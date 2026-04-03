@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
+import { getBrowserAppUrl } from "@/lib/env"
 
 const roles = [
   { value: "donor", label: "Donor / volunteer" },
@@ -35,10 +36,12 @@ export default function RegisterPage() {
     e.preventDefault()
     setLoading(true)
     const supabase = createClient()
+    const redirectTo = `${getBrowserAppUrl()}/auth/callback`
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        emailRedirectTo: redirectTo,
         data: { name, role },
       },
     })

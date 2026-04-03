@@ -10,8 +10,14 @@ ImpactBridge is a **Next.js 14** app on the App Router, backed by **Supabase** (
    - `project-media` — public read, authenticated upload.
    - `ngo-docs` — private, authenticated read/write for verification PDFs.
    - `brand-assets` — public read, authenticated upload for logos.
-4. **Authentication → URL configuration**: add your Vercel URL (and `http://localhost:3000` for dev) to redirect URLs.
-5. (Optional) Run `supabase/seed.sql` after creating demo users in **Authentication** and assigning roles on `public.users` (see comments at top of seed file).
+4. **Authentication → URL configuration** (required so email confirmation does not send users to localhost):
+   - **Site URL:** your production app root, e.g. `https://your-app.vercel.app` (or your custom domain).
+   - **Redirect URLs:** add both:
+     - `https://your-app.vercel.app/auth/callback`
+     - `http://localhost:3000/auth/callback` (local dev)
+   Sign-up uses `emailRedirectTo` → `/auth/callback`; Supabase must allow that exact URL.
+5. Set **`NEXT_PUBLIC_APP_URL`** on Vercel to the same public URL as Site URL (e.g. `https://your-app.vercel.app`). If omitted, the register form falls back to the **current browser origin**, which is correct when users sign up from production.
+6. (Optional) Run `supabase/seed.sql` after creating demo users in **Authentication** and assigning roles on `public.users` (see comments at top of seed file).
 
 ## 2. Razorpay
 
