@@ -2,6 +2,8 @@ export type VolunteerEmailSendResult =
   | { sent: true }
   | { sent: false; reason: "missing_key" | "resend_rejected" }
 
+const DEFAULT_RESEND_FROM = "ImpactBridge <onboarding@resend.dev>"
+
 function resolveResendApiKey(): string | undefined {
   const raw = process.env.RESEND_API_KEY
   if (raw == null || typeof raw !== "string") return undefined
@@ -13,6 +15,50 @@ function resolveResendApiKey(): string | undefined {
     t = t.slice(1, -1).trim()
   }
   return t || undefined
+}
+
+/** Resend requires `email@domain` or `Display Name <email@domain>` (no smart quotes / broken brackets). */
+function resolveResendFromEmail(): string {
+  const raw = process.env.RESEND_FROM_EMAIL
+  if (raw == null || typeof raw !== "string") return DEFAULT_RESEND_FROM
+  let t = raw
+    .replace(/^\uFEFF/, "")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2018\u2019]/g, "'")
+    .trim()
+  if (
+    (t.startsWith('"') && t.endsWith('"')) ||
+    (t.startsWith("'") && t.endsWith("'"))
+  ) {
+    t = t.slice(1, -1).trim()
+  }
+  if (!t) return DEFAULT_RESEND_FROM
+
+  const innerEmail = (s: string) => {
+    const x = s.trim()
+    if (!x || x.includes(" ") || !x.includes("@")) return null
+    const [local, ...rest] = x.split("@")
+    const domain = rest.join("@")
+    if (!local || !domain || !domain.includes(".")) return null
+    return x
+  }
+
+  if (!t.includes("<")) {
+    const email = innerEmail(t)
+    if (email) return email
+  } else {
+    const m = t.match(/^(.+?)<([^>]+)>\s*$/)
+    if (m) {
+      const name = m[1].trim()
+      const email = innerEmail(m[2])
+      if (name && email) return `${name} <${email}>`
+    }
+  }
+
+  console.warn(
+    "[email] RESEND_FROM_EMAIL must be a bare address (you@domain.com) or \"Name <you@domain.com>\"; using default sender."
+  )
+  return DEFAULT_RESEND_FROM
 }
 
 type VolunteerConfirmation = {
@@ -44,7 +90,7 @@ export async function sendVolunteerRegistrationEmail(
   p: VolunteerConfirmation
 ): Promise<VolunteerEmailSendResult> {
   const key = resolveResendApiKey()
-  const from = process.env.RESEND_FROM_EMAIL ?? "ImpactBridge <onboarding@resend.dev>"
+  const from = resolveResendFromEmail()
 
   const when = formatEventWhen(p.startAt, p.endAt)
   const place = [p.eventVenueLine, p.location].filter(Boolean).join(" · ") || p.location
@@ -115,7 +161,7 @@ export async function sendOrganizerInquiryEmail(p: {
   projectUrl: string
 }): Promise<boolean> {
   const key = resolveResendApiKey()
-  const from = process.env.RESEND_FROM_EMAIL ?? "ImpactBridge <onboarding@resend.dev>"
+  const from = resolveResendFromEmail()
 
   const html = `
   <div style="font-family: system-ui, sans-serif; max-width: 560px; line-height: 1.5;">
