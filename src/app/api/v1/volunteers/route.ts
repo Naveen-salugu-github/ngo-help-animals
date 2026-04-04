@@ -128,8 +128,9 @@ export async function POST(request: NextRequest) {
   const whatsappShareUrl = buildWhatsappShareUrl(shareText)
 
   let emailed = false
+  let emailNotSentReason: "missing_key" | "resend_rejected" | undefined
   if (emailForSend) {
-    emailed = await sendVolunteerRegistrationEmail({
+    const r = await sendVolunteerRegistrationEmail({
       to: emailForSend,
       participantName: nameForEmail,
       eventTitle: title,
@@ -140,6 +141,8 @@ export async function POST(request: NextRequest) {
       projectUrl,
       whatsappShareUrl,
     })
+    emailed = r.sent
+    if (!r.sent) emailNotSentReason = r.reason
   }
 
   return NextResponse.json({
@@ -147,5 +150,6 @@ export async function POST(request: NextRequest) {
     id: row?.id,
     volunteerCount: bumped.volunteer_count,
     emailSent: emailed,
+    ...(emailNotSentReason ? { emailNotSentReason } : {}),
   })
 }

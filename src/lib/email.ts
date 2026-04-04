@@ -1,3 +1,20 @@
+export type VolunteerEmailSendResult =
+  | { sent: true }
+  | { sent: false; reason: "missing_key" | "resend_rejected" }
+
+function resolveResendApiKey(): string | undefined {
+  const raw = process.env.RESEND_API_KEY
+  if (raw == null || typeof raw !== "string") return undefined
+  let t = raw.trim()
+  if (
+    (t.startsWith('"') && t.endsWith('"')) ||
+    (t.startsWith("'") && t.endsWith("'"))
+  ) {
+    t = t.slice(1, -1).trim()
+  }
+  return t || undefined
+}
+
 type VolunteerConfirmation = {
   to: string
   participantName: string
@@ -23,8 +40,10 @@ function formatEventWhen(startAt: Date | null, endAt: Date | null): string {
   return `${start} – ${end} IST`
 }
 
-export async function sendVolunteerRegistrationEmail(p: VolunteerConfirmation): Promise<boolean> {
-  const key = process.env.RESEND_API_KEY
+export async function sendVolunteerRegistrationEmail(
+  p: VolunteerConfirmation
+): Promise<VolunteerEmailSendResult> {
+  const key = resolveResendApiKey()
   const from = process.env.RESEND_FROM_EMAIL ?? "ImpactBridge <onboarding@resend.dev>"
 
   const when = formatEventWhen(p.startAt, p.endAt)
@@ -49,7 +68,7 @@ export async function sendVolunteerRegistrationEmail(p: VolunteerConfirmation): 
 
   if (!key) {
     console.warn("[email] RESEND_API_KEY not set; skipping send to", p.to)
-    return false
+    return { sent: false, reason: "missing_key" }
   }
 
   const res = await fetch("https://api.resend.com/emails", {
@@ -69,9 +88,9 @@ export async function sendVolunteerRegistrationEmail(p: VolunteerConfirmation): 
   if (!res.ok) {
     const err = await res.text()
     console.error("[email] Resend error:", res.status, err)
-    return false
+    return { sent: false, reason: "resend_rejected" }
   }
-  return true
+  return { sent: true }
 }
 
 function escapeHtml(s: string): string {
@@ -95,7 +114,7 @@ export async function sendOrganizerInquiryEmail(p: {
   message: string
   projectUrl: string
 }): Promise<boolean> {
-  const key = process.env.RESEND_API_KEY
+  const key = resolveResendApiKey()
   const from = process.env.RESEND_FROM_EMAIL ?? "ImpactBridge <onboarding@resend.dev>"
 
   const html = `

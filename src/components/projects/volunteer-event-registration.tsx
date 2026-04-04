@@ -85,9 +85,11 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
       const msg =
         body.emailSent === true
           ? "You’re registered. Check your inbox for date, place, and WhatsApp link."
-          : body.emailSent === false
-            ? "You’re registered. (Add RESEND_API_KEY to send confirmation emails.)"
-            : "You’re registered."
+          : body.emailNotSentReason === "resend_rejected"
+            ? "You’re registered. Email wasn’t delivered — in Vercel logs look for [email] Resend error; verify RESEND_API_KEY, RESEND_FROM_EMAIL, and your Resend domain."
+            : body.emailSent === false
+              ? "You’re registered. (Add RESEND_API_KEY for Production in Vercel, redeploy, and avoid quotes around the key.)"
+              : "You’re registered."
       toast.success(msg)
       setOpen(false)
       router.refresh()
