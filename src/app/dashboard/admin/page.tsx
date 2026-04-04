@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { setNgoVerification, setImpactModeration } from "@/app/actions/admin"
+import { setNgoVerification, setImpactModeration, setProjectCampaignStatus } from "@/app/actions/admin"
 import { AdminDeleteProjectButton } from "@/components/dashboard/admin-delete-project-button"
 import Link from "next/link"
 
@@ -29,6 +29,21 @@ export default async function AdminDashboardPage() {
     .from("ngos")
     .select("id, organization_name, verification_status, created_at, user_id")
     .eq("verification_status", "pending")
+    .order("created_at", { ascending: false })
+
+  const { data: pendingCampaigns } = await supabase
+    .from("projects")
+    .select(
+      `
+      id,
+      title,
+      location,
+      status,
+      created_at,
+      ngos:ngo_id ( organization_name )
+    `
+    )
+    .eq("status", "pending_review")
     .order("created_at", { ascending: false })
 
   const { data: pendingImpact } = await supabase
@@ -123,6 +138,59 @@ export default async function AdminDashboardPage() {
                     <input type="hidden" name="verification_status" value="rejected" />
                     <Button type="submit" size="sm" variant="destructive">
                       Reject
+                    </Button>
+                  </form>
+                </div>
+              </div>
+            )
+          })}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Campaign approval</CardTitle>
+          <CardDescription>
+            NGOs submitted these for publication. Approve to go live on Explore, map, and donations; reject to send back to draft.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {(pendingCampaigns ?? []).length === 0 && (
+            <p className="text-sm text-muted-foreground">No campaigns awaiting review.</p>
+          )}
+          {(pendingCampaigns ?? []).map((p) => {
+            const raw = p.ngos as unknown
+            const ngo = (Array.isArray(raw) ? raw[0] : raw) as { organization_name: string } | null
+            return (
+              <div
+                key={p.id}
+                className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <p className="font-medium">{p.title}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {ngo?.organization_name ?? "NGO"} · {p.location}
+                  </p>
+                  <Badge variant="secondary" className="mt-2">
+                    pending review
+                  </Badge>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Link href={`/projects/${p.id}`} className="inline-flex items-center text-sm text-primary underline">
+                    Preview (admin)
+                  </Link>
+                  <form action={setProjectCampaignStatus}>
+                    <input type="hidden" name="project_id" value={p.id} />
+                    <input type="hidden" name="next_status" value="active" />
+                    <Button type="submit" size="sm">
+                      Approve &amp; publish
+                    </Button>
+                  </form>
+                  <form action={setProjectCampaignStatus}>
+                    <input type="hidden" name="project_id" value={p.id} />
+                    <input type="hidden" name="next_status" value="draft" />
+                    <Button type="submit" size="sm" variant="outline">
+                      Reject (draft)
                     </Button>
                   </form>
                 </div>

@@ -6,9 +6,17 @@ import { ArrowRight } from "lucide-react"
 import { HeroImageRotator } from "@/components/home/hero-image-rotator"
 import { LocationPromptBanner } from "@/components/home/location-prompt-banner"
 import { FeaturedProjectsGrid, type FeaturedProject } from "@/components/home/featured-projects-grid"
-import { DonorQuickActions } from "@/components/home/donor-quick-actions"
+import { NgoHomeQuickActions } from "@/components/home/ngo-home-quick-actions"
 
-export default async function HomePage() {
+type HomeSearchParams = { campaignSubmitted?: string | string[] }
+
+function campaignSubmittedFlag(sp: HomeSearchParams): boolean {
+  const v = sp.campaignSubmitted
+  const s = Array.isArray(v) ? v[0] : v
+  return s === "1" || s === "true"
+}
+
+export default async function HomePage({ searchParams }: { searchParams: HomeSearchParams }) {
   const supabase = await createClient()
   const {
     data: { user },
@@ -64,8 +72,29 @@ export default async function HomePage() {
     user?.email?.split("@")[0] ||
     "there"
 
+  const showCampaignSubmitted = campaignSubmittedFlag(searchParams) && me?.role === "ngo"
+
   return (
     <div>
+      {showCampaignSubmitted && (
+        <div className="border-b border-primary/20 bg-primary/10">
+          <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-medium text-foreground">
+              Your campaign was submitted for admin review. It will appear on Explore and accept support only after
+              approval.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild size="sm" variant="default">
+                <Link href="/dashboard/ngo">NGO dashboard</Link>
+              </Button>
+              <Button asChild size="sm" variant="outline">
+                <Link href="/">Dismiss</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <section className="border-b bg-gradient-to-b from-accent/40 to-background">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-16 md:flex-row md:items-center md:py-24">
           <div className="flex-1 space-y-6">
@@ -87,9 +116,9 @@ export default async function HomePage() {
             <div className="space-y-3">
               <LocationPromptBanner variant="default" />
             </div>
-            {me?.role === "donor" && (
+            {me?.role === "ngo" && (
               <div className="max-w-xl">
-                <DonorQuickActions />
+                <NgoHomeQuickActions />
               </div>
             )}
             <div className="flex flex-wrap gap-3">

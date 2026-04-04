@@ -177,62 +177,17 @@ export default async function NgoDashboardPage() {
                     placeholder='[{"amount":50,"label":"1 meal"},{"amount":200,"label":"1 tree"}]'
                   />
                 </div>
+                <p className="text-xs text-muted-foreground sm:col-span-2">
+                  Submitting for publication sends the campaign to admin review. It appears on Explore and accepts donations only after approval.
+                </p>
                 <div className="flex gap-2 sm:col-span-2">
-                  <Button type="submit" name="status" value="active">
-                    Publish active
+                  <Button type="submit" name="status" value="pending">
+                    Submit for review
                   </Button>
                   <Button type="submit" name="status" value="draft" variant="secondary">
                     Save draft
                   </Button>
                 </div>
-              </form>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Impact update</CardTitle>
-              <CardDescription>Posts appear in the feed after admin approval.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form action={createImpactUpdate} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="project_id">Project</Label>
-                  <select
-                    id="project_id"
-                    name="project_id"
-                    required
-                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
-                  >
-                    <option value="">Select…</option>
-                    {(projects ?? []).map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.title}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="media_url">Photo or video URL</Label>
-                  <Input id="media_url" name="media_url" required placeholder="https://…" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="media_type">Media type</Label>
-                  <select id="media_type" name="media_type" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm">
-                    <option value="image">Image</option>
-                    <option value="video">Video</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="impact_context">Context for AI (optional)</Label>
-                  <Textarea id="impact_context" rows={2} placeholder="Kids receiving midday meals in Vizag…" />
-                </div>
-                <AiCaptionButton contextFieldId="impact_context" targetFieldId="caption" />
-                <div className="space-y-2">
-                  <Label htmlFor="caption">Caption</Label>
-                  <Textarea id="caption" name="caption" rows={3} />
-                </div>
-                <Button type="submit">Submit update</Button>
               </form>
             </CardContent>
           </Card>
@@ -244,11 +199,83 @@ export default async function NgoDashboardPage() {
             <ul className="space-y-2 text-sm">
               {(projects ?? []).map((p) => (
                 <li key={p.id}>
-                  <strong>{p.title}</strong> — {p.status} — goal ₹{Number(p.goal_amount).toLocaleString("en-IN")}
+                  <strong>{p.title}</strong> —{" "}
+                  {p.status === "pending_review" ? (
+                    <span className="text-amber-700 dark:text-amber-500">awaiting admin approval</span>
+                  ) : (
+                    p.status
+                  )}{" "}
+                  — goal ₹{Number(p.goal_amount).toLocaleString("en-IN")}
+                  {p.status === "pending_review" && (
+                    <span className="ml-2 text-xs text-muted-foreground">(only you can open the page until published)</span>
+                  )}
                 </li>
               ))}
             </ul>
           </div>
+
+          <Separator />
+
+          <section id="impact-updates" className="space-y-4">
+            <div>
+              <h2 className="text-xl font-semibold">Impact updates</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Separate from creating a campaign — post field photos or videos for an existing project. The public feed
+                shows them after admin approval.
+              </p>
+            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>New impact post</CardTitle>
+                <CardDescription>Choose a project below, then add media and a caption.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form action={createImpactUpdate} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="impact_project_id">Project</Label>
+                    <select
+                      id="impact_project_id"
+                      name="project_id"
+                      required
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                    >
+                      <option value="">Select…</option>
+                      {(projects ?? []).map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="impact_media_url">Photo or video URL</Label>
+                    <Input id="impact_media_url" name="media_url" required placeholder="https://…" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="impact_media_type">Media type</Label>
+                    <select
+                      id="impact_media_type"
+                      name="media_type"
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                    >
+                      <option value="image">Image</option>
+                      <option value="video">Video</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="impact_context">Context for AI (optional)</Label>
+                    <Textarea id="impact_context" rows={2} placeholder="Kids receiving midday meals in Vizag…" />
+                  </div>
+                  <AiCaptionButton contextFieldId="impact_context" targetFieldId="impact_caption" />
+                  <div className="space-y-2">
+                    <Label htmlFor="impact_caption">Caption</Label>
+                    <Textarea id="impact_caption" name="caption" rows={3} />
+                  </div>
+                  <Button type="submit">Submit update</Button>
+                </form>
+              </CardContent>
+            </Card>
+          </section>
         </>
       )}
     </div>

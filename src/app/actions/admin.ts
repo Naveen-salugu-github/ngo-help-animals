@@ -58,6 +58,38 @@ export async function setImpactModeration(formData: FormData): Promise<void> {
   revalidatePath("/feed")
 }
 
+export async function setProjectCampaignStatus(formData: FormData): Promise<void> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return
+
+  const { data: profile } = await supabase.from("users").select("role").eq("id", user.id).single()
+  if (profile?.role !== "admin") return
+
+  const project_id = String(formData.get("project_id") ?? "")
+  const next = String(formData.get("next_status") ?? "") as "active" | "draft"
+  if (!project_id || !["active", "draft"].includes(next)) {
+    return
+  }
+
+  const { data, error } = await supabase
+    .from("projects")
+    .update({ status: next })
+    .eq("id", project_id)
+    .eq("status", "pending_review")
+    .select("id")
+
+  if (error) return
+  if (!data?.length) return
+  revalidatePath("/dashboard/admin")
+  revalidatePath("/projects")
+  revalidatePath("/dashboard/ngo")
+  revalidatePath("/")
+  revalidatePath("/volunteer-map")
+}
+
 export async function deleteProjectAsAdmin(projectId: string): Promise<{ ok: boolean; error?: string }> {
   const supabase = await createClient()
   const {

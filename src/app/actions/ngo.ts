@@ -1,6 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 
 export async function createNgoProfile(formData: FormData): Promise<void> {
@@ -81,6 +82,9 @@ export async function createProject(formData: FormData): Promise<void> {
   const event_start_at = combineDateTime(campaignDate, startTime)
   const event_end_at = combineDateTime(campaignDate, endTime)
 
+  const submittedAsDraft = String(formData.get("status") ?? "") === "draft"
+  const nextStatus = submittedAsDraft ? "draft" : "pending_review"
+
   const { error } = await supabase.from("projects").insert({
     ngo_id: ngo.id,
     title,
@@ -90,7 +94,7 @@ export async function createProject(formData: FormData): Promise<void> {
     micro_donation_units,
     timeline_start: campaignDate || null,
     timeline_end: null,
-    status: (formData.get("status") as string) === "draft" ? "draft" : "active",
+    status: nextStatus,
     cover_image_url: String(formData.get("cover_image_url") ?? "") || null,
     volunteer_slots: Number(formData.get("volunteer_slots") ?? 0) || 0,
     volunteer_category: String(formData.get("volunteer_category") ?? "") || null,
@@ -106,6 +110,11 @@ export async function createProject(formData: FormData): Promise<void> {
   if (error) return
   revalidatePath("/dashboard/ngo")
   revalidatePath("/projects")
+  revalidatePath("/")
+
+  if (!submittedAsDraft) {
+    redirect("/?campaignSubmitted=1")
+  }
 }
 
 export async function createImpactUpdate(formData: FormData): Promise<void> {

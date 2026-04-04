@@ -1,6 +1,6 @@
 export type UserRole = "donor" | "ngo" | "brand" | "admin"
 export type VerificationStatus = "pending" | "verified" | "rejected"
-export type ProjectStatus = "draft" | "active" | "funded" | "closed"
+export type ProjectStatus = "draft" | "pending_review" | "active" | "funded" | "closed"
 export type PaymentStatus = "pending" | "completed" | "failed" | "refunded"
 export type VolunteerStatus = "rsvp" | "confirmed" | "checked_in" | "cancelled"
 export type MediaType = "image" | "video"

@@ -158,6 +158,18 @@ export default async function ProjectDetailPage({ params }: Params) {
         <p className="text-sm font-medium">{ngo?.organization_name}</p>
       </div>
 
+      {project.status === "pending_review" && (
+        <Card className="mt-6 border-amber-500/40 bg-amber-500/10">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base text-amber-900 dark:text-amber-100">Awaiting admin approval</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-amber-950/80 dark:text-amber-50/90">
+            This campaign is not public yet. After an admin approves it, it will appear on Explore and accept donations and
+            volunteer sign-ups.
+          </CardContent>
+        </Card>
+      )}
+
       <div className="mt-6">
         <p className="mb-2 text-sm font-medium text-muted-foreground">Share this event</p>
         <EventShareRow url={sharePageUrl} title={project.title} description={project.location} />
