@@ -59,8 +59,15 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
       router.push(`/login?next=/projects/${projectId}`)
       return
     }
-    if (!phone.trim() || !email.trim()) {
-      toast.error("Phone and email are required")
+    const nameTrim = name.trim()
+    const emailTrim = email.trim()
+    const emailOk = emailTrim.length > 3 && emailTrim.includes("@") && emailTrim.includes(".")
+    if (!nameTrim) {
+      toast.error("Full name is required")
+      return
+    }
+    if (!emailTrim || !emailOk) {
+      toast.error("A valid email is required")
       return
     }
     setLoading(true)
@@ -73,9 +80,9 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
         },
         body: JSON.stringify({
           projectId,
-          phone: phone.trim(),
-          contactEmail: email.trim(),
-          participantName: name.trim() || undefined,
+          phone: phone.trim() || undefined,
+          contactEmail: emailTrim,
+          participantName: nameTrim,
         }),
       })
       const body = await res.json()
@@ -120,8 +127,8 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
           <DialogHeader>
             <DialogTitle>Event registration</DialogTitle>
             <DialogDescription>
-              We’ll send your confirmation by email with date, time, and place. You’ll also get a WhatsApp-friendly
-              link to share the event.
+              Full name and email are required so we can send your confirmation (date, time, place) and a WhatsApp-friendly
+              link. Phone is optional.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -132,6 +139,7 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 autoComplete="name"
+                required
               />
             </div>
             <div className="space-y-2">
@@ -146,16 +154,16 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="reg-phone">Phone (with country code)</Label>
+              <Label htmlFor="reg-phone">Phone (optional)</Label>
               <Input
                 id="reg-phone"
                 type="tel"
-                required
-                placeholder="+91 98765 43210"
+                placeholder="+91 98765 43210 — optional"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 autoComplete="tel"
               />
+              <p className="text-xs text-muted-foreground">Add a number if the organizer should reach you by call or SMS.</p>
             </div>
           </div>
           <DialogFooter>

@@ -32,7 +32,7 @@ export async function POST(request: NextRequest, { params }: Params) {
 
   const { data: project, error: pErr } = await admin
     .from("projects")
-    .select("id, title, status, event_end_at, ngo_id")
+    .select("id, title, status, event_end_at, ngo_id, organizer_contact_email")
     .eq("id", projectId)
     .single()
 
@@ -51,7 +51,10 @@ export async function POST(request: NextRequest, { params }: Params) {
   }
 
   const { data: organizer } = await admin.from("users").select("email, name").eq("id", ngo.user_id).single()
-  if (!organizer?.email) {
+  const campaignEmail = String(project.organizer_contact_email ?? "").trim()
+  const campaignEmailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(campaignEmail)
+  const toEmail = campaignEmailOk ? campaignEmail : organizer?.email ?? ""
+  if (!toEmail) {
     return NextResponse.json({ error: "Organizer email unavailable" }, { status: 503 })
   }
 
@@ -72,7 +75,7 @@ export async function POST(request: NextRequest, { params }: Params) {
 
   const site = getSiteUrl()
   const emailed = await sendOrganizerInquiryEmail({
-    to: organizer.email,
+    to: toEmail,
     organizerName: ngo.organization_name ?? "Organizer",
     projectTitle: project.title as string,
     fromEmail,

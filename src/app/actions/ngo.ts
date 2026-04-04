@@ -92,6 +92,22 @@ export async function createProject(formData: FormData): Promise<CreateProjectRe
   const submittedAsDraft = String(formData.get("status") ?? "") === "draft"
   const nextStatus = submittedAsDraft ? "draft" : "pending_review"
 
+  const organizer_contact_phone = String(formData.get("organizer_contact_phone") ?? "").trim()
+  const organizer_contact_email = String(formData.get("organizer_contact_email") ?? "").trim()
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(organizer_contact_email)
+
+  if (!submittedAsDraft) {
+    if (!organizer_contact_phone || organizer_contact_phone.length < 8) {
+      return {
+        ok: false,
+        error: "Add a valid organizer phone (with country code) before submitting for review.",
+      }
+    }
+    if (!organizer_contact_email || !emailOk) {
+      return { ok: false, error: "Add a valid organizer email before submitting for review." }
+    }
+  }
+
   const { error } = await supabase.from("projects").insert({
     ngo_id: ngo.id,
     title,
@@ -112,6 +128,8 @@ export async function createProject(formData: FormData): Promise<CreateProjectRe
     event_start_at,
     event_end_at,
     event_venue_detail: String(formData.get("event_venue_detail") ?? "").trim() || null,
+    organizer_contact_phone: organizer_contact_phone || null,
+    organizer_contact_email: organizer_contact_email || null,
   })
 
   if (error) {

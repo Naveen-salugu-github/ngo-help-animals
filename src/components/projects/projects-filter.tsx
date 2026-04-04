@@ -36,6 +36,8 @@ export type ProjectListItem = {
   status: string
   latitude: number | null
   longitude: number | null
+  organizer_contact_phone: string | null
+  organizer_contact_email: string | null
   ngos: {
     organization_name: string
     verification_status: string
@@ -151,6 +153,8 @@ export function ProjectsFilter({ projects }: { projects: ProjectListItem[] }) {
                         projectTitle={p.title}
                         ngoName={ngoName}
                         variant="compact"
+                        organizerContactPhone={p.organizer_contact_phone}
+                        organizerContactEmail={p.organizer_contact_email}
                       />
                     )}
                     {showFeedback && (

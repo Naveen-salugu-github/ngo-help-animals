@@ -103,6 +103,37 @@ export function NgoCreateCampaignForm() {
           disabled={loading}
         />
       </div>
+      <div className="sm:col-span-2 rounded-lg border border-border bg-muted/30 p-4">
+        <p className="mb-3 text-sm font-medium">Organizer contact for this campaign</p>
+        <p className="mb-3 text-xs text-muted-foreground">
+          Shown when supporters use &quot;Contact organizer&quot; and when they register for the event. Required before
+          submitting for review; optional if you save a draft first.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="organizer_contact_phone">Organizer phone</Label>
+            <Input
+              id="organizer_contact_phone"
+              name="organizer_contact_phone"
+              type="tel"
+              placeholder="+91 98765 43210"
+              autoComplete="tel"
+              disabled={loading}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="organizer_contact_email">Organizer email</Label>
+            <Input
+              id="organizer_contact_email"
+              name="organizer_contact_email"
+              type="email"
+              placeholder="events@your-ngo.org"
+              autoComplete="email"
+              disabled={loading}
+            />
+          </div>
+        </div>
+      </div>
       <div className="space-y-2">
         <Label htmlFor="beneficiaries_impacted">Beneficiaries (estimate)</Label>
         <Input

@@ -189,6 +189,8 @@ export default async function ProjectDetailPage({ params }: Params) {
               projectId={project.id}
               projectTitle={project.title}
               ngoName={ngo?.organization_name ?? "Organizer"}
+              organizerContactPhone={project.organizer_contact_phone}
+              organizerContactEmail={project.organizer_contact_email}
             />
           </CardContent>
         </Card>

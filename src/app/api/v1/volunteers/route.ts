@@ -48,9 +48,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, id: existing.id, updated: true })
   }
 
-  if (status === "rsvp" && (!phone || !contactEmail)) {
+  const emailLooksValid = contactEmail.length > 3 && contactEmail.includes("@") && contactEmail.includes(".")
+  if (status === "rsvp" && (!participantName || !contactEmail || !emailLooksValid)) {
     return NextResponse.json(
-      { error: "Phone and email are required to register for this event" },
+      { error: "Full name and a valid email are required to register for this event" },
       { status: 400 }
     )
   }
@@ -85,7 +86,7 @@ export async function POST(request: NextRequest) {
 
   const { data: profile } = await admin.from("users").select("name, email").eq("id", user.id).single()
   const nameForEmail = participantName || profile?.name || profile?.email || "Participant"
-  const emailForSend = contactEmail || profile?.email
+  const emailForSend = contactEmail || profile?.email || ""
 
   const { data: row, error: insErr } = await supabase
     .from("volunteers")

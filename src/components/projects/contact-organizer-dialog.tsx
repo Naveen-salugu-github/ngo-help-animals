@@ -16,20 +16,29 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import { Mail } from "lucide-react"
+import { Mail, Phone } from "lucide-react"
 
 type Props = {
   projectId: string
   projectTitle: string
   ngoName: string
+  organizerContactPhone?: string | null
+  organizerContactEmail?: string | null
   /** Compact button for grid cards */
   variant?: "default" | "compact"
+}
+
+function telHref(phone: string) {
+  const digits = phone.replace(/[^\d+]/g, "")
+  return digits ? `tel:${digits}` : `tel:${phone.trim()}`
 }
 
 export function ContactOrganizerDialog({
   projectId,
   projectTitle,
   ngoName,
+  organizerContactPhone,
+  organizerContactEmail,
   variant = "default",
 }: Props) {
   const router = useRouter()
@@ -106,6 +115,34 @@ export function ContactOrganizerDialog({
               reply.
             </DialogDescription>
           </DialogHeader>
+          <div className="rounded-md border bg-muted/40 px-3 py-2 text-sm">
+            <p className="mb-2 font-medium text-foreground">Organizer contact</p>
+            <div className="space-y-1.5 text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-2">
+                <Phone className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                {organizerContactPhone?.trim() ? (
+                  <a href={telHref(organizerContactPhone)} className="text-primary underline-offset-4 hover:underline">
+                    {organizerContactPhone.trim()}
+                  </a>
+                ) : (
+                  <span>Not provided for this campaign</span>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Mail className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                {organizerContactEmail?.trim() ? (
+                  <a
+                    href={`mailto:${encodeURIComponent(organizerContactEmail.trim())}`}
+                    className="text-primary underline-offset-4 hover:underline"
+                  >
+                    {organizerContactEmail.trim()}
+                  </a>
+                ) : (
+                  <span>Not provided for this campaign</span>
+                )}
+              </div>
+            </div>
+          </div>
           <div className="grid gap-2 py-4">
             <Label htmlFor="org-msg">Your message</Label>
             <Textarea

@@ -26,6 +26,8 @@ export default async function ProjectsPage() {
       status,
       latitude,
       longitude,
+      organizer_contact_phone,
+      organizer_contact_email,
       ngos:ngo_id (
         organization_name,
         verification_status
