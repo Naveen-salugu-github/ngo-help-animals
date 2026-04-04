@@ -138,9 +138,11 @@ export default async function HomePage() {
             reports. Volunteers discover events on the map.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Button asChild>
-              <Link href="/register">Create account</Link>
-            </Button>
+            {me?.role !== "ngo" && (
+              <Button asChild>
+                <Link href="/register?role=ngo">Register NGO</Link>
+              </Button>
+            )}
             <Button asChild variant="outline">
               <Link href="/dashboard/ngo">NGO dashboard</Link>
             </Button>

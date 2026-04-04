@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react"
 
+/** Broken 4th slide removed; +2: street feeding (people + dog) and cat/dog faces (Unsplash). */
 const IMAGES = [
   "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=900&q=80",
   "https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=900&q=80",
   "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=900&q=80",
-  "https://images.unsplash.com/photo-1488521787991-ed7bbaae773f?w=900&q=80",
+  "https://images.unsplash.com/photo-1511691218551-82509ca78ce8?w=900&q=80",
+  "https://images.unsplash.com/photo-1728065015087-b1fbb15e5480?w=900&q=80",
 ]
 
 const INTERVAL_MS = 3000
@@ -26,7 +28,7 @@ export function HeroImageRotator() {
       {IMAGES.map((src, i) => (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          key={src}
+          key={`hero-${i}`}
           src={src}
           alt=""
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
