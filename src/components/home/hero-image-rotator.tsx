@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react"
 
-/** Broken 4th slide removed; +2: street feeding (people + dog) and cat/dog faces (Unsplash). */
+/** Last two: Unsplash YfNRdlxHDwI (cats on step), Rwx2wnnAiCE (feeding stray dog, India). */
 const IMAGES = [
   "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=900&q=80",
   "https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=900&q=80",
   "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=900&q=80",
-  "https://images.unsplash.com/photo-1511691218551-82509ca78ce8?w=900&q=80",
-  "https://images.unsplash.com/photo-1728065015087-b1fbb15e5480?w=900&q=80",
+  "https://images.unsplash.com/photo-1699525187657-7ad6c07c4d74?w=900&q=80",
+  "https://images.unsplash.com/photo-1674802401345-4e6ec9fc2146?w=900&q=80",
 ]
 
 const INTERVAL_MS = 3000
