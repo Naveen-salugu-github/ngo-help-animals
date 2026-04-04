@@ -8,6 +8,7 @@ ImpactBridge is a **Next.js 14** app on the App Router, backed by **Supabase** (
 2. Open **SQL Editor** and run migrations in order:
    - `supabase/migrations/20260403000000_impactbridge.sql`
    - `supabase/migrations/20260403120000_volunteer_event_enhancements.sql` (event times + volunteer phone/email)
+   - `supabase/migrations/20260403150000_admin_delete_projects.sql` (admin list/delete campaigns)
 3. If bucket creation fails in SQL (permissions), create buckets manually in **Storage**:
    - `project-media` — public read, authenticated upload.
    - `ngo-docs` — private, authenticated read/write for verification PDFs.

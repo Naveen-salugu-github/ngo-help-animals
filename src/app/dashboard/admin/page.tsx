@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { setNgoVerification, setImpactModeration } from "@/app/actions/admin"
+import { AdminDeleteProjectButton } from "@/components/dashboard/admin-delete-project-button"
+import Link from "next/link"
 
 export const metadata = { title: "Admin | ImpactBridge" }
 
@@ -47,6 +49,21 @@ export default async function AdminDashboardPage() {
   const { count: userCount } = await supabase.from("users").select("*", { count: "exact", head: true })
   const { count: projectCount } = await supabase.from("projects").select("*", { count: "exact", head: true })
   const { count: donationRows } = await supabase.from("donations").select("*", { count: "exact", head: true })
+
+  const { data: allProjects } = await supabase
+    .from("projects")
+    .select(
+      `
+      id,
+      title,
+      status,
+      location,
+      created_at,
+      ngos:ngo_id ( organization_name )
+    `
+    )
+    .order("created_at", { ascending: false })
+    .limit(100)
 
   return (
     <div className="mx-auto max-w-5xl space-y-10 px-4 py-10">
@@ -156,6 +173,42 @@ export default async function AdminDashboardPage() {
                     </Button>
                   </form>
                 </div>
+              </div>
+            )
+          })}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Campaigns (projects)</CardTitle>
+          <CardDescription>
+            Remove a campaign from the platform. This deletes the project and related volunteers, donations records,
+            impact updates, and sponsorships (database cascades).
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {(allProjects ?? []).length === 0 && (
+            <p className="text-sm text-muted-foreground">No projects yet.</p>
+          )}
+          {(allProjects ?? []).map((p) => {
+            const raw = p.ngos as unknown
+            const ngo = (Array.isArray(raw) ? raw[0] : raw) as { organization_name: string } | null
+            return (
+              <div
+                key={p.id}
+                className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <p className="font-medium">{p.title}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {ngo?.organization_name ?? "NGO"} · {p.location} · {p.status}
+                  </p>
+                  <Link href={`/projects/${p.id}`} className="mt-1 inline-block text-xs text-primary underline">
+                    View public page
+                  </Link>
+                </div>
+                <AdminDeleteProjectButton projectId={p.id} title={p.title} />
               </div>
             )
           })}

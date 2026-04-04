@@ -57,3 +57,27 @@ export async function setImpactModeration(formData: FormData): Promise<void> {
   revalidatePath("/dashboard/admin")
   revalidatePath("/feed")
 }
+
+export async function deleteProjectAsAdmin(projectId: string): Promise<{ ok: boolean; error?: string }> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { ok: false, error: "Not signed in" }
+
+  const { data: profile } = await supabase.from("users").select("role").eq("id", user.id).single()
+  if (profile?.role !== "admin") return { ok: false, error: "Not allowed" }
+
+  const id = projectId.trim()
+  if (!id) return { ok: false, error: "Invalid project" }
+
+  const { error } = await supabase.from("projects").delete().eq("id", id)
+  if (error) return { ok: false, error: error.message }
+
+  revalidatePath("/dashboard/admin")
+  revalidatePath("/projects")
+  revalidatePath("/feed")
+  revalidatePath("/volunteer-map")
+  revalidatePath("/")
+  return { ok: true }
+}
