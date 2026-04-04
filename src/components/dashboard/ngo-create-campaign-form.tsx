@@ -17,8 +17,14 @@ export function NgoCreateCampaignForm() {
     e.preventDefault()
     setLoading(true)
     const form = e.currentTarget
-    const sub = (e.nativeEvent as SubmitEvent).submitter
-    const fd = new FormData(form, sub instanceof HTMLButtonElement ? sub : undefined)
+    const sub = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null
+    const fd = new FormData(form)
+    // Do not rely on `new FormData(form, submitter)` — set explicitly for broad browser/React compatibility.
+    if (sub?.name === "status" && sub.value) {
+      fd.set("status", sub.value)
+    } else {
+      fd.set("status", "pending")
+    }
     try {
       const result = await createProject(fd)
       if (!result.ok) {
@@ -34,7 +40,8 @@ export function NgoCreateCampaignForm() {
         toast.success("Draft saved.")
         router.refresh()
       }
-    } catch {
+    } catch (err) {
+      console.error(err)
       toast.error("Something went wrong. Try again.")
     } finally {
       setLoading(false)

@@ -115,7 +115,13 @@ export async function createProject(formData: FormData): Promise<CreateProjectRe
   })
 
   if (error) {
-    return { ok: false, error: error.message || "Could not create campaign." }
+    let msg = error.message || "Could not create campaign."
+    if (/project_status|enum|pending_review|invalid input value for enum/i.test(msg)) {
+      msg =
+        "Database is missing campaign status “pending_review”. In Supabase → SQL Editor, run: ALTER TYPE public.project_status ADD VALUE IF NOT EXISTS 'pending_review'; (or apply migration 20260404180000_project_pending_review.sql)"
+    }
+    console.error("createProject:", error)
+    return { ok: false, error: msg }
   }
   revalidatePath("/dashboard/ngo")
   revalidatePath("/projects")

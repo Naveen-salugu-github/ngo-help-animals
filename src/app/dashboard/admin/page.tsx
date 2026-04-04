@@ -156,7 +156,13 @@ export default async function AdminDashboardPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           {(pendingCampaigns ?? []).length === 0 && (
-            <p className="text-sm text-muted-foreground">No campaigns awaiting review.</p>
+            <p className="text-sm text-muted-foreground">
+              No campaigns awaiting review. If NGO submissions fail with a database error, run the migration that adds{" "}
+              <code className="rounded bg-muted px-1 text-xs">pending_review</code> to{" "}
+              <code className="rounded bg-muted px-1 text-xs">project_status</code> (see{" "}
+              <code className="rounded bg-muted px-1 text-xs">20260404180000_project_pending_review.sql</code>
+              ).
+            </p>
           )}
           {(pendingCampaigns ?? []).map((p) => {
             const raw = p.ngos as unknown
