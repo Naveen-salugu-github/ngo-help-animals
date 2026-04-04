@@ -85,3 +85,55 @@ function escapeHtml(s: string): string {
 export function buildWhatsappShareUrl(text: string): string {
   return `https://wa.me/?text=${encodeURIComponent(text)}`
 }
+
+export async function sendOrganizerInquiryEmail(p: {
+  to: string
+  organizerName: string
+  projectTitle: string
+  fromEmail: string
+  fromName: string
+  message: string
+  projectUrl: string
+}): Promise<boolean> {
+  const key = process.env.RESEND_API_KEY
+  const from = process.env.RESEND_FROM_EMAIL ?? "ImpactBridge <onboarding@resend.dev>"
+
+  const html = `
+  <div style="font-family: system-ui, sans-serif; max-width: 560px; line-height: 1.5;">
+    <h1 style="font-size: 18px;">New message about your campaign</h1>
+    <p><strong>${escapeHtml(p.projectTitle)}</strong></p>
+    <p style="margin: 16px 0; padding: 12px; background: #f4f4f5; border-radius: 8px;">${escapeHtml(p.message)}</p>
+    <p style="font-size: 14px; color: #555;">
+      From: ${escapeHtml(p.fromName)} &lt;${escapeHtml(p.fromEmail)}&gt;
+    </p>
+    <p><a href="${p.projectUrl}">Open campaign</a></p>
+    <p style="font-size: 12px; color: #888;">ImpactBridge — reply directly to the sender’s email if needed.</p>
+  </div>`
+
+  if (!key) {
+    console.warn("[email] RESEND_API_KEY not set; skipping organizer inquiry email")
+    return false
+  }
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [p.to],
+      reply_to: p.fromEmail,
+      subject: `Message about: ${p.projectTitle}`,
+      html,
+    }),
+  })
+
+  if (!res.ok) {
+    const err = await res.text()
+    console.error("[email] Resend organizer inquiry error:", res.status, err)
+    return false
+  }
+  return true
+}

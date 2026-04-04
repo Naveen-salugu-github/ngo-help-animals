@@ -1,14 +1,23 @@
 import Link from "next/link"
-import Image from "next/image"
 import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { BadgeCheck, ArrowRight } from "lucide-react"
+import { ArrowRight } from "lucide-react"
+import { HeroImageRotator } from "@/components/home/hero-image-rotator"
+import { LocationPromptBanner } from "@/components/home/location-prompt-banner"
+import { FeaturedProjectsGrid, type FeaturedProject } from "@/components/home/featured-projects-grid"
+import { DonorQuickActions } from "@/components/home/donor-quick-actions"
 
 export default async function HomePage() {
   const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const { data: me } = user
+    ? await supabase.from("users").select("name, email, role").eq("id", user.id).single()
+    : { data: null }
+
   const { data: projects } = await supabase
     .from("projects")
     .select(
@@ -20,6 +29,8 @@ export default async function HomePage() {
       funds_raised,
       cover_image_url,
       beneficiaries_impacted,
+      latitude,
+      longitude,
       ngos:ngo_id (
         organization_name,
         verification_status
@@ -30,7 +41,28 @@ export default async function HomePage() {
     .order("created_at", { ascending: false })
     .limit(6)
 
-  const list = projects ?? []
+  const list: FeaturedProject[] = (projects ?? []).map((p) => {
+    const raw = p.ngos as unknown
+    const ngo = (Array.isArray(raw) ? raw[0] : raw) as FeaturedProject["ngos"]
+    return {
+      id: p.id,
+      title: p.title,
+      location: p.location,
+      goal_amount: Number(p.goal_amount),
+      funds_raised: Number(p.funds_raised),
+      cover_image_url: p.cover_image_url,
+      beneficiaries_impacted: p.beneficiaries_impacted,
+      latitude: p.latitude != null ? Number(p.latitude) : null,
+      longitude: p.longitude != null ? Number(p.longitude) : null,
+      ngos: ngo,
+    }
+  })
+
+  const welcomeName =
+    me?.name?.trim() ||
+    me?.email?.split("@")[0] ||
+    user?.email?.split("@")[0] ||
+    "there"
 
   return (
     <div>
@@ -40,13 +72,26 @@ export default async function HomePage() {
             <Badge variant="secondary" className="w-fit">
               Verified impact marketplace
             </Badge>
-            <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
-              Fund real projects. See real change.
-            </h1>
+            {user ? (
+              <>
+                <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Welcome, {welcomeName}</h1>
+                <p className="text-xl font-medium text-muted-foreground">Fund real projects. See real change.</p>
+              </>
+            ) : (
+              <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Fund real projects. See real change.</h1>
+            )}
             <p className="max-w-xl text-lg text-muted-foreground">
-              ImpactBridge connects NGOs, donors, volunteers, and brands. Every project shows
-              funding progress, field media, and verification — so generosity stays transparent.
+              ImpactBridge connects NGOs, donors, volunteers, and brands. Every project shows funding progress, field
+              media, and verification — so generosity stays transparent.
             </p>
+            <div className="space-y-3">
+              <LocationPromptBanner variant="default" />
+            </div>
+            {me?.role === "donor" && (
+              <div className="max-w-xl">
+                <DonorQuickActions />
+              </div>
+            )}
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg">
                 <Link href="/projects">
@@ -61,16 +106,7 @@ export default async function HomePage() {
               </Button>
             </div>
           </div>
-          <div className="relative mx-auto aspect-[4/3] w-full max-w-md flex-1 overflow-hidden rounded-2xl border bg-muted shadow-xl md:max-w-lg">
-            <Image
-              src="https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=900&q=80"
-              alt="Community impact"
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width:768px) 100vw, 480px"
-            />
-          </div>
+          <HeroImageRotator />
         </div>
       </section>
 
@@ -86,48 +122,7 @@ export default async function HomePage() {
             <Link href="/projects">View all</Link>
           </Button>
         </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {list.map((p) => {
-            const raw = p.ngos as unknown
-            const ngo = (Array.isArray(raw) ? raw[0] : raw) as {
-              organization_name: string
-              verification_status: string
-            } | null
-            const pct =
-              p.goal_amount > 0
-                ? Math.min(100, Math.round((Number(p.funds_raised) / Number(p.goal_amount)) * 100))
-                : 0
-            const img =
-              p.cover_image_url ??
-              "https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=800&q=80"
-            return (
-              <Link key={p.id} href={`/projects/${p.id}`}>
-                <Card className="h-full overflow-hidden transition-shadow hover:shadow-lg">
-                  <div className="relative aspect-[16/10] w-full bg-muted">
-                    <Image src={img} alt="" fill className="object-cover" sizes="(max-width:768px) 100vw, 33vw" />
-                  </div>
-                  <CardContent className="space-y-3 p-4">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-semibold leading-snug">{p.title}</h3>
-                      {ngo?.verification_status === "verified" && (
-                        <BadgeCheck className="h-5 w-5 shrink-0 text-primary" aria-hidden />
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground">{p.location}</p>
-                    <p className="text-xs text-muted-foreground">{ngo?.organization_name}</p>
-                    <Progress value={pct} className="h-2" />
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>{pct}% funded</span>
-                      {p.beneficiaries_impacted > 0 && (
-                        <span>{p.beneficiaries_impacted} beneficiaries</span>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            )
-          })}
-        </div>
+        <FeaturedProjectsGrid projects={list} />
         {list.length === 0 && (
           <p className="text-center text-muted-foreground">
             No active projects yet. Connect Supabase and run the seed script to see demo data.
@@ -139,8 +134,8 @@ export default async function HomePage() {
         <div className="mx-auto max-w-6xl px-4 text-center">
           <h2 className="text-2xl font-bold">For NGOs, brands, and changemakers</h2>
           <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
-            NGOs publish verified projects and field updates. Brands co-create CSR campaigns with
-            downloadable impact reports. Volunteers discover events on the map.
+            NGOs publish verified projects and field updates. Brands co-create CSR campaigns with downloadable impact
+            reports. Volunteers discover events on the map.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Button asChild>

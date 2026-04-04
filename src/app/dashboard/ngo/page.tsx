@@ -18,7 +18,7 @@ export default async function NgoDashboardPage() {
   } = await supabase.auth.getUser()
   if (!user) redirect("/login?next=/dashboard/ngo")
 
-  const { data: profile } = await supabase.from("users").select("role").eq("id", user.id).single()
+  const { data: profile } = await supabase.from("users").select("role, name, email").eq("id", user.id).single()
   if (profile?.role !== "ngo") {
     return (
       <div className="mx-auto max-w-lg px-4 py-16 text-center">
@@ -32,11 +32,15 @@ export default async function NgoDashboardPage() {
     ? await supabase.from("projects").select("*").eq("ngo_id", ngo.id).order("created_at", { ascending: false })
     : { data: [] }
 
+  const ngoWelcome =
+    profile?.name?.trim() || profile?.email?.split("@")[0] || "there"
+
   return (
     <div className="mx-auto max-w-4xl space-y-10 px-4 py-10">
       <div>
-        <h1 className="text-3xl font-bold">NGO dashboard</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-4xl font-bold tracking-tight">Welcome, {ngoWelcome}</h1>
+        <p className="mt-2 text-lg text-muted-foreground">NGO dashboard</p>
+        <p className="mt-1 text-muted-foreground">
           Register your organization, publish projects, and share field impact updates.
         </p>
       </div>
@@ -91,7 +95,7 @@ export default async function NgoDashboardPage() {
             </CardHeader>
           </Card>
 
-          <Card>
+          <Card id="create-campaign">
             <CardHeader>
               <CardTitle>Create project</CardTitle>
               <CardDescription>
@@ -133,12 +137,16 @@ export default async function NgoDashboardPage() {
                   <Input id="longitude" name="longitude" type="number" step="any" placeholder="83.2185" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="timeline_start">Start date</Label>
-                  <Input id="timeline_start" name="timeline_start" type="date" />
+                  <Label htmlFor="campaign_date">Date of campaign</Label>
+                  <Input id="campaign_date" name="campaign_date" type="date" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="timeline_end">End date</Label>
-                  <Input id="timeline_end" name="timeline_end" type="date" />
+                  <Label htmlFor="event_start_time">Start time</Label>
+                  <Input id="event_start_time" name="event_start_time" type="time" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="event_end_time">Ending time</Label>
+                  <Input id="event_end_time" name="event_end_time" type="time" />
                 </div>
                 <div className="sm:col-span-2 space-y-2">
                   <Label htmlFor="event_venue_detail">Event venue (building / landmark)</Label>
@@ -147,14 +155,6 @@ export default async function NgoDashboardPage() {
                     name="event_venue_detail"
                     placeholder="e.g. RK Beach meeting point, near Submarine Museum"
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="event_start_at">Event start (local)</Label>
-                  <Input id="event_start_at" name="event_start_at" type="datetime-local" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="event_end_at">Event end (local)</Label>
-                  <Input id="event_end_at" name="event_end_at" type="datetime-local" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="beneficiaries_impacted">Beneficiaries (estimate)</Label>

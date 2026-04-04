@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { ProjectsFilter, type ProjectListItem } from "@/components/projects/projects-filter"
+import { LocationPromptBanner } from "@/components/home/location-prompt-banner"
 
 export const metadata = {
   title: "Explore projects | ImpactBridge",
@@ -21,6 +22,10 @@ export default async function ProjectsPage() {
       donor_count,
       beneficiaries_impacted,
       volunteer_category,
+      event_end_at,
+      status,
+      latitude,
+      longitude,
       ngos:ngo_id (
         organization_name,
         verification_status
@@ -33,7 +38,12 @@ export default async function ProjectsPage() {
   const list: ProjectListItem[] = (projects ?? []).map((p) => {
     const raw = p.ngos as unknown
     const ngo = (Array.isArray(raw) ? raw[0] : raw) as ProjectListItem["ngos"]
-    return { ...p, ngos: ngo }
+    return {
+      ...p,
+      ngos: ngo,
+      latitude: p.latitude != null ? Number(p.latitude) : null,
+      longitude: p.longitude != null ? Number(p.longitude) : null,
+    }
   })
 
   return (
@@ -45,6 +55,9 @@ export default async function ProjectsPage() {
             Filter by cause or location. Every card shows verified NGO badges and live funding.
           </p>
         </div>
+      </div>
+      <div className="mb-6">
+        <LocationPromptBanner variant="compact" />
       </div>
       <ProjectsFilter projects={list} />
     </div>

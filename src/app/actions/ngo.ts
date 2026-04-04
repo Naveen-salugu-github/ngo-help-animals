@@ -66,13 +66,21 @@ export async function createProject(formData: FormData): Promise<void> {
 
   const lat = formData.get("latitude")
   const lng = formData.get("longitude")
-  const eventStart = String(formData.get("event_start_at") ?? "").trim()
-  const eventEnd = String(formData.get("event_end_at") ?? "").trim()
-  const parseLocal = (s: string) => {
-    if (!s) return null
-    const d = new Date(s)
+
+  const campaignDate = String(formData.get("campaign_date") ?? "").trim()
+  const startTime = String(formData.get("event_start_time") ?? "").trim()
+  const endTime = String(formData.get("event_end_time") ?? "").trim()
+
+  const combineDateTime = (date: string, time: string): string | null => {
+    if (!date || !time) return null
+    const normalized = time.length === 5 ? `${time}:00` : time
+    const d = new Date(`${date}T${normalized}`)
     return Number.isNaN(d.getTime()) ? null : d.toISOString()
   }
+
+  const event_start_at = combineDateTime(campaignDate, startTime)
+  const event_end_at = combineDateTime(campaignDate, endTime)
+
   const { error } = await supabase.from("projects").insert({
     ngo_id: ngo.id,
     title,
@@ -80,8 +88,8 @@ export async function createProject(formData: FormData): Promise<void> {
     location,
     goal_amount,
     micro_donation_units,
-    timeline_start: String(formData.get("timeline_start") ?? "") || null,
-    timeline_end: String(formData.get("timeline_end") ?? "") || null,
+    timeline_start: campaignDate || null,
+    timeline_end: null,
     status: (formData.get("status") as string) === "draft" ? "draft" : "active",
     cover_image_url: String(formData.get("cover_image_url") ?? "") || null,
     volunteer_slots: Number(formData.get("volunteer_slots") ?? 0) || 0,
@@ -90,8 +98,8 @@ export async function createProject(formData: FormData): Promise<void> {
     longitude: lng ? Number(lng) : null,
     impact_metrics: {},
     beneficiaries_impacted: Number(formData.get("beneficiaries_impacted") ?? 0) || 0,
-    event_start_at: parseLocal(eventStart),
-    event_end_at: parseLocal(eventEnd),
+    event_start_at,
+    event_end_at,
     event_venue_detail: String(formData.get("event_venue_detail") ?? "").trim() || null,
   })
 

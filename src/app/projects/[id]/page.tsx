@@ -12,6 +12,9 @@ import { DonateButton } from "@/components/projects/donate-button"
 import { VolunteerEventRegistration } from "@/components/projects/volunteer-event-registration"
 import { VolunteerCheckIn } from "@/components/projects/volunteer-check-in"
 import { EventShareRow } from "@/components/projects/event-share-row"
+import { ContactOrganizerDialog } from "@/components/projects/contact-organizer-dialog"
+import { PostEventFeedbackDialog } from "@/components/projects/post-event-feedback-dialog"
+import { campaignAcceptsOrganizerContact, eventHasFinished } from "@/lib/campaign-utils"
 import { BadgeCheck, Users, HeartHandshake, CalendarClock, MapPinned } from "lucide-react"
 import type { MicroDonationUnit } from "@/types/database"
 
@@ -70,6 +73,16 @@ export default async function ProjectDetailPage({ params }: Params) {
       ? await supabase
           .from("volunteers")
           .select("status")
+          .eq("user_id", user.id)
+          .eq("project_id", id)
+          .maybeSingle()
+      : { data: null }
+
+  const { data: myFeedback } =
+    user && project
+      ? await supabase
+          .from("project_feedback")
+          .select("rating, comment")
           .eq("user_id", user.id)
           .eq("project_id", id)
           .maybeSingle()
@@ -149,6 +162,45 @@ export default async function ProjectDetailPage({ params }: Params) {
         <p className="mb-2 text-sm font-medium text-muted-foreground">Share this event</p>
         <EventShareRow url={sharePageUrl} title={project.title} description={project.location} />
       </div>
+
+      {project.status === "active" && campaignAcceptsOrganizerContact(eventEnd) && (
+        <Card id="contact-organizer" className="mt-6 border-primary/15">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Contact the organizer</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-muted-foreground">
+            <p>
+              Logged-in supporters can send a message to <strong className="text-foreground">{ngo?.organization_name}</strong>{" "}
+              about this campaign (timing, accessibility, what to bring). You’ll be prompted to sign in if needed.
+            </p>
+            <ContactOrganizerDialog
+              projectId={project.id}
+              projectTitle={project.title}
+              ngoName={ngo?.organization_name ?? "Organizer"}
+            />
+          </CardContent>
+        </Card>
+      )}
+
+      {project.status === "active" && eventHasFinished(eventEnd) && (
+        <Card className="mt-6 border-amber-500/20 bg-amber-500/5">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">How was the event?</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-muted-foreground">
+            <p>
+              This campaign’s listed end time has passed. Share quick feedback (optional stars + a short note) to help the NGO
+              improve future events.
+            </p>
+            <PostEventFeedbackDialog
+              projectId={project.id}
+              projectTitle={project.title}
+              initialRating={myFeedback?.rating ?? null}
+              initialComment={myFeedback?.comment ?? null}
+            />
+          </CardContent>
+        </Card>
+      )}
 
       {slots > 0 && (
         <Card className="mt-6 border-primary/20 bg-accent/20">
@@ -232,8 +284,11 @@ export default async function ProjectDetailPage({ params }: Params) {
             {ngo?.description && <p>{ngo.description}</p>}
             {(project.timeline_start || project.timeline_end) && (
               <p>
-                <span className="font-medium text-foreground">Timeline: </span>
-                {project.timeline_start ?? "—"} → {project.timeline_end ?? "—"}
+                <span className="font-medium text-foreground">
+                  {project.timeline_end ? "Campaign period: " : "Campaign date: "}
+                </span>
+                {project.timeline_start ?? "—"}
+                {project.timeline_end ? ` → ${project.timeline_end}` : ""}
               </p>
             )}
             {metrics && Object.keys(metrics).length > 0 && (
