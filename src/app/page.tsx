@@ -159,28 +159,30 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
         )}
       </section>
 
-      <section className="border-t bg-muted/40 py-16">
-        <div className="mx-auto max-w-6xl px-4 text-center">
-          <h2 className="text-2xl font-bold">For NGOs, brands, and changemakers</h2>
-          <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
-            NGOs publish verified projects and field updates. Brands co-create CSR campaigns with downloadable impact
-            reports. Volunteers discover events on the map.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            {me?.role !== "ngo" && (
-              <Button asChild>
-                <Link href="/register?role=ngo">Register NGO</Link>
+      {(me?.role === "ngo" || me?.role === "brand") && (
+        <section className="border-t bg-muted/40 py-16">
+          <div className="mx-auto max-w-6xl px-4 text-center">
+            <h2 className="text-2xl font-bold">For NGOs, brands, and changemakers</h2>
+            <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
+              NGOs publish verified projects and field updates. Brands co-create CSR campaigns with downloadable impact
+              reports. Volunteers discover events on the map.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-4">
+              {me?.role !== "ngo" && (
+                <Button asChild>
+                  <Link href="/register?role=ngo">Register NGO</Link>
+                </Button>
+              )}
+              <Button asChild variant="outline">
+                <Link href="/dashboard/ngo">NGO dashboard</Link>
               </Button>
-            )}
-            <Button asChild variant="outline">
-              <Link href="/dashboard/ngo">NGO dashboard</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/dashboard/brand">Brand dashboard</Link>
-            </Button>
+              <Button asChild variant="outline">
+                <Link href="/dashboard/brand">Brand dashboard</Link>
+              </Button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   )
 }
