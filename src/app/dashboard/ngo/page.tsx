@@ -140,6 +140,22 @@ export default async function NgoDashboardPage() {
                   <Label htmlFor="timeline_end">End date</Label>
                   <Input id="timeline_end" name="timeline_end" type="date" />
                 </div>
+                <div className="sm:col-span-2 space-y-2">
+                  <Label htmlFor="event_venue_detail">Event venue (building / landmark)</Label>
+                  <Input
+                    id="event_venue_detail"
+                    name="event_venue_detail"
+                    placeholder="e.g. RK Beach meeting point, near Submarine Museum"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="event_start_at">Event start (local)</Label>
+                  <Input id="event_start_at" name="event_start_at" type="datetime-local" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="event_end_at">Event end (local)</Label>
+                  <Input id="event_end_at" name="event_end_at" type="datetime-local" />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="beneficiaries_impacted">Beneficiaries (estimate)</Label>
                   <Input id="beneficiaries_impacted" name="beneficiaries_impacted" type="number" min={0} defaultValue={0} />
@@ -147,6 +163,10 @@ export default async function NgoDashboardPage() {
                 <div className="sm:col-span-2 space-y-2">
                   <Label htmlFor="cover_image_url">Cover image URL</Label>
                   <Input id="cover_image_url" name="cover_image_url" placeholder="https://…" />
+                  <p className="text-xs text-muted-foreground">
+                    Prefer Supabase Storage or direct image URLs. Some hosts block hotlinking — if the image breaks, re-upload
+                    the file to Storage and paste that URL.
+                  </p>
                 </div>
                 <div className="sm:col-span-2 space-y-2">
                   <Label htmlFor="micro_donation_units">Micro donations JSON (optional)</Label>

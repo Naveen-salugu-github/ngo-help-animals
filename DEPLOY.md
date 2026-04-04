@@ -5,7 +5,9 @@ ImpactBridge is a **Next.js 14** app on the App Router, backed by **Supabase** (
 ## 1. Supabase
 
 1. Create a project at [https://supabase.com](https://supabase.com).
-2. Open **SQL Editor** and run the migration in `supabase/migrations/20260403000000_impactbridge.sql`.
+2. Open **SQL Editor** and run migrations in order:
+   - `supabase/migrations/20260403000000_impactbridge.sql`
+   - `supabase/migrations/20260403120000_volunteer_event_enhancements.sql` (event times + volunteer phone/email)
 3. If bucket creation fails in SQL (permissions), create buckets manually in **Storage**:
    - `project-media` — public read, authenticated upload.
    - `ngo-docs` — private, authenticated read/write for verification PDFs.
@@ -25,19 +27,24 @@ ImpactBridge is a **Next.js 14** app on the App Router, backed by **Supabase** (
 2. Set `NEXT_PUBLIC_RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` (and duplicate `RAZORPAY_KEY_ID` if you prefer server-only separation).
 3. Use test keys in development. Webhook hardening (signature verification on a dedicated webhook route) can be added for production.
 
-## 3. Groq
+## 3. Resend (volunteer confirmation emails)
+
+1. Create an API key at [https://resend.com](https://resend.com).
+2. Set `RESEND_API_KEY` and `RESEND_FROM_EMAIL` on Vercel (use a verified domain in production).
+
+## 4. Groq
 
 1. Create an API key at [https://console.groq.com](https://console.groq.com).
 2. Set `GROQ_API_KEY` in Vercel environment variables (server-only).
 
-## 4. Vercel
+## 5. Vercel
 
 1. Import the Git repository into Vercel.
 2. Framework preset: **Next.js**.
 3. Add all variables from `.env.example` in **Project → Settings → Environment Variables**.
 4. Deploy. Set `NEXT_PUBLIC_APP_URL` to your production URL (e.g. `https://impactbridge.vercel.app`).
 
-## 5. Mobile / external API clients
+## 6. Mobile / external API clients
 
 Versioned JSON routes live under `/api/v1/*`. Authenticated calls should send:
 
@@ -54,7 +61,7 @@ Examples:
 - `POST /api/v1/payments/razorpay/verify`
 - `POST /api/v1/volunteers` with body `{ "projectId": "uuid" }`
 
-## 6. Admin user
+## 7. Admin user
 
 After your first signup, promote an account in SQL:
 
@@ -62,7 +69,7 @@ After your first signup, promote an account in SQL:
 update public.users set role = 'admin' where email = 'you@company.com';
 ```
 
-## 7. Production checklist
+## 8. Production checklist
 
 - [ ] RLS policies reviewed for your threat model.
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` only on server (Vercel env, never in client).

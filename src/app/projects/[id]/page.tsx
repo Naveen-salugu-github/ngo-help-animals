@@ -1,15 +1,18 @@
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import { format } from "date-fns"
 import { createClient } from "@/lib/supabase/server"
+import { getSiteUrl } from "@/lib/env"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { DonateButton } from "@/components/projects/donate-button"
-import { VolunteerRsvp } from "@/components/projects/volunteer-rsvp"
+import { VolunteerEventRegistration } from "@/components/projects/volunteer-event-registration"
 import { VolunteerCheckIn } from "@/components/projects/volunteer-check-in"
-import { BadgeCheck, Users, HeartHandshake } from "lucide-react"
+import { EventShareRow } from "@/components/projects/event-share-row"
+import { BadgeCheck, Users, HeartHandshake, CalendarClock, MapPinned } from "lucide-react"
 import type { MicroDonationUnit } from "@/types/database"
 
 type Params = { params: Promise<{ id: string }> }
@@ -99,10 +102,33 @@ export default async function ProjectDetailPage({ params }: Params) {
 
   const metrics = project.impact_metrics as Record<string, string | number> | null
 
+  const sharePageUrl = `${getSiteUrl()}/projects/${id}`
+  const slots = Number(project.volunteer_slots) || 0
+  const filled = Number(project.volunteer_count) || 0
+  const spotsLeft = Math.max(0, slots - filled)
+  const registrationFull = slots > 0 && filled >= slots
+
+  const eventStart = project.event_start_at as string | null | undefined
+  const eventEnd = project.event_end_at as string | null | undefined
+  const eventVenueDetail = project.event_venue_detail as string | null | undefined
+
+  const eventWhen =
+    eventStart != null
+      ? eventEnd != null
+        ? `${format(new Date(eventStart), "PPP p")} → ${format(new Date(eventEnd), "p")}`
+        : format(new Date(eventStart), "PPP p")
+      : null
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
       <div className="relative mb-8 aspect-[21/9] w-full overflow-hidden rounded-2xl border bg-muted">
-        <Image src={cover} alt="" fill className="object-cover" priority sizes="100vw" />
+        {/* eslint-disable-next-line @next/next/no-img-element -- NGO-supplied URLs (e.g. Google Photos) often break with next/image */}
+        <img
+          src={cover}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          referrerPolicy="no-referrer"
+        />
       </div>
 
       <div className="space-y-2">
@@ -118,6 +144,51 @@ export default async function ProjectDetailPage({ params }: Params) {
         <p className="text-muted-foreground">{project.location}</p>
         <p className="text-sm font-medium">{ngo?.organization_name}</p>
       </div>
+
+      <div className="mt-6">
+        <p className="mb-2 text-sm font-medium text-muted-foreground">Share this event</p>
+        <EventShareRow url={sharePageUrl} title={project.title} description={project.location} />
+      </div>
+
+      {slots > 0 && (
+        <Card className="mt-6 border-primary/20 bg-accent/20">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <CalendarClock className="h-4 w-4" />
+              Volunteer event
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            {eventWhen && (
+              <p>
+                <span className="font-medium text-foreground">When: </span>
+                {eventWhen} <span className="text-muted-foreground">(your timezone)</span>
+              </p>
+            )}
+            <p className="flex flex-wrap items-start gap-2">
+              <MapPinned className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+              <span>
+                <span className="font-medium text-foreground">Where: </span>
+                {project.location}
+                {eventVenueDetail ? ` — ${eventVenueDetail}` : ""}
+              </span>
+            </p>
+            <p className="pt-1">
+              <span className="font-medium text-foreground">Registrations: </span>
+              {filled} / {slots}
+              {spotsLeft > 0 ? (
+                <Badge variant="secondary" className="ml-2">
+                  {spotsLeft} spot{spotsLeft === 1 ? "" : "s"} left
+                </Badge>
+              ) : (
+                <Badge variant="destructive" className="ml-2">
+                  Full
+                </Badge>
+              )}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {sponsors && sponsors.length > 0 && (
         <Card className="mt-6 border-primary/20 bg-accent/30">
@@ -201,17 +272,29 @@ export default async function ProjectDetailPage({ params }: Params) {
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-muted-foreground" />
                 <span>
-                  {project.volunteer_count}/{project.volunteer_slots} volunteers
+                  {filled}/{slots} volunteers registered
                 </span>
               </div>
             </div>
             {project.status === "active" && (
               <DonateButton projectId={project.id} units={microUnits} />
             )}
-            {project.status === "active" && project.volunteer_slots > 0 && (
+            {project.status === "active" && slots > 0 && (
               <div className="flex flex-col gap-2">
+                {myVolunteer &&
+                  (myVolunteer.status === "rsvp" ||
+                    myVolunteer.status === "confirmed" ||
+                    myVolunteer.status === "checked_in") && (
+                    <Badge className="w-fit" variant="outline">
+                      You’re registered for this event
+                    </Badge>
+                  )}
                 {(!myVolunteer || myVolunteer.status === "cancelled") && (
-                  <VolunteerRsvp projectId={project.id} />
+                  <VolunteerEventRegistration
+                    projectId={project.id}
+                    disabled={registrationFull}
+                    fullMessage="Registration is full — no more spots available."
+                  />
                 )}
                 {myVolunteer &&
                   (myVolunteer.status === "rsvp" || myVolunteer.status === "confirmed") && (
@@ -234,7 +317,13 @@ export default async function ProjectDetailPage({ params }: Params) {
                 {u.media_type === "video" ? (
                   <video src={u.media_url} className="h-full w-full object-cover" controls />
                 ) : (
-                  <Image src={u.media_url} alt="" fill className="object-cover" sizes="50vw" />
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={u.media_url}
+                    alt=""
+                    className="h-full w-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
                 )}
               </div>
               <CardContent className="p-3">
