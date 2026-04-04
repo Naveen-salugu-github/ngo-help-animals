@@ -7,6 +7,7 @@ import { HeroImageRotator } from "@/components/home/hero-image-rotator"
 import { LocationPromptBanner } from "@/components/home/location-prompt-banner"
 import { FeaturedProjectsGrid, type FeaturedProject } from "@/components/home/featured-projects-grid"
 import { NgoHomeQuickActions } from "@/components/home/ngo-home-quick-actions"
+import { HomeImpactUpdatesSection } from "@/components/home/home-impact-updates-section"
 
 type HomeSearchParams = { campaignSubmitted?: string | string[] }
 
@@ -158,6 +159,8 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
           </p>
         )}
       </section>
+
+      {user && me?.role === "ngo" && <HomeImpactUpdatesSection userId={user.id} />}
 
       {(me?.role === "ngo" || me?.role === "brand") && (
         <section className="border-t bg-muted/40 py-16">

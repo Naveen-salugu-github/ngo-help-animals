@@ -1,8 +1,11 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
+
+export type CreateProjectResult =
+  | { ok: true; submittedForReview: boolean }
+  | { ok: false; error: string }
 
 export async function createNgoProfile(formData: FormData): Promise<void> {
   const supabase = await createClient()
@@ -30,22 +33,26 @@ export async function createNgoProfile(formData: FormData): Promise<void> {
   revalidatePath("/dashboard/ngo")
 }
 
-export async function createProject(formData: FormData): Promise<void> {
+export async function createProject(formData: FormData): Promise<CreateProjectResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) return
+  if (!user) {
+    return { ok: false, error: "Sign in required." }
+  }
 
   const { data: ngo } = await supabase.from("ngos").select("id").eq("user_id", user.id).single()
-  if (!ngo) return
+  if (!ngo) {
+    return { ok: false, error: "Save your organization profile first." }
+  }
 
   const title = String(formData.get("title") ?? "").trim()
   const description = String(formData.get("description") ?? "").trim()
   const location = String(formData.get("location") ?? "").trim()
   const goal_amount = Number(formData.get("goal_amount"))
   if (!title || !description || !location || !goal_amount) {
-    return
+    return { ok: false, error: "Fill in title, description, location, and goal amount." }
   }
 
   const microRaw = String(formData.get("micro_donation_units") ?? "").trim()
@@ -55,7 +62,7 @@ export async function createProject(formData: FormData): Promise<void> {
       micro_donation_units = JSON.parse(microRaw)
       if (!Array.isArray(micro_donation_units)) throw new Error("invalid")
     } catch {
-      return
+      return { ok: false, error: "Micro donations must be valid JSON array." }
     }
   } else {
     micro_donation_units = [
@@ -107,14 +114,14 @@ export async function createProject(formData: FormData): Promise<void> {
     event_venue_detail: String(formData.get("event_venue_detail") ?? "").trim() || null,
   })
 
-  if (error) return
+  if (error) {
+    return { ok: false, error: error.message || "Could not create campaign." }
+  }
   revalidatePath("/dashboard/ngo")
   revalidatePath("/projects")
   revalidatePath("/")
 
-  if (!submittedAsDraft) {
-    redirect("/?campaignSubmitted=1")
-  }
+  return { ok: true, submittedForReview: !submittedAsDraft }
 }
 
 export async function createImpactUpdate(formData: FormData): Promise<void> {
@@ -145,4 +152,5 @@ export async function createImpactUpdate(formData: FormData): Promise<void> {
   if (error) return
   revalidatePath("/dashboard/ngo")
   revalidatePath("/feed")
+  revalidatePath("/")
 }

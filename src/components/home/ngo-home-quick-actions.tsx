@@ -13,18 +13,23 @@ export function NgoHomeQuickActions() {
           Publish campaigns from your NGO dashboard, or explore and fund other projects on the platform.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3 sm:flex-row">
-        <Button asChild size="lg" className="flex-1 gap-2">
-          <Link href="/projects">
-            <HeartHandshake className="h-5 w-5" />
-            Donate &amp; support projects
-          </Link>
-        </Button>
-        <Button asChild size="lg" variant="outline" className="flex-1 gap-2">
-          <Link href="/dashboard/ngo#create-campaign">
-            <Sparkles className="h-5 w-5" />
-            Create a campaign
-          </Link>
+      <CardContent className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button asChild size="lg" className="flex-1 gap-2">
+            <Link href="/projects">
+              <HeartHandshake className="h-5 w-5" />
+              Donate &amp; support projects
+            </Link>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="flex-1 gap-2">
+            <Link href="/dashboard/ngo#create-campaign">
+              <Sparkles className="h-5 w-5" />
+              Create a campaign
+            </Link>
+          </Button>
+        </div>
+        <Button asChild variant="link" size="sm" className="h-auto px-0 text-muted-foreground">
+          <Link href="/#impact-updates">Post an impact update (home)</Link>
         </Button>
       </CardContent>
     </Card>
