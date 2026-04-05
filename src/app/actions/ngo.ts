@@ -176,7 +176,7 @@ export async function createImpactUpdate(formData: FormData): Promise<CreateImpa
   const media_url = String(formData.get("media_url") ?? "").trim()
   const caption = String(formData.get("caption") ?? "").trim()
   if (!project_id || !media_url) {
-    return { ok: false, error: "Choose a project and add a media URL." }
+    return { ok: false, error: "Choose a project and add a media URL or upload a file." }
   }
 
   const { data: project } = await supabase.from("projects").select("ngo_id").eq("id", project_id).single()

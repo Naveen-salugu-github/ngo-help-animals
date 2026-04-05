@@ -101,10 +101,12 @@ export default async function NgoImpactUpdatesPage() {
         <Card className="max-w-2xl">
           <CardHeader>
             <CardTitle>New impact post</CardTitle>
-            <CardDescription>Choose a project, add a public media URL and caption.</CardDescription>
+            <CardDescription>
+              Choose a project, then paste a public image/video URL or upload a file from your device.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <NgoImpactUpdateForm projects={list} />
+            <NgoImpactUpdateForm projects={list} userId={user.id} />
           </CardContent>
         </Card>
       )}
