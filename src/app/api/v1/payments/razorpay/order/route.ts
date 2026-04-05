@@ -2,8 +2,13 @@ import { NextRequest, NextResponse } from "next/server"
 import Razorpay from "razorpay"
 import { createApiRouteClient } from "@/lib/supabase/api-route"
 import { createAdminClient } from "@/lib/supabase/admin"
+import { DONATIONS_ENABLED } from "@/lib/feature-flags"
 
 export async function POST(request: NextRequest) {
+  if (!DONATIONS_ENABLED) {
+    return NextResponse.json({ error: "Donations are temporarily unavailable" }, { status: 503 })
+  }
+
   const keyId = process.env.RAZORPAY_KEY_ID
   const keySecret = process.env.RAZORPAY_KEY_SECRET
   if (!keyId || !keySecret) {
@@ -64,6 +69,7 @@ export async function POST(request: NextRequest) {
     project_id: body.projectId,
     amount: body.amount,
     payment_status: "pending",
+    payment_provider: "razorpay",
     razorpay_order_id: order.id,
     micro_unit_label: body.microUnitLabel ?? null,
   })

@@ -24,7 +24,9 @@ export default async function ReceiptPage({ params }: Params) {
       currency,
       payment_status,
       micro_unit_label,
+      payment_provider,
       razorpay_payment_id,
+      stripe_payment_intent_id,
       created_at,
       projects:project_id ( title )
     `
@@ -65,10 +67,20 @@ export default async function ReceiptPage({ params }: Params) {
             <span className="text-muted-foreground">Status: </span>
             {donation.payment_status}
           </p>
+          <p>
+            <span className="text-muted-foreground">Paid via: </span>
+            {donation.payment_provider === "stripe" ? "Stripe" : "Razorpay"}
+          </p>
           {donation.razorpay_payment_id && (
             <p>
-              <span className="text-muted-foreground">Payment ref: </span>
+              <span className="text-muted-foreground">Razorpay ref: </span>
               {donation.razorpay_payment_id}
+            </p>
+          )}
+          {donation.stripe_payment_intent_id && (
+            <p>
+              <span className="text-muted-foreground">Stripe ref: </span>
+              {donation.stripe_payment_intent_id}
             </p>
           )}
           <p className="text-xs text-muted-foreground">

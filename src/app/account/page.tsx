@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { signOut } from "@/app/actions/auth"
 import { AvatarUpload } from "@/components/account/avatar-upload"
 import { AccountNameForm } from "@/components/account/account-name-form"
+import { DONATIONS_ENABLED } from "@/lib/feature-flags"
 
 export const metadata = { title: "My account | ImpactBridge" }
 
@@ -105,7 +106,7 @@ export default async function AccountPage() {
               <Link href="/projects" className="text-primary underline">
                 Explore projects
               </Link>{" "}
-              to fund impact.
+              {DONATIONS_ENABLED ? "to fund impact." : "to volunteer and follow campaigns."}
             </p>
           ) : (
             <ul className="divide-y rounded-md border">

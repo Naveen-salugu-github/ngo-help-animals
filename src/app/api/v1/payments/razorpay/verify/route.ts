@@ -2,6 +2,7 @@ import crypto from "crypto"
 import { NextRequest, NextResponse } from "next/server"
 import { createApiRouteClient } from "@/lib/supabase/api-route"
 import { createAdminClient } from "@/lib/supabase/admin"
+import { completeDonationAndCreditProject } from "@/lib/complete-donation"
 
 export async function POST(request: NextRequest) {
   const keySecret = process.env.RAZORPAY_KEY_SECRET
@@ -52,29 +53,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Donation not found" }, { status: 404 })
   }
 
-  await admin
-    .from("donations")
-    .update({
-      payment_status: "completed",
-      razorpay_payment_id: body.razorpay_payment_id,
-      receipt_url: `/receipts/${donation.id}`,
-    })
-    .eq("id", donation.id)
-
-  const { data: project } = await admin
-    .from("projects")
-    .select("funds_raised, donor_count")
-    .eq("id", donation.project_id)
-    .single()
-
-  if (project) {
-    await admin
-      .from("projects")
-      .update({
-        funds_raised: Number(project.funds_raised) + Number(donation.amount),
-        donor_count: (project.donor_count ?? 0) + 1,
-      })
-      .eq("id", donation.project_id)
+  const done = await completeDonationAndCreditProject(admin, {
+    donationId: donation.id,
+    razorpayPaymentId: body.razorpay_payment_id,
+  })
+  if (!done.ok) {
+    return NextResponse.json({ error: done.error }, { status: 400 })
   }
 
   return NextResponse.json({

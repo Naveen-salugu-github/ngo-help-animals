@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { VOLUNTEER_WHATSAPP_COMMUNITY_URL } from "@/lib/community-links"
 import { toast } from "sonner"
 
 type Props = {
@@ -89,15 +90,23 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
       if (!res.ok) {
         throw new Error(body.error ?? "Registration failed")
       }
-      const msg =
-        body.emailSent === true
-          ? "You’re registered. Check your inbox for date, place, and WhatsApp link."
-          : body.emailNotSentReason === "resend_rejected"
-            ? "You’re registered. Email wasn’t delivered — in Vercel logs look for [email] Resend error; verify RESEND_API_KEY, RESEND_FROM_EMAIL, and your Resend domain."
-            : body.emailSent === false
-              ? "You’re registered. (Add RESEND_API_KEY for Production in Vercel, redeploy, and avoid quotes around the key.)"
-              : "You’re registered."
-      toast.success(msg)
+      const waUrl =
+        typeof body.volunteerWhatsappUrl === "string" ? body.volunteerWhatsappUrl : VOLUNTEER_WHATSAPP_COMMUNITY_URL
+      toast.success("You’re registered.", {
+        description: (
+          <span className="block pt-1">
+            <a
+              href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-primary underline underline-offset-4"
+            >
+              Join Impact Bridge ~ Help Animals on WhatsApp
+            </a>
+          </span>
+        ),
+        duration: 14_000,
+      })
       setOpen(false)
       router.refresh()
     } catch (err: unknown) {
@@ -127,8 +136,8 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
           <DialogHeader>
             <DialogTitle>Event registration</DialogTitle>
             <DialogDescription>
-              Full name and email are required so we can send your confirmation (date, time, place) and a WhatsApp-friendly
-              link. Phone is optional.
+              Full name and email are required for your registration record. After you confirm, we’ll show a link to our
+              WhatsApp community for updates. Phone is optional.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">

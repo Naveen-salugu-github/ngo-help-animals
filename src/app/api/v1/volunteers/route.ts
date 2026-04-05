@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createApiRouteClient } from "@/lib/supabase/api-route"
 import { createAdminClient } from "@/lib/supabase/admin"
-import { buildWhatsappShareUrl, sendVolunteerRegistrationEmail } from "@/lib/email"
-import { getSiteUrl } from "@/lib/env"
+import { VOLUNTEER_WHATSAPP_COMMUNITY_URL } from "@/lib/community-links"
+// import { buildWhatsappShareUrl, sendVolunteerRegistrationEmail } from "@/lib/email"
+// import { getSiteUrl } from "@/lib/env"
 
 export async function POST(request: NextRequest) {
   const supabase = createApiRouteClient(request)
@@ -45,7 +46,13 @@ export async function POST(request: NextRequest) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
-    return NextResponse.json({ ok: true, id: existing.id, updated: true })
+    return NextResponse.json({
+      ok: true,
+      id: existing.id,
+      updated: true,
+      emailSent: false,
+      volunteerWhatsappUrl: VOLUNTEER_WHATSAPP_COMMUNITY_URL,
+    })
   }
 
   const emailLooksValid = contactEmail.length > 3 && contactEmail.includes("@") && contactEmail.includes(".")
@@ -84,10 +91,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Registration is full — no spots left" }, { status: 400 })
   }
 
-  const { data: profile } = await admin.from("users").select("name, email").eq("id", user.id).single()
-  const nameForEmail = participantName || profile?.name || profile?.email || "Participant"
-  const emailForSend = contactEmail || profile?.email || ""
-
   const { data: row, error: insErr } = await supabase
     .from("volunteers")
     .insert({
@@ -117,40 +120,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Registration is full — please try again" }, { status: 409 })
   }
 
-  const site = getSiteUrl()
-  const projectUrl = `${site}/projects/${body.projectId}`
-  const venueLine = (project.event_venue_detail as string | null) ?? ""
-  const loc = project.location as string
-  const title = project.title as string
-  const startAt = project.event_start_at ? new Date(project.event_start_at as string) : null
-  const endAt = project.event_end_at ? new Date(project.event_end_at as string) : null
-
-  const shareText = `Join me at "${title}" on ImpactBridge — ${projectUrl}`
-  const whatsappShareUrl = buildWhatsappShareUrl(shareText)
-
-  let emailed = false
-  let emailNotSentReason: "missing_key" | "resend_rejected" | undefined
-  if (emailForSend) {
-    const r = await sendVolunteerRegistrationEmail({
-      to: emailForSend,
-      participantName: nameForEmail,
-      eventTitle: title,
-      eventVenueLine: venueLine,
-      location: loc,
-      startAt,
-      endAt,
-      projectUrl,
-      whatsappShareUrl,
-    })
-    emailed = r.sent
-    if (!r.sent) emailNotSentReason = r.reason
-  }
+  /*
+   * Resend confirmation email — disabled for now; clients show WhatsApp community link instead.
+   *
+   * const { data: profile } = await admin.from("users").select("name, email").eq("id", user.id).single()
+   * const nameForEmail = participantName || profile?.name || profile?.email || "Participant"
+   * const emailForSend = contactEmail || profile?.email || ""
+   * const site = getSiteUrl()
+   * const projectUrl = `${site}/projects/${body.projectId}`
+   * const venueLine = (project.event_venue_detail as string | null) ?? ""
+   * const loc = project.location as string
+   * const title = project.title as string
+   * const startAt = project.event_start_at ? new Date(project.event_start_at as string) : null
+   * const endAt = project.event_end_at ? new Date(project.event_end_at as string) : null
+   * const shareText = `Join me at "${title}" on ImpactBridge — ${projectUrl}`
+   * const whatsappShareUrl = buildWhatsappShareUrl(shareText)
+   * if (emailForSend) {
+   *   const r = await sendVolunteerRegistrationEmail({ to: emailForSend, participantName: nameForEmail, ... })
+   * }
+   */
 
   return NextResponse.json({
     ok: true,
     id: row?.id,
     volunteerCount: bumped.volunteer_count,
-    emailSent: emailed,
-    ...(emailNotSentReason ? { emailNotSentReason } : {}),
+    emailSent: false,
+    volunteerWhatsappUrl: VOLUNTEER_WHATSAPP_COMMUNITY_URL,
   })
 }
