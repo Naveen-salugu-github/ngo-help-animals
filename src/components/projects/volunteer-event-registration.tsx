@@ -14,24 +14,24 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { VOLUNTEER_WHATSAPP_COMMUNITY_URL } from "@/lib/community-links"
+import { VOLUNTEER_WHATSAPP_CHANNEL_URL } from "@/lib/community-links"
 import { toast } from "sonner"
 
-/** Persistent WhatsApp community link (used under the register button and for users already on the RSVP list). */
+/** Official Impact Bridge WhatsApp channel (under the register button and for users already on the RSVP list). */
 export function VolunteerWhatsappChannelCard() {
   return (
     <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-3 text-sm">
-      <p className="font-medium text-foreground">Join the WhatsApp community</p>
+      <p className="font-medium text-foreground">Follow Impact Bridge on WhatsApp</p>
       <p className="mt-1 text-xs text-muted-foreground">
-        Stay in the loop for this event and other Impact Bridge updates.
+        Official channel for event updates and Impact Bridge announcements.
       </p>
       <a
-        href={VOLUNTEER_WHATSAPP_COMMUNITY_URL}
+        href={VOLUNTEER_WHATSAPP_CHANNEL_URL}
         target="_blank"
         rel="noopener noreferrer"
         className="mt-2 inline-block font-medium text-primary underline underline-offset-4"
       >
-        Open Impact Bridge ~ Help Animals on WhatsApp
+        Open WhatsApp channel
       </a>
     </div>
   )
@@ -157,8 +157,8 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
           <DialogHeader>
             <DialogTitle>Event registration</DialogTitle>
             <DialogDescription>
-              Full name and email are required for your registration record. After you confirm, a WhatsApp community link
-              appears below the button on this page. Phone is optional.
+              Full name and email are required for your registration record. After you confirm, a link to the Impact
+              Bridge WhatsApp channel appears below the button on this page. Phone is optional.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">

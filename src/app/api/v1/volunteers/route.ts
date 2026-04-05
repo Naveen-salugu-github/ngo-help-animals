@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createApiRouteClient } from "@/lib/supabase/api-route"
 import { createAdminClient } from "@/lib/supabase/admin"
-import { VOLUNTEER_WHATSAPP_COMMUNITY_URL } from "@/lib/community-links"
+import { VOLUNTEER_WHATSAPP_CHANNEL_URL } from "@/lib/community-links"
 // import { buildWhatsappShareUrl, sendVolunteerRegistrationEmail } from "@/lib/email"
 // import { getSiteUrl } from "@/lib/env"
 
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       id: existing.id,
       updated: true,
       emailSent: false,
-      volunteerWhatsappUrl: VOLUNTEER_WHATSAPP_COMMUNITY_URL,
+      volunteerWhatsappUrl: VOLUNTEER_WHATSAPP_CHANNEL_URL,
     })
   }
 
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
   }
 
   /*
-   * Resend confirmation email — disabled for now; clients show WhatsApp community link instead.
+   * Resend confirmation email — disabled for now; clients show WhatsApp channel link instead.
    *
    * const { data: profile } = await admin.from("users").select("name, email").eq("id", user.id).single()
    * const nameForEmail = participantName || profile?.name || profile?.email || "Participant"
@@ -145,6 +145,6 @@ export async function POST(request: NextRequest) {
     id: row?.id,
     volunteerCount: bumped.volunteer_count,
     emailSent: false,
-    volunteerWhatsappUrl: VOLUNTEER_WHATSAPP_COMMUNITY_URL,
+    volunteerWhatsappUrl: VOLUNTEER_WHATSAPP_CHANNEL_URL,
   })
 }

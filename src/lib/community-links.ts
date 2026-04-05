@@ -1,3 +1,3 @@
-/** Impact Bridge community WhatsApp (shown after event registration while email is off). */
-export const VOLUNTEER_WHATSAPP_COMMUNITY_URL =
-  "https://chat.whatsapp.com/Db8zfydJD7ECG5RAs893he"
+/** Impact Bridge WhatsApp channel — event updates (shown after volunteer registration while email is off). */
+export const VOLUNTEER_WHATSAPP_CHANNEL_URL =
+  "https://whatsapp.com/channel/0029Vb7hAGp1SWsumoiEJb2z"
