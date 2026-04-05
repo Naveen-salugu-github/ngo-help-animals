@@ -13,7 +13,7 @@ import { toast } from "sonner"
 
 type ProjectOption = { id: string; title: string }
 
-export function HomeImpactUpdateForm({ projects }: { projects: ProjectOption[] }) {
+export function NgoImpactUpdateForm({ projects }: { projects: ProjectOption[] }) {
   const router = useRouter()
   const formRef = useRef<HTMLFormElement>(null)
   const [pending, startTransition] = useTransition()
@@ -36,9 +36,9 @@ export function HomeImpactUpdateForm({ projects }: { projects: ProjectOption[] }
   return (
     <form ref={formRef} action={submit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="home_impact_project_id">Project</Label>
+        <Label htmlFor="ngo_impact_project_id">Project</Label>
         <select
-          id="home_impact_project_id"
+          id="ngo_impact_project_id"
           name="project_id"
           required
           className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
@@ -52,13 +52,13 @@ export function HomeImpactUpdateForm({ projects }: { projects: ProjectOption[] }
         </select>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="home_impact_media_url">Photo or video URL</Label>
-        <Input id="home_impact_media_url" name="media_url" required placeholder="https://…" />
+        <Label htmlFor="ngo_impact_media_url">Photo or video URL</Label>
+        <Input id="ngo_impact_media_url" name="media_url" required placeholder="https://…" />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="home_impact_media_type">Media type</Label>
+        <Label htmlFor="ngo_impact_media_type">Media type</Label>
         <select
-          id="home_impact_media_type"
+          id="ngo_impact_media_type"
           name="media_type"
           className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
         >
@@ -67,17 +67,17 @@ export function HomeImpactUpdateForm({ projects }: { projects: ProjectOption[] }
         </select>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="home_impact_context">Context for AI (optional)</Label>
-        <Textarea id="home_impact_context" rows={2} placeholder="Kids receiving midday meals in Vizag…" />
+        <Label htmlFor="ngo_impact_context">Context for AI (optional)</Label>
+        <Textarea id="ngo_impact_context" rows={2} placeholder="Kids receiving midday meals in Vizag…" />
       </div>
-      <AiCaptionButton contextFieldId="home_impact_context" targetFieldId="home_impact_caption" />
+      <AiCaptionButton contextFieldId="ngo_impact_context" targetFieldId="ngo_impact_caption" />
       <div className="space-y-2">
-        <Label htmlFor="home_impact_caption">Caption</Label>
-        <Textarea id="home_impact_caption" name="caption" rows={3} />
+        <Label htmlFor="ngo_impact_caption">Caption</Label>
+        <Textarea id="ngo_impact_caption" name="caption" rows={3} />
       </div>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <Button type="submit" disabled={pending}>
-          {pending ? "Submitting…" : "Submit update"}
+          {pending ? "Submitting…" : "Publish update"}
         </Button>
         <Button type="button" variant="link" className="h-auto px-0 text-muted-foreground sm:justify-end" asChild>
           <Link href="/feed">View impact feed</Link>
