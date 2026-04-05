@@ -26,9 +26,11 @@ type PaymentsConfig = { razorpay: boolean; stripe: boolean }
 type Props = {
   projectId: string
   units: MicroDonationUnit[]
+  /** When false, this campaign does not collect donations — render nothing. */
+  fundingNeeded?: boolean
 }
 
-export function DonateButton({ projectId, units }: Props) {
+export function DonateButton({ projectId, units, fundingNeeded = true }: Props) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -51,6 +53,10 @@ export function DonateButton({ projectId, units }: Props) {
       setPending(null)
     }
   }, [open])
+
+  if (fundingNeeded === false) {
+    return null
+  }
 
   if (!DONATIONS_ENABLED) {
     return (

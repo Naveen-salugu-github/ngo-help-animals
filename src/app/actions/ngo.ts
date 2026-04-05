@@ -50,26 +50,38 @@ export async function createProject(formData: FormData): Promise<CreateProjectRe
   const title = String(formData.get("title") ?? "").trim()
   const description = String(formData.get("description") ?? "").trim()
   const location = String(formData.get("location") ?? "").trim()
-  const goal_amount = Number(formData.get("goal_amount"))
-  if (!title || !description || !location || !goal_amount) {
-    return { ok: false, error: "Fill in title, description, location, and goal amount." }
-  }
+  const fundingNeeded = String(formData.get("funding_needed") ?? "true") !== "false"
 
-  const microRaw = String(formData.get("micro_donation_units") ?? "").trim()
+  let goal_amount = 0
   let micro_donation_units: { amount: number; label: string }[] = []
-  if (microRaw) {
-    try {
-      micro_donation_units = JSON.parse(microRaw)
-      if (!Array.isArray(micro_donation_units)) throw new Error("invalid")
-    } catch {
-      return { ok: false, error: "Micro donations must be valid JSON array." }
+
+  if (fundingNeeded) {
+    const g = Number(formData.get("goal_amount"))
+    if (!title || !description || !location || !g || g < 1) {
+      return { ok: false, error: "Fill in title, description, location, and goal amount (INR)." }
+    }
+    goal_amount = g
+    const microRaw = String(formData.get("micro_donation_units") ?? "").trim()
+    if (microRaw) {
+      try {
+        micro_donation_units = JSON.parse(microRaw)
+        if (!Array.isArray(micro_donation_units)) throw new Error("invalid")
+      } catch {
+        return { ok: false, error: "Micro donations must be valid JSON array." }
+      }
+    } else {
+      micro_donation_units = [
+        { amount: 50, label: "1 meal" },
+        { amount: 200, label: "1 tree" },
+        { amount: 1000, label: "1 school kit" },
+      ]
     }
   } else {
-    micro_donation_units = [
-      { amount: 50, label: "1 meal" },
-      { amount: 200, label: "1 tree" },
-      { amount: 1000, label: "1 school kit" },
-    ]
+    if (!title || !description || !location) {
+      return { ok: false, error: "Fill in title, description, and location." }
+    }
+    goal_amount = 0
+    micro_donation_units = []
   }
 
   const lat = formData.get("latitude")
@@ -113,6 +125,7 @@ export async function createProject(formData: FormData): Promise<CreateProjectRe
     title,
     description,
     location,
+    funding_needed: fundingNeeded,
     goal_amount,
     micro_donation_units,
     timeline_start: campaignDate || null,

@@ -37,12 +37,15 @@ export async function POST(request: NextRequest) {
 
   const { data: project, error: pErr } = await db
     .from("projects")
-    .select("id, status")
+    .select("id, status, funding_needed")
     .eq("id", body.projectId)
     .single()
 
   if (pErr || !project || project.status !== "active") {
     return NextResponse.json({ error: "Project not available" }, { status: 400 })
+  }
+  if (project.funding_needed === false) {
+    return NextResponse.json({ error: "This campaign is not accepting donations" }, { status: 400 })
   }
 
   const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret })

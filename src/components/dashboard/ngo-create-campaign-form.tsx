@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createProject } from "@/app/actions/ngo"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -12,6 +13,7 @@ import { toast } from "sonner"
 export function NgoCreateCampaignForm() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [fundingNeeded, setFundingNeeded] = useState(true)
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -50,6 +52,25 @@ export function NgoCreateCampaignForm() {
 
   return (
     <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
+      <input type="hidden" name="funding_needed" value={fundingNeeded ? "true" : "false"} />
+      <div className="sm:col-span-2 flex items-start gap-3 rounded-lg border border-border bg-muted/30 p-4">
+        <Checkbox
+          id="campaign-funding-needed"
+          checked={fundingNeeded}
+          onCheckedChange={(v) => setFundingNeeded(v === true)}
+          disabled={loading}
+          className="mt-0.5"
+        />
+        <div className="space-y-1">
+          <Label htmlFor="campaign-funding-needed" className="cursor-pointer font-medium leading-snug">
+            This campaign needs online donations
+          </Label>
+          <p className="text-xs text-muted-foreground">
+            Turn off for volunteer-only or awareness campaigns — no funding goal, micro-donations, or public Donate button
+            after approval.
+          </p>
+        </div>
+      </div>
       <div className="sm:col-span-2 space-y-2">
         <Label htmlFor="title">Title</Label>
         <Input id="title" name="title" required disabled={loading} />
@@ -62,10 +83,12 @@ export function NgoCreateCampaignForm() {
         <Label htmlFor="location">Location</Label>
         <Input id="location" name="location" required disabled={loading} />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="goal_amount">Goal amount (INR)</Label>
-        <Input id="goal_amount" name="goal_amount" type="number" min={1} required disabled={loading} />
-      </div>
+      {fundingNeeded && (
+        <div className="space-y-2">
+          <Label htmlFor="goal_amount">Goal amount (INR)</Label>
+          <Input id="goal_amount" name="goal_amount" type="number" min={1} required={fundingNeeded} disabled={loading} />
+        </div>
+      )}
       <div className="space-y-2">
         <Label htmlFor="volunteer_slots">Volunteer slots</Label>
         <Input id="volunteer_slots" name="volunteer_slots" type="number" min={0} defaultValue={0} disabled={loading} />
@@ -153,19 +176,21 @@ export function NgoCreateCampaignForm() {
           file to Storage and paste that URL.
         </p>
       </div>
-      <div className="sm:col-span-2 space-y-2">
-        <Label htmlFor="micro_donation_units">Micro donations JSON (optional)</Label>
-        <Textarea
-          id="micro_donation_units"
-          name="micro_donation_units"
-          rows={3}
-          placeholder='[{"amount":50,"label":"1 meal"},{"amount":200,"label":"1 tree"}]'
-          disabled={loading}
-        />
-      </div>
+      {fundingNeeded && (
+        <div className="sm:col-span-2 space-y-2">
+          <Label htmlFor="micro_donation_units">Micro donations JSON (optional)</Label>
+          <Textarea
+            id="micro_donation_units"
+            name="micro_donation_units"
+            rows={3}
+            placeholder='[{"amount":50,"label":"1 meal"},{"amount":200,"label":"1 tree"}]'
+            disabled={loading}
+          />
+        </div>
+      )}
       <p className="text-xs text-muted-foreground sm:col-span-2">
-        Submitting for publication sends the campaign to admin review. It appears on Explore and accepts donations only
-        after approval.
+        Submitting for publication sends the campaign to admin review. It appears on Explore after approval
+        {fundingNeeded ? " and can accept donations if enabled on the platform." : " (no public donate button for this campaign)."}
       </p>
       <div className="flex gap-2 sm:col-span-2">
         <Button type="submit" name="status" value="pending" disabled={loading}>

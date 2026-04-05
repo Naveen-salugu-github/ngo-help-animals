@@ -99,7 +99,8 @@ export default async function NgoDashboardPage() {
             <CardHeader>
               <CardTitle>Create project</CardTitle>
               <CardDescription>
-                Micro-donations JSON optional — default units are pre-filled server-side if empty.
+                Use the toggle if the campaign only needs volunteers or awareness — no funding goal or donate button.
+                Otherwise micro-donations JSON is optional (defaults apply if empty).
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -120,7 +121,11 @@ export default async function NgoDashboardPage() {
                   ) : (
                     p.status
                   )}{" "}
-                  — goal ₹{Number(p.goal_amount).toLocaleString("en-IN")}
+                  {p.funding_needed === false ? (
+                    <span className="text-muted-foreground"> — no online funding</span>
+                  ) : (
+                    <> — goal ₹{Number(p.goal_amount).toLocaleString("en-IN")}</>
+                  )}
                   {p.status === "pending_review" && (
                     <span className="ml-2 text-xs text-muted-foreground">(only you can open the page until published)</span>
                   )}

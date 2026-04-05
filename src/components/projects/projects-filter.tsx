@@ -36,6 +36,7 @@ export type ProjectListItem = {
   status: string
   latitude: number | null
   longitude: number | null
+  funding_needed: boolean | null
   organizer_contact_phone: string | null
   organizer_contact_email: string | null
   ngos: {
@@ -61,6 +62,7 @@ export function ProjectsFilter({ projects }: { projects: ProjectListItem[] }) {
       const hay = `${p.title} ${p.location} ${p.volunteer_category ?? ""}`.toLowerCase()
       if (q && !hay.includes(q.toLowerCase())) return false
       if (progress === "any") return true
+      if (p.funding_needed === false) return false
       const pct = p.goal_amount > 0 ? p.funds_raised / p.goal_amount : 0
       if (progress === "under25") return pct < 0.25
       if (progress === "25to75") return pct >= 0.25 && pct < 0.75
@@ -105,8 +107,9 @@ export function ProjectsFilter({ projects }: { projects: ProjectListItem[] }) {
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {displayList.map((p) => {
           const ngo = p.ngos
+          const fundingNeeded = p.funding_needed !== false
           const pct =
-            p.goal_amount > 0
+            fundingNeeded && p.goal_amount > 0
               ? Math.min(100, Math.round((Number(p.funds_raised) / Number(p.goal_amount)) * 100))
               : 0
           const active = p.status === "active"
@@ -137,14 +140,20 @@ export function ProjectsFilter({ projects }: { projects: ProjectListItem[] }) {
                   <p className="line-clamp-2 text-sm text-muted-foreground">{p.description}</p>
                   <p className="mt-1 text-xs text-muted-foreground">{p.location}</p>
                 </Link>
-                <Progress value={pct} className="h-2" />
-                <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-                  <span>{pct}% funded</span>
-                  <span>{p.donor_count} donors</span>
-                  {p.beneficiaries_impacted > 0 && (
-                    <span>{p.beneficiaries_impacted} beneficiaries</span>
-                  )}
-                </div>
+                {fundingNeeded ? (
+                  <>
+                    <Progress value={pct} className="h-2" />
+                    <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+                      <span>{pct}% funded</span>
+                      <span>{p.donor_count} donors</span>
+                      {p.beneficiaries_impacted > 0 && (
+                        <span>{p.beneficiaries_impacted} beneficiaries</span>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Volunteers &amp; awareness — no public funding goal</p>
+                )}
                 {(showContact || showFeedback) && (
                   <div className="grid gap-2 border-t pt-3">
                     {showContact && (

@@ -15,6 +15,7 @@ export type FeaturedProject = {
   location: string
   goal_amount: number
   funds_raised: number
+  funding_needed?: boolean | null
   cover_image_url: string | null
   beneficiaries_impacted: number
   latitude: number | null
@@ -47,8 +48,9 @@ export function FeaturedProjectsGrid({ projects }: { projects: FeaturedProject[]
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {ordered.map((p) => {
           const ngo = p.ngos
+          const fundingNeeded = p.funding_needed !== false
           const pct =
-            p.goal_amount > 0
+            fundingNeeded && p.goal_amount > 0
               ? Math.min(100, Math.round((Number(p.funds_raised) / Number(p.goal_amount)) * 100))
               : 0
           return (
@@ -70,13 +72,19 @@ export function FeaturedProjectsGrid({ projects }: { projects: FeaturedProject[]
                   </div>
                   <p className="text-sm text-muted-foreground">{p.location}</p>
                   <p className="text-xs text-muted-foreground">{ngo?.organization_name}</p>
-                  <Progress value={pct} className="h-2" />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>{pct}% funded</span>
-                    {p.beneficiaries_impacted > 0 && (
-                      <span>{p.beneficiaries_impacted} beneficiaries</span>
-                    )}
-                  </div>
+                  {fundingNeeded ? (
+                    <>
+                      <Progress value={pct} className="h-2" />
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>{pct}% funded</span>
+                        {p.beneficiaries_impacted > 0 && (
+                          <span>{p.beneficiaries_impacted} beneficiaries</span>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">Volunteers &amp; awareness — no public funding goal</p>
+                  )}
                 </CardContent>
               </Card>
             </Link>

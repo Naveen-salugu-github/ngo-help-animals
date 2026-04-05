@@ -53,6 +53,7 @@ export type Project = {
   donor_count: number
   beneficiaries_impacted: number
   volunteer_category: string | null
+  funding_needed?: boolean | null
   organizer_contact_phone?: string | null
   organizer_contact_email?: string | null
 }

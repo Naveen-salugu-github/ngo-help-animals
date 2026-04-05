@@ -103,8 +103,10 @@ export default async function ProjectDetailPage({ params }: Params) {
     description: string | null
   }
 
+  const fundingNeeded = project.funding_needed !== false
+
   const pct =
-    project.goal_amount > 0
+    fundingNeeded && project.goal_amount > 0
       ? Math.min(100, Math.round((Number(project.funds_raised) / Number(project.goal_amount)) * 100))
       : 0
 
@@ -321,32 +323,51 @@ export default async function ProjectDetailPage({ params }: Params) {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Funding</CardTitle>
+            <CardTitle className="text-lg">{fundingNeeded ? "Funding" : "Get involved"}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Progress value={pct} className="h-3" />
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <div>
-                <p className="text-muted-foreground">Raised</p>
-                <p className="font-semibold">₹{Number(project.funds_raised).toLocaleString("en-IN")}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Goal</p>
-                <p className="font-semibold">₹{Number(project.goal_amount).toLocaleString("en-IN")}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <HeartHandshake className="h-4 w-4 text-muted-foreground" />
-                <span>{project.donor_count} donors</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <span>
-                  {filled}/{slots} volunteers registered
-                </span>
-              </div>
-            </div>
+            {fundingNeeded ? (
+              <>
+                <Progress value={pct} className="h-3" />
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">Raised</p>
+                    <p className="font-semibold">₹{Number(project.funds_raised).toLocaleString("en-IN")}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Goal</p>
+                    <p className="font-semibold">₹{Number(project.goal_amount).toLocaleString("en-IN")}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <HeartHandshake className="h-4 w-4 text-muted-foreground" />
+                    <span>{project.donor_count} donors</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span>
+                      {filled}/{slots} volunteers registered
+                    </span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground">
+                  This campaign is not collecting online donations. You can still volunteer, contact the organizer, or
+                  share the event.
+                </p>
+                {slots > 0 && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span>
+                      {filled}/{slots} volunteers registered
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
             {project.status === "active" && (
-              <DonateButton projectId={project.id} units={microUnits} />
+              <DonateButton projectId={project.id} units={microUnits} fundingNeeded={fundingNeeded} />
             )}
             {project.status === "active" && slots > 0 && (
               <div className="flex flex-col gap-2">
