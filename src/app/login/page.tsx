@@ -9,11 +9,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
+import { safeNextPath } from "@/lib/safe-next-path"
 
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const next = searchParams.get("next") ?? "/"
+  const next = safeNextPath(searchParams.get("next"))
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -72,7 +73,10 @@ export default function LoginPage() {
       </Card>
       <p className="text-center text-sm text-muted-foreground">
         No account?{" "}
-        <Link href="/register" className="text-primary underline">
+        <Link
+          href={`/register?next=${encodeURIComponent(next)}`}
+          className="text-primary underline"
+        >
           Join ImpactBridge
         </Link>
       </p>

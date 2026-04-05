@@ -17,6 +17,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import { getBrowserAppUrl } from "@/lib/env"
+import { safeNextPath } from "@/lib/safe-next-path"
 
 const roles = [
   { value: "donor", label: "Donor / volunteer" },
@@ -27,6 +28,7 @@ const roles = [
 export function RegisterForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const afterAuthNext = safeNextPath(searchParams.get("next"))
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -59,7 +61,7 @@ export function RegisterForm() {
       return
     }
     toast.success("Check your email to confirm, then log in.")
-    router.push("/login")
+    router.push(`/login?next=${encodeURIComponent(afterAuthNext)}`)
   }
 
   return (
@@ -127,7 +129,7 @@ export function RegisterForm() {
       </Card>
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="text-primary underline">
+        <Link href={`/login?next=${encodeURIComponent(afterAuthNext)}`} className="text-primary underline">
           Log in
         </Link>
       </p>

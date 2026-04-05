@@ -70,6 +70,19 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
     })
   }, [open])
 
+  async function openRegistrationDialog() {
+    const supabase = createClient()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+    if (!session) {
+      toast.message("Log in to register for this event")
+      router.push(`/login?next=${encodeURIComponent(`/projects/${projectId}`)}`)
+      return
+    }
+    setOpen(true)
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     const supabase = createClient()
@@ -77,8 +90,8 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
       data: { session },
     } = await supabase.auth.getSession()
     if (!session) {
-      toast.message("Log in to register")
-      router.push(`/login?next=/projects/${projectId}`)
+      toast.message("Log in to register for this event")
+      router.push(`/login?next=${encodeURIComponent(`/projects/${projectId}`)}`)
       return
     }
     const nameTrim = name.trim()
@@ -132,11 +145,14 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
   return (
     <div className="flex flex-col gap-3">
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button variant="secondary" className="w-full">
-            Register for this event
-          </Button>
-        </DialogTrigger>
+        <Button
+          type="button"
+          variant="secondary"
+          className="w-full"
+          onClick={() => void openRegistrationDialog()}
+        >
+          Register for this event
+        </Button>
         <DialogContent className="sm:max-w-md">
         <form onSubmit={submit}>
           <DialogHeader>
