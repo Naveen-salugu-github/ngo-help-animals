@@ -18,6 +18,26 @@ import { Label } from "@/components/ui/label"
 import { VOLUNTEER_WHATSAPP_COMMUNITY_URL } from "@/lib/community-links"
 import { toast } from "sonner"
 
+/** Persistent WhatsApp community link (used under the register button and for users already on the RSVP list). */
+export function VolunteerWhatsappChannelCard() {
+  return (
+    <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-3 text-sm">
+      <p className="font-medium text-foreground">Join the WhatsApp community</p>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Stay in the loop for this event and other Impact Bridge updates.
+      </p>
+      <a
+        href={VOLUNTEER_WHATSAPP_COMMUNITY_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-2 inline-block font-medium text-primary underline underline-offset-4"
+      >
+        Open Impact Bridge ~ Help Animals on WhatsApp
+      </a>
+    </div>
+  )
+}
+
 type Props = {
   projectId: string
   disabled: boolean
@@ -28,6 +48,7 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [justRegistered, setJustRegistered] = useState(false)
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
@@ -90,23 +111,7 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
       if (!res.ok) {
         throw new Error(body.error ?? "Registration failed")
       }
-      const waUrl =
-        typeof body.volunteerWhatsappUrl === "string" ? body.volunteerWhatsappUrl : VOLUNTEER_WHATSAPP_COMMUNITY_URL
-      toast.success("You’re registered.", {
-        description: (
-          <span className="block pt-1">
-            <a
-              href={waUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium text-primary underline underline-offset-4"
-            >
-              Join Impact Bridge ~ Help Animals on WhatsApp
-            </a>
-          </span>
-        ),
-        duration: 14_000,
-      })
+      setJustRegistered(true)
       setOpen(false)
       router.refresh()
     } catch (err: unknown) {
@@ -125,19 +130,20 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="secondary" className="w-full">
-          Register for this event
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+    <div className="flex flex-col gap-3">
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button variant="secondary" className="w-full">
+            Register for this event
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
         <form onSubmit={submit}>
           <DialogHeader>
             <DialogTitle>Event registration</DialogTitle>
             <DialogDescription>
-              Full name and email are required for your registration record. After you confirm, we’ll show a link to our
-              WhatsApp community for updates. Phone is optional.
+              Full name and email are required for your registration record. After you confirm, a WhatsApp community link
+              appears below the button on this page. Phone is optional.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -181,7 +187,9 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+      {justRegistered && <VolunteerWhatsappChannelCard />}
+    </div>
   )
 }

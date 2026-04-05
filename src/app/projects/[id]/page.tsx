@@ -9,7 +9,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { DonateButton } from "@/components/projects/donate-button"
-import { VolunteerEventRegistration } from "@/components/projects/volunteer-event-registration"
+import {
+  VolunteerEventRegistration,
+  VolunteerWhatsappChannelCard,
+} from "@/components/projects/volunteer-event-registration"
 import { VolunteerCheckIn } from "@/components/projects/volunteer-check-in"
 import { EventShareRow } from "@/components/projects/event-share-row"
 import { ContactOrganizerDialog } from "@/components/projects/contact-organizer-dialog"
@@ -379,6 +382,10 @@ export default async function ProjectDetailPage({ params }: Params) {
                       You’re registered for this event
                     </Badge>
                   )}
+                {myVolunteer &&
+                  (myVolunteer.status === "rsvp" ||
+                    myVolunteer.status === "confirmed" ||
+                    myVolunteer.status === "checked_in") && <VolunteerWhatsappChannelCard />}
                 {(!myVolunteer || myVolunteer.status === "cancelled") && (
                   <VolunteerEventRegistration
                     projectId={project.id}
