@@ -107,10 +107,10 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
             {user ? (
               <>
                 <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Welcome, {welcomeName}</h1>
-                <p className="text-xl font-medium text-muted-foreground">Fund real projects. See real change.</p>
+                <p className="text-xl font-medium text-muted-foreground">Join real projects. See real change.</p>
               </>
             ) : (
-              <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Fund real projects. See real change.</h1>
+              <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Join real projects. See real change.</h1>
             )}
             <p className="max-w-xl text-lg text-muted-foreground">
               ImpactBridge connects NGOs, donors, volunteers, and brands. Every project shows funding progress, field
