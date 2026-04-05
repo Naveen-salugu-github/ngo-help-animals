@@ -161,33 +161,45 @@ export async function createProject(formData: FormData): Promise<CreateProjectRe
   return { ok: true, submittedForReview: !submittedAsDraft }
 }
 
-export async function createImpactUpdate(formData: FormData): Promise<void> {
+export type CreateImpactUpdateResult =
+  | { ok: true }
+  | { ok: false; error: string }
+
+export async function createImpactUpdate(formData: FormData): Promise<CreateImpactUpdateResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) return
+  if (!user) return { ok: false, error: "You must be signed in." }
 
   const project_id = String(formData.get("project_id") ?? "")
   const media_url = String(formData.get("media_url") ?? "").trim()
   const caption = String(formData.get("caption") ?? "").trim()
-  if (!project_id || !media_url) return
+  if (!project_id || !media_url) {
+    return { ok: false, error: "Choose a project and add a media URL." }
+  }
 
   const { data: project } = await supabase.from("projects").select("ngo_id").eq("id", project_id).single()
-  if (!project) return
+  if (!project) return { ok: false, error: "Campaign not found." }
   const { data: ngo } = await supabase.from("ngos").select("user_id").eq("id", project.ngo_id).single()
-  if (!ngo || ngo.user_id !== user.id) return
+  if (!ngo || ngo.user_id !== user.id) {
+    return { ok: false, error: "You can only post updates for your own campaigns." }
+  }
 
   const { error } = await supabase.from("impact_updates").insert({
     project_id,
     media_url,
     media_type: (formData.get("media_type") as string) === "video" ? "video" : "image",
     caption,
-    moderation_status: "pending",
+    moderation_status: "approved",
   })
 
-  if (error) return
+  if (error) {
+    console.error("createImpactUpdate:", error)
+    return { ok: false, error: error.message || "Could not save your update." }
+  }
   revalidatePath("/dashboard/ngo")
   revalidatePath("/feed")
   revalidatePath("/")
+  return { ok: true }
 }

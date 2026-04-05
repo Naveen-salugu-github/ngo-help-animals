@@ -1,12 +1,7 @@
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
-import { createImpactUpdate } from "@/app/actions/ngo"
+import { HomeImpactUpdateForm } from "@/components/home/home-impact-update-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { AiCaptionButton } from "@/components/dashboard/ai-caption-button"
 
 type Props = { userId: string }
 
@@ -29,7 +24,8 @@ export async function HomeImpactUpdatesSection({ userId }: Props) {
         <div className="mb-6">
           <h2 className="text-2xl font-bold tracking-tight">Impact updates</h2>
           <p className="mt-1 max-w-2xl text-muted-foreground">
-            Post field photos or videos for one of your campaigns. The public impact feed shows them after admin approval.
+            Post field photos or videos for one of your campaigns. They go live on the impact feed and project pages
+            as soon as you submit.
           </p>
         </div>
 
@@ -50,49 +46,7 @@ export async function HomeImpactUpdatesSection({ userId }: Props) {
               <CardDescription>Choose a project, add media URL and caption.</CardDescription>
             </CardHeader>
             <CardContent>
-              <form action={createImpactUpdate} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="home_impact_project_id">Project</Label>
-                  <select
-                    id="home_impact_project_id"
-                    name="project_id"
-                    required
-                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
-                  >
-                    <option value="">Select…</option>
-                    {list.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.title}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="home_impact_media_url">Photo or video URL</Label>
-                  <Input id="home_impact_media_url" name="media_url" required placeholder="https://…" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="home_impact_media_type">Media type</Label>
-                  <select
-                    id="home_impact_media_type"
-                    name="media_type"
-                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
-                  >
-                    <option value="image">Image</option>
-                    <option value="video">Video</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="home_impact_context">Context for AI (optional)</Label>
-                  <Textarea id="home_impact_context" rows={2} placeholder="Kids receiving midday meals in Vizag…" />
-                </div>
-                <AiCaptionButton contextFieldId="home_impact_context" targetFieldId="home_impact_caption" />
-                <div className="space-y-2">
-                  <Label htmlFor="home_impact_caption">Caption</Label>
-                  <Textarea id="home_impact_caption" name="caption" rows={3} />
-                </div>
-                <Button type="submit">Submit update</Button>
-              </form>
+              <HomeImpactUpdateForm projects={list} />
             </CardContent>
           </Card>
         )}

@@ -93,7 +93,7 @@ export default async function ProjectDetailPage({ params }: Params) {
 
   const { data: updates } = await supabase
     .from("impact_updates")
-    .select("id, media_url, media_type, caption, created_at, moderation_status")
+    .select("id, media_url, media_type, caption, created_at")
     .eq("project_id", id)
     .order("created_at", { ascending: false })
     .limit(12)
@@ -425,11 +425,6 @@ export default async function ProjectDetailPage({ params }: Params) {
               </div>
               <CardContent className="p-3">
                 <p className="text-sm">{u.caption}</p>
-                {u.moderation_status !== "approved" && (
-                  <Badge variant="outline" className="mt-2 text-xs">
-                    {u.moderation_status}
-                  </Badge>
-                )}
               </CardContent>
             </Card>
           ))}

@@ -32,32 +32,6 @@ export async function setNgoVerification(formData: FormData): Promise<void> {
   revalidatePath("/projects")
 }
 
-export async function setImpactModeration(formData: FormData): Promise<void> {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return
-
-  const { data: profile } = await supabase.from("users").select("role").eq("id", user.id).single()
-  if (profile?.role !== "admin") return
-
-  const id = String(formData.get("impact_id") ?? "")
-  const moderation_status = String(formData.get("moderation_status") ?? "") as
-    | "pending"
-    | "approved"
-    | "rejected"
-  if (!id || !["pending", "approved", "rejected"].includes(moderation_status)) {
-    return
-  }
-
-  const { error } = await supabase.from("impact_updates").update({ moderation_status }).eq("id", id)
-
-  if (error) return
-  revalidatePath("/dashboard/admin")
-  revalidatePath("/feed")
-}
-
 export async function setProjectCampaignStatus(formData: FormData): Promise<void> {
   const supabase = await createClient()
   const {

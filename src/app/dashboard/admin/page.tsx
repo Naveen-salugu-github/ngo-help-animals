@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { setNgoVerification, setImpactModeration, setProjectCampaignStatus } from "@/app/actions/admin"
+import { setNgoVerification, setProjectCampaignStatus } from "@/app/actions/admin"
 import { AdminDeleteProjectButton } from "@/components/dashboard/admin-delete-project-button"
 import Link from "next/link"
 
@@ -46,21 +46,6 @@ export default async function AdminDashboardPage() {
     .eq("status", "pending_review")
     .order("created_at", { ascending: false })
 
-  const { data: pendingImpact } = await supabase
-    .from("impact_updates")
-    .select(
-      `
-      id,
-      caption,
-      media_url,
-      moderation_status,
-      created_at,
-      projects:project_id ( title, ngos:ngo_id ( organization_name ) )
-    `
-    )
-    .eq("moderation_status", "pending")
-    .order("created_at", { ascending: false })
-
   const { count: userCount } = await supabase.from("users").select("*", { count: "exact", head: true })
   const { count: projectCount } = await supabase.from("projects").select("*", { count: "exact", head: true })
   const { count: donationRows } = await supabase.from("donations").select("*", { count: "exact", head: true })
@@ -84,7 +69,7 @@ export default async function AdminDashboardPage() {
     <div className="mx-auto max-w-5xl space-y-10 px-4 py-10">
       <div>
         <h1 className="text-3xl font-bold">Admin</h1>
-        <p className="text-muted-foreground">Verify NGOs, approve impact posts, monitor platform health.</p>
+        <p className="text-muted-foreground">Verify NGOs, review campaigns, monitor platform health.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -197,53 +182,6 @@ export default async function AdminDashboardPage() {
                     <input type="hidden" name="next_status" value="draft" />
                     <Button type="submit" size="sm" variant="outline">
                       Reject (draft)
-                    </Button>
-                  </form>
-                </div>
-              </div>
-            )
-          })}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Impact moderation</CardTitle>
-          <CardDescription>Approve posts for the public feed.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {(pendingImpact ?? []).length === 0 && (
-            <p className="text-sm text-muted-foreground">No posts awaiting review.</p>
-          )}
-          {(pendingImpact ?? []).map((post) => {
-            const raw = post.projects as unknown
-            const proj = (Array.isArray(raw) ? raw[0] : raw) as {
-              title: string
-              ngos: { organization_name: string } | { organization_name: string }[] | null
-            } | null
-            const ngoRaw = proj?.ngos
-            const ngo = Array.isArray(ngoRaw) ? ngoRaw[0] : ngoRaw
-            return (
-              <div key={post.id} className="space-y-3 rounded-lg border p-4">
-                <p className="text-sm font-medium">{ngo?.organization_name}</p>
-                <p className="text-xs text-muted-foreground">{proj?.title}</p>
-                <p className="text-sm">{post.caption}</p>
-                <a href={post.media_url} className="text-xs text-primary underline" target="_blank" rel="noreferrer">
-                  Media link
-                </a>
-                <div className="flex flex-wrap gap-2">
-                  <form action={setImpactModeration}>
-                    <input type="hidden" name="impact_id" value={post.id} />
-                    <input type="hidden" name="moderation_status" value="approved" />
-                    <Button type="submit" size="sm">
-                      Approve
-                    </Button>
-                  </form>
-                  <form action={setImpactModeration}>
-                    <input type="hidden" name="impact_id" value={post.id} />
-                    <input type="hidden" name="moderation_status" value="rejected" />
-                    <Button type="submit" size="sm" variant="outline">
-                      Reject
                     </Button>
                   </form>
                 </div>

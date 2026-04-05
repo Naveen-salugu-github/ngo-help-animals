@@ -8,28 +8,11 @@ import { Heart, Share2, MapPin, BadgeCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/client"
+import type { ImpactFeedRow } from "@/lib/impact-feed-data"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
-type FeedRow = {
-  id: string
-  media_url: string
-  media_type: string
-  caption: string
-  like_count: number
-  share_count: number
-  created_at: string
-  projects: {
-    id: string
-    title: string
-    ngos: {
-      organization_name: string
-      verification_status: string
-    }
-  } | null
-}
-
-export function ImpactFeedList({ initial }: { initial: FeedRow[] }) {
+export function ImpactFeedList({ initial }: { initial: ImpactFeedRow[] }) {
   const [items, setItems] = useState(initial)
   const [accessToken, setAccessToken] = useState<string | null>(null)
 
