@@ -16,7 +16,7 @@ export default async function FeedPage() {
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold tracking-tight">Impact feed</h1>
         <p className="mt-2 text-muted-foreground">
-          Real updates from the ground — meals served, trees planted, shores cleaned.
+          Field photos and stories from campaigns: meals served, trees planted, shores cleaned, and more.
         </p>
       </div>
       <ImpactFeedList initial={rows} />

@@ -42,7 +42,7 @@ export async function POST(request: NextRequest, { params }: Params) {
 
   const endAt = project.event_end_at ? new Date(project.event_end_at as string) : null
   if (endAt && endAt < new Date()) {
-    return NextResponse.json({ error: "This campaign has ended — use feedback instead" }, { status: 400 })
+    return NextResponse.json({ error: "This campaign has ended. Use feedback instead." }, { status: 400 })
   }
 
   const { data: ngo } = await admin.from("ngos").select("user_id, organization_name").eq("id", project.ngo_id).single()

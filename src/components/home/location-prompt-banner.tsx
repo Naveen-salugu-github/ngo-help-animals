@@ -68,7 +68,7 @@ export function LocationPromptBanner({ variant = "default" }: Props) {
         <p className="flex items-start gap-2 text-sm">
           <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
           <span>
-            Location is on — we’ll prioritize campaigns with map pins closer to you (Explore &amp; home).{" "}
+            Location is on. We’ll prioritize campaigns with map pins closer to you (Explore and home).{" "}
             <span className="text-muted-foreground">
               Same flow works in mobile browsers and in-app WebViews (iOS/Android) over HTTPS.
             </span>
@@ -91,7 +91,7 @@ export function LocationPromptBanner({ variant = "default" }: Props) {
         </Button>
         {(status === "denied" || status === "error") && (
           <span className="text-xs text-destructive">
-            {status === "denied" ? "Permission denied — check browser or OS settings." : "Location unavailable."}
+            {status === "denied" ? "Permission denied. Check browser or OS settings." : "Location unavailable."}
           </span>
         )}
       </div>
@@ -107,7 +107,7 @@ export function LocationPromptBanner({ variant = "default" }: Props) {
             See campaigns closer to you
           </p>
           <p className="text-sm text-muted-foreground">
-            Enable location once — we sort projects by distance when the NGO added map coordinates. Your position stays in
+            Enable location once. We sort projects by distance when the NGO added map coordinates. Your position stays in
             this browser only (Web, Safari on iOS, Chrome, and Android WebView when permissions allow).
           </p>
           {(status === "denied" || status === "error") && (

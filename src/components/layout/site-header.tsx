@@ -55,7 +55,7 @@ export async function SiteHeader() {
           ? "/dashboard/admin"
           : null
 
-  /** Single “Dashboard” shortcut — hidden for NGO (nav already has NGO + Brand dashboards). */
+  /** Single “Dashboard” shortcut; hidden for NGO (nav already has NGO + Brand dashboards). */
   const showDashShortcut = user && dash && !isNgo
 
   return (

@@ -109,7 +109,7 @@ export async function sendVolunteerRegistrationEmail(
       Share with friends on WhatsApp:
       <a href="${p.whatsappShareUrl}">Open WhatsApp with a pre-filled message</a>
     </p>
-    <p style="font-size: 12px; color: #888;">ImpactBridge — verified social impact</p>
+    <p style="font-size: 12px; color: #888;">ImpactBridge: verified social impact</p>
   </div>`
 
   if (!key) {
@@ -172,7 +172,7 @@ export async function sendOrganizerInquiryEmail(p: {
       From: ${escapeHtml(p.fromName)} &lt;${escapeHtml(p.fromEmail)}&gt;
     </p>
     <p><a href="${p.projectUrl}">Open campaign</a></p>
-    <p style="font-size: 12px; color: #888;">ImpactBridge — reply directly to the sender’s email if needed.</p>
+    <p style="font-size: 12px; color: #888;">ImpactBridge. Reply directly to the sender’s email if needed.</p>
   </div>`
 
   if (!key) {

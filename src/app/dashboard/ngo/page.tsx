@@ -135,7 +135,8 @@ export default async function NgoDashboardPage() {
             <CardHeader>
               <CardTitle>Create project</CardTitle>
               <CardDescription>
-                Use the toggle if the campaign only needs volunteers or awareness — no funding goal or donate button.
+                Use the toggle if the campaign only needs volunteers or awareness: no funding goal or public Donate
+                button.
                 Otherwise micro-donations JSON is optional (defaults apply if empty).
               </CardDescription>
             </CardHeader>
@@ -174,9 +175,9 @@ export default async function NgoDashboardPage() {
                               <span className="capitalize">{p.status.replace(/_/g, " ")}</span>
                             )}
                             {p.funding_needed === false ? (
-                              <span> — no online funding</span>
+                              <span>, no online funding</span>
                             ) : (
-                              <> — goal ₹{Number(p.goal_amount).toLocaleString("en-IN")}</>
+                              <>, goal ₹{Number(p.goal_amount).toLocaleString("en-IN")}</>
                             )}
                             {p.status === "pending_review" && (
                               <span className="block text-xs">

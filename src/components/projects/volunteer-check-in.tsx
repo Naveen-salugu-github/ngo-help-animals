@@ -34,7 +34,7 @@ export function VolunteerCheckIn({ projectId }: { projectId: string }) {
       if (!res.ok) {
         throw new Error(body.error ?? "Check-in failed")
       }
-      toast.success("Checked in — thank you for showing up.")
+      toast.success("Checked in. Thank you for showing up.")
       router.refresh()
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Check-in failed")

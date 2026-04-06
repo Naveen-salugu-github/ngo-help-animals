@@ -34,7 +34,7 @@ export function VolunteerRsvp({ projectId }: { projectId: string }) {
       if (!res.ok) {
         throw new Error(body.error ?? "RSVP failed")
       }
-      toast.success("You’re on the list — see you in the field.")
+      toast.success("You’re on the list. See you in the field.")
       router.refresh()
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "RSVP failed")

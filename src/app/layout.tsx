@@ -10,9 +10,9 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "ImpactBridge — Social impact marketplace",
+  title: "ImpactBridge | Social impact marketplace",
   description:
-    "Connect NGOs, donors, volunteers, and brands. Fund verified impact projects and track real-world outcomes.",
+    "Connect NGOs, donors, volunteers, and brands. Fund verified impact projects and follow transparent outcomes.",
 }
 
 export default function RootLayout({

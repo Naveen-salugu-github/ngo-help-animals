@@ -11,7 +11,7 @@ type Props = {
 }
 
 export function EventShareRow({ url, title, description }: Props) {
-  const text = `${title}${description ? ` — ${description}` : ""}`.slice(0, 280)
+  const text = `${title}${description ? `. ${description}` : ""}`.slice(0, 280)
   const encodedUrl = encodeURIComponent(url)
   const encodedText = encodeURIComponent(text)
 
@@ -84,7 +84,7 @@ export function EventShareRow({ url, title, description }: Props) {
         Copy link
       </Button>
       <p className="w-full text-xs text-muted-foreground">
-        Instagram doesn’t support one-tap web sharing — use <strong>Copy link</strong> and paste in your story or bio.
+        Instagram doesn’t support one-tap web sharing. Use <strong>Copy link</strong> and paste in your story or bio.
       </p>
     </div>
   )

@@ -241,7 +241,7 @@ export default async function ProjectDetailPage({ params }: Params) {
               <span>
                 <span className="font-medium text-foreground">Where: </span>
                 {project.location}
-                {eventVenueDetail ? ` — ${eventVenueDetail}` : ""}
+                {eventVenueDetail ? `. ${eventVenueDetail}` : ""}
               </span>
             </p>
             <p className="pt-1">
@@ -306,8 +306,8 @@ export default async function ProjectDetailPage({ params }: Params) {
                 <span className="font-medium text-foreground">
                   {project.timeline_end ? "Campaign period: " : "Campaign date: "}
                 </span>
-                {project.timeline_start ?? "—"}
-                {project.timeline_end ? ` → ${project.timeline_end}` : ""}
+                {project.timeline_start ?? "Not set"}
+                {project.timeline_end ? ` to ${project.timeline_end}` : ""}
               </p>
             )}
             {metrics && Object.keys(metrics).length > 0 && (
@@ -390,7 +390,7 @@ export default async function ProjectDetailPage({ params }: Params) {
                   <VolunteerEventRegistration
                     projectId={project.id}
                     disabled={registrationFull}
-                    fullMessage="Registration is full — no more spots available."
+                    fullMessage="Registration is full. No more spots available."
                   />
                 )}
                 {myVolunteer &&

@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react"
 
-/** Last two: Unsplash YfNRdlxHDwI (cats on step), Rwx2wnnAiCE (feeding stray dog, India). */
+/** Rotating hero photos (Unsplash): wildlife, Bengaluru school (Nikhita S), community, India family with puppies (Wietse Jongsma, Chhattisgarh). */
 const IMAGES = [
   "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=900&q=80",
-  "https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=900&q=80",
+  "https://images.unsplash.com/photo-1522660985361-921e935bba78?w=900&q=80",
   "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=900&q=80",
   "https://images.unsplash.com/photo-1699525187657-7ad6c07c4d74?w=900&q=80",
   "https://images.unsplash.com/photo-1674802401345-4e6ec9fc2146?w=900&q=80",
+  "https://images.unsplash.com/photo-1750133091122-77c31bb965e0?w=900&q=80",
 ]
 
 const INTERVAL_MS = 3000

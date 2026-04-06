@@ -76,19 +76,19 @@ export default async function AdminDashboardPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Users</CardDescription>
-            <CardTitle className="text-2xl">{userCount ?? "—"}</CardTitle>
+            <CardTitle className="text-2xl">{userCount ?? "-"}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Projects</CardDescription>
-            <CardTitle className="text-2xl">{projectCount ?? "—"}</CardTitle>
+            <CardTitle className="text-2xl">{projectCount ?? "-"}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Donation rows</CardDescription>
-            <CardTitle className="text-2xl">{donationRows ?? "—"}</CardTitle>
+            <CardTitle className="text-2xl">{donationRows ?? "-"}</CardTitle>
           </CardHeader>
         </Card>
       </div>

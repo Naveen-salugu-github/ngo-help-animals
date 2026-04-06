@@ -77,7 +77,7 @@ export function PostEventFeedbackDialog({
       if (!res.ok) {
         throw new Error(data.error ?? "Failed to save feedback")
       }
-      toast.success("Thanks — your feedback was saved.")
+      toast.success("Thanks. Your feedback was saved.")
       setOpen(false)
       router.refresh()
     } catch (err: unknown) {

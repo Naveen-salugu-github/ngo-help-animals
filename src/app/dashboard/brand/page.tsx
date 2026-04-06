@@ -124,7 +124,7 @@ export default async function BrandDashboardPage() {
                     <option value="">Select…</option>
                     {(activeProjects ?? []).map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.title} — {p.location}
+                        {p.title} · {p.location}
                       </option>
                     ))}
                   </select>

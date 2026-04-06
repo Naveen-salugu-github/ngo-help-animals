@@ -21,7 +21,7 @@ export function NgoCreateCampaignForm() {
     const form = e.currentTarget
     const sub = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null
     const fd = new FormData(form)
-    // Do not rely on `new FormData(form, submitter)` — set explicitly for broad browser/React compatibility.
+    // Do not rely on `new FormData(form, submitter)`; set explicitly for broad browser/React compatibility.
     if (sub?.name === "status" && sub.value) {
       fd.set("status", sub.value)
     } else {
@@ -66,7 +66,7 @@ export function NgoCreateCampaignForm() {
             This campaign needs online donations
           </Label>
           <p className="text-xs text-muted-foreground">
-            Turn off for volunteer-only or awareness campaigns — no funding goal, micro-donations, or public Donate button
+            Turn off for volunteer-only or awareness campaigns: no funding goal, micro-donations, or public Donate button
             after approval.
           </p>
         </div>
@@ -172,7 +172,7 @@ export function NgoCreateCampaignForm() {
         <Label htmlFor="cover_image_url">Cover image URL</Label>
         <Input id="cover_image_url" name="cover_image_url" placeholder="https://…" disabled={loading} />
         <p className="text-xs text-muted-foreground">
-          Prefer Supabase Storage or direct image URLs. Some hosts block hotlinking — if the image breaks, re-upload the
+          Prefer Supabase Storage or direct image URLs. Some hosts block hotlinking. If the image breaks, re-upload the
           file to Storage and paste that URL.
         </p>
       </div>

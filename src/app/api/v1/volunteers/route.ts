@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
   const admin = createAdminClient()
   if (!admin) {
     return NextResponse.json(
-      { error: "Server missing SUPABASE_SERVICE_ROLE_KEY — cannot finalize volunteer slots" },
+      { error: "Server missing SUPABASE_SERVICE_ROLE_KEY; cannot finalize volunteer slots" },
       { status: 503 }
     )
   }
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (project.volunteer_count >= project.volunteer_slots) {
-    return NextResponse.json({ error: "Registration is full — no spots left" }, { status: 400 })
+    return NextResponse.json({ error: "Registration is full. No spots left." }, { status: 400 })
   }
 
   const { data: row, error: insErr } = await supabase
@@ -117,11 +117,11 @@ export async function POST(request: NextRequest) {
 
   if (bumpErr || !bumped) {
     await admin.from("volunteers").delete().eq("id", row.id)
-    return NextResponse.json({ error: "Registration is full — please try again" }, { status: 409 })
+    return NextResponse.json({ error: "Registration is full. Please try again." }, { status: 409 })
   }
 
   /*
-   * Resend confirmation email — disabled for now; clients show WhatsApp channel link instead.
+   * Resend confirmation email disabled for now; clients show WhatsApp channel link instead.
    *
    * const { data: profile } = await admin.from("users").select("name, email").eq("id", user.id).single()
    * const nameForEmail = participantName || profile?.name || profile?.email || "Participant"
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
    * const title = project.title as string
    * const startAt = project.event_start_at ? new Date(project.event_start_at as string) : null
    * const endAt = project.event_end_at ? new Date(project.event_end_at as string) : null
-   * const shareText = `Join me at "${title}" on ImpactBridge — ${projectUrl}`
+   * const shareText = `Join me at "${title}" on ImpactBridge: ${projectUrl}`
    * const whatsappShareUrl = buildWhatsappShareUrl(shareText)
    * if (emailForSend) {
    *   const r = await sendVolunteerRegistrationEmail({ to: emailForSend, participantName: nameForEmail, ... })

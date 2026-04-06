@@ -106,14 +106,18 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
             {user ? (
               <>
                 <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Welcome, {welcomeName}</h1>
-                <p className="text-xl font-medium text-muted-foreground">Join real projects. See real change.</p>
+                <p className="text-xl font-medium text-muted-foreground">
+                  Join verified projects. See transparent impact.
+                </p>
               </>
             ) : (
-              <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Join real projects. See real change.</h1>
+              <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
+                Join verified projects. See transparent impact.
+              </h1>
             )}
             <p className="max-w-xl text-lg text-muted-foreground">
               ImpactBridge connects NGOs, donors, volunteers, and brands. Every project shows funding progress, field
-              media, and verification — so generosity stays transparent.
+              media, and verification, so generosity stays transparent.
             </p>
             <div className="space-y-3">
               <LocationPromptBanner variant="default" />
@@ -146,7 +150,7 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Featured projects</h2>
             <p className="text-muted-foreground">
-              Live campaigns from partner NGOs — micro-donations and volunteering supported.
+              Live campaigns from partner NGOs, with micro-donations and volunteering where available.
             </p>
           </div>
           <Button asChild variant="outline">

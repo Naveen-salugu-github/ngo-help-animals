@@ -83,7 +83,9 @@ export function FeaturedProjectsGrid({ projects }: { projects: FeaturedProject[]
                       </div>
                     </>
                   ) : (
-                    <p className="text-xs text-muted-foreground">Volunteers &amp; awareness — no public funding goal</p>
+                    <p className="text-xs text-muted-foreground">
+                      Volunteers and awareness only: no public funding goal
+                    </p>
                   )}
                 </CardContent>
               </Card>

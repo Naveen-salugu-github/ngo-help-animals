@@ -136,7 +136,7 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
   if (disabled) {
     return (
       <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
-        {fullMessage ?? "Registration is full — no more spots available."}
+        {fullMessage ?? "Registration is full. No more spots available."}
       </div>
     )
   }
@@ -188,7 +188,7 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
               <Input
                 id="reg-phone"
                 type="tel"
-                placeholder="+91 98765 43210 — optional"
+                placeholder="+91 98765 43210 (optional)"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 autoComplete="tel"

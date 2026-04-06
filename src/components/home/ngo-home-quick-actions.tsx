@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { DONATIONS_ENABLED } from "@/lib/feature-flags"
 import { Compass, HeartHandshake, ImagePlus, Sparkles } from "lucide-react"
 
-/** Logged-in NGO users only — not shown for donor, admin, or brand. */
+/** Logged-in NGO users only; not shown for donor, admin, or brand. */
 export function NgoHomeQuickActions() {
   return (
     <Card className="border-primary/20 bg-primary/5">

@@ -26,7 +26,7 @@ type PaymentsConfig = { razorpay: boolean; stripe: boolean }
 type Props = {
   projectId: string
   units: MicroDonationUnit[]
-  /** When false, this campaign does not collect donations — render nothing. */
+  /** When false, this campaign does not collect donations; render nothing. */
   fundingNeeded?: boolean
 }
 
@@ -149,7 +149,7 @@ export function DonateButton({ projectId, units, fundingNeeded = true }: Props) 
             toast.error(vr.error ?? "Verification failed")
             return
           }
-          toast.success("Thank you — your impact is on its way.")
+          toast.success("Thank you. Your impact is on its way.")
           setOpen(false)
           router.refresh()
         },
@@ -242,7 +242,7 @@ export function DonateButton({ projectId, units, fundingNeeded = true }: Props) 
         <DialogHeader>
           <DialogTitle>
             {step === "method" && pending
-              ? `Pay ₹${pending.amount} — choose provider`
+              ? `Pay ₹${pending.amount} (choose provider)`
               : "Choose your impact"}
           </DialogTitle>
         </DialogHeader>
@@ -267,7 +267,7 @@ export function DonateButton({ projectId, units, fundingNeeded = true }: Props) 
               {both
                 ? "You can pay with Razorpay (UPI, cards, netbanking in India) or Stripe (cards and more)."
                 : payments?.razorpay
-                  ? "Secured by Razorpay — UPI, cards, and net banking at checkout."
+                  ? "Secured by Razorpay: UPI, cards, and net banking at checkout."
                   : payments?.stripe
                     ? "You will be redirected to Stripe Checkout to complete payment."
                     : "Configure Razorpay and/or Stripe to accept donations."}

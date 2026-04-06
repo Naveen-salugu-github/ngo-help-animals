@@ -53,7 +53,7 @@ export function DonateSuccessClient() {
         return
       }
       setStatus("ok")
-      setMessage("Thank you — your impact is on its way.")
+      setMessage("Thank you. Your impact is on its way.")
       if (typeof data.receiptPath === "string") setReceiptPath(data.receiptPath)
     })()
 

@@ -97,7 +97,7 @@ export function ProjectsFilter({ projects }: { projects: ProjectListItem[] }) {
             <SelectContent>
               <SelectItem value="any">Any</SelectItem>
               <SelectItem value="under25">Under 25%</SelectItem>
-              <SelectItem value="25to75">25% — 75%</SelectItem>
+              <SelectItem value="25to75">25% to 75%</SelectItem>
               <SelectItem value="over75">Over 75%</SelectItem>
             </SelectContent>
           </Select>
@@ -152,7 +152,9 @@ export function ProjectsFilter({ projects }: { projects: ProjectListItem[] }) {
                     </div>
                   </>
                 ) : (
-                  <p className="text-xs text-muted-foreground">Volunteers &amp; awareness — no public funding goal</p>
+                  <p className="text-xs text-muted-foreground">
+                    Volunteers and awareness only: no public funding goal
+                  </p>
                 )}
                 {(showContact || showFeedback) && (
                   <div className="grid gap-2 border-t pt-3">

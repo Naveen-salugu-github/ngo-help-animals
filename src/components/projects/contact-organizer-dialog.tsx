@@ -78,7 +78,7 @@ export function ContactOrganizerDialog({
       }
       toast.success(
         data.emailSent
-          ? "Message sent — the organizer was emailed."
+          ? "Message sent. The organizer was emailed."
           : "Message saved. (Add RESEND_API_KEY for email delivery.)"
       )
       setOpen(false)
