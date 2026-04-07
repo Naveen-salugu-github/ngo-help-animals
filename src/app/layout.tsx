@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { SiteHeader } from "@/components/layout/site-header"
+import { SiteFooter } from "@/components/layout/site-footer"
 import { Toaster } from "@/components/ui/sonner"
 
 const inter = Inter({
@@ -22,9 +23,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} min-h-screen font-sans antialiased`}>
+      <body className={`${inter.variable} flex min-h-screen flex-col font-sans antialiased`}>
         <SiteHeader />
-        <main className="min-h-[calc(100vh-3.5rem)]">{children}</main>
+        <main className="flex-1">{children}</main>
+        <SiteFooter />
         <Toaster richColors position="top-center" />
       </body>
     </html>
