@@ -170,6 +170,9 @@ export default async function AdminDashboardPage() {
                   <Link href={`/projects/${p.id}`} className="inline-flex items-center text-sm text-primary underline">
                     Preview (admin)
                   </Link>
+                  <Button size="sm" variant="secondary" asChild>
+                    <Link href={`/dashboard/admin/campaigns/${p.id}/edit`}>Edit campaign</Link>
+                  </Button>
                   <form action={setProjectCampaignStatus}>
                     <input type="hidden" name="project_id" value={p.id} />
                     <input type="hidden" name="next_status" value="active" />
@@ -218,6 +221,12 @@ export default async function AdminDashboardPage() {
                   </p>
                   <Link href={`/projects/${p.id}`} className="mt-1 inline-block text-xs text-primary underline">
                     View public page
+                  </Link>
+                  <Link
+                    href={`/dashboard/admin/campaigns/${p.id}/edit`}
+                    className="mt-1 ml-2 inline-block text-xs text-primary underline"
+                  >
+                    Edit campaign
                   </Link>
                 </div>
                 <AdminDeleteProjectButton projectId={p.id} title={p.title} />
