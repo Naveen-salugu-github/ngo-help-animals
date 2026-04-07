@@ -1,4 +1,4 @@
-# ImpactBridge
+# Soul Space
 
 Social impact marketplace connecting **NGOs**, **donors**, **volunteers**, and **brands**. Built with **Next.js 14 (App Router)**, **TypeScript**, **Tailwind CSS**, **shadcn/ui**, and **Supabase** (Postgres, Auth, Storage). Payments via **Razorpay**; AI helpers via **Groq**.
 

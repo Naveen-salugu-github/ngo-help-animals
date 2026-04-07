@@ -29,8 +29,8 @@ export function FeaturedProjectsGrid({ projects }: { projects: FeaturedProject[]
   useEffect(() => {
     setCoords(readStoredUserCoords())
     const fn = () => setCoords(readStoredUserCoords())
-    window.addEventListener("impactbridge:coords-updated", fn)
-    return () => window.removeEventListener("impactbridge:coords-updated", fn)
+    window.addEventListener("Soul Space:coords-updated", fn)
+    return () => window.removeEventListener("Soul Space:coords-updated", fn)
   }, [])
 
   const ordered = useMemo(() => {

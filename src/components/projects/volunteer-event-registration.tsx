@@ -17,13 +17,13 @@ import { Label } from "@/components/ui/label"
 import { VOLUNTEER_WHATSAPP_CHANNEL_URL } from "@/lib/community-links"
 import { toast } from "sonner"
 
-/** Official Impact Bridge WhatsApp channel (under the register button and for users already on the RSVP list). */
+/** Official Soul Space WhatsApp channel (under the register button and for users already on the RSVP list). */
 export function VolunteerWhatsappChannelCard() {
   return (
     <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-3 text-sm">
-      <p className="font-medium text-foreground">Follow Impact Bridge on WhatsApp</p>
+      <p className="font-medium text-foreground">Follow Soul Space on WhatsApp</p>
       <p className="mt-1 text-xs text-muted-foreground">
-        Official channel for event updates and Impact Bridge announcements.
+        Official channel for event updates and Soul Space announcements.
       </p>
       <a
         href={VOLUNTEER_WHATSAPP_CHANNEL_URL}

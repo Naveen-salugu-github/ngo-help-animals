@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
    * const title = project.title as string
    * const startAt = project.event_start_at ? new Date(project.event_start_at as string) : null
    * const endAt = project.event_end_at ? new Date(project.event_end_at as string) : null
-   * const shareText = `Join me at "${title}" on ImpactBridge: ${projectUrl}`
+   * const shareText = `Join me at "${title}" on Soul Space: ${projectUrl}`
    * const whatsappShareUrl = buildWhatsappShareUrl(shareText)
    * if (emailForSend) {
    *   const r = await sendVolunteerRegistrationEmail({ to: emailForSend, participantName: nameForEmail, ... })

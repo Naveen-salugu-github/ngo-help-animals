@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { SiteLogo } from "@/components/branding/site-logo"
 import { createClient } from "@/lib/supabase/server"
 import { signOut } from "@/app/actions/auth"
 import { Button } from "@/components/ui/button"
@@ -61,10 +62,7 @@ export async function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4">
-        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <span className="rounded-md bg-primary px-2 py-0.5 text-primary-foreground">IB</span>
-          <span className="hidden sm:inline">ImpactBridge</span>
-        </Link>
+        <SiteLogo />
 
         <nav className="hidden items-center gap-5 lg:flex">
           {nav.map((item) => (

@@ -3,7 +3,7 @@ import { ProjectsFilter, type ProjectListItem } from "@/components/projects/proj
 import { LocationPromptBanner } from "@/components/home/location-prompt-banner"
 
 export const metadata = {
-  title: "Explore projects | ImpactBridge",
+  title: "Explore projects | Soul Space",
 }
 
 export default async function ProjectsPage() {

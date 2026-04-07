@@ -3,7 +3,7 @@ import { fetchImpactFeedRows } from "@/lib/impact-feed-data"
 import { ImpactFeedList } from "@/components/feed/impact-feed-list"
 
 export const metadata = {
-  title: "Impact feed | ImpactBridge",
+  title: "Impact feed | Soul Space",
   description: "Field photos and videos from verified impact projects.",
 }
 

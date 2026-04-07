@@ -2,7 +2,7 @@ import { Suspense } from "react"
 import { DonateSuccessClient } from "./donate-success-client"
 
 export const metadata = {
-  title: "Donation complete | ImpactBridge",
+  title: "Donation complete | Soul Space",
 }
 
 export default function DonateSuccessPage() {

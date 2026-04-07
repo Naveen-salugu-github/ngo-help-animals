@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
             currency: "inr",
             unit_amount: Math.round(body.amount * 100),
             product_data: {
-              name: `ImpactBridge: ${label}`,
+              name: `Soul Space: ${label}`,
               description: "Verified social impact contribution",
             },
           },

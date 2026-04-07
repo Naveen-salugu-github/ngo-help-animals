@@ -149,7 +149,7 @@ export function NgoImpactUpdateForm({ projects, userId }: Props) {
       <div className="space-y-2">
         <Label>Media</Label>
         <p className="text-xs text-muted-foreground">
-          Upload a file (stored in your ImpactBridge media folder) or paste a public HTTPS link to an image or video.
+          Upload a file (stored in your Soul Space media folder) or paste a public HTTPS link to an image or video.
         </p>
         <input
           ref={fileInputRef}

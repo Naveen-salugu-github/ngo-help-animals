@@ -3,6 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { format } from "date-fns"
 import { createClient } from "@/lib/supabase/server"
+import { APP_NAME } from "@/lib/branding"
 import { getSiteUrl } from "@/lib/env"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: Params) {
   const { id } = await params
   const supabase = await createClient()
   const { data } = await supabase.from("projects").select("title").eq("id", id).single()
-  return { title: data?.title ? `${data.title} | ImpactBridge` : "Project | ImpactBridge" }
+  return { title: data?.title ? `${data.title} | ${APP_NAME}` : `Project | ${APP_NAME}` }
 }
 
 export default async function ProjectDetailPage({ params }: Params) {

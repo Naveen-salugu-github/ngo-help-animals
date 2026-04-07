@@ -1,16 +1,17 @@
 import type { Metadata } from "next"
 import { LegalPageShell } from "@/components/legal/legal-page-shell"
+import { SUPPORT_EMAIL } from "@/lib/branding"
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | ImpactBridge",
-  description: "How ImpactBridge collects, uses, and protects your information.",
+  title: "Privacy Policy | Soul Space",
+  description: "How Soul Space collects, uses, and protects your information.",
 }
 
 export default function PrivacyPage() {
   return (
     <LegalPageShell title="Privacy Policy">
       <p>
-        ImpactBridge (&quot;we&quot;, &quot;us&quot;) operates a platform connecting NGOs, donors, volunteers, and
+        Soul Space (&quot;we&quot;, &quot;us&quot;) operates a platform connecting NGOs, donors, volunteers, and
         brands. This policy describes how we handle personal information when you use our website and related services.
       </p>
       <h2 className="!mt-8 text-foreground">Information we collect</h2>
@@ -47,8 +48,8 @@ export default function PrivacyPage() {
       <h2 className="!mt-8 text-foreground">Contact</h2>
       <p>
         For privacy questions, email{" "}
-        <a href="mailto:support@impactbridge.app" className="text-primary underline">
-          support@impactbridge.app
+        <a href={`mailto:${SUPPORT_EMAIL}`} className="text-primary underline">
+          {SUPPORT_EMAIL}
         </a>
         . Replace this address with your production support inbox before launch.
       </p>

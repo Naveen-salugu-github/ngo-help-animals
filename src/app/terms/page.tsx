@@ -1,20 +1,21 @@
 import type { Metadata } from "next"
 import { LegalPageShell } from "@/components/legal/legal-page-shell"
+import { SUPPORT_EMAIL } from "@/lib/branding"
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions | ImpactBridge",
-  description: "Terms of use for ImpactBridge.",
+  title: "Terms & Conditions | Soul Space",
+  description: "Terms of use for Soul Space.",
 }
 
 export default function TermsPage() {
   return (
     <LegalPageShell title="Terms & Conditions">
       <p>
-        By accessing or using ImpactBridge, you agree to these terms. If you do not agree, do not use the service.
+        By accessing or using Soul Space, you agree to these terms. If you do not agree, do not use the service.
       </p>
       <h2 className="!mt-8 text-foreground">The service</h2>
       <p>
-        ImpactBridge provides an online marketplace for social impact: NGOs may publish campaigns; users may donate,
+        Soul Space provides an online marketplace for social impact: NGOs may publish campaigns; users may donate,
         volunteer, and view updates; brands may record sponsorships subject to product rules. We may change features
         with reasonable notice where appropriate.
       </p>
@@ -32,7 +33,7 @@ export default function TermsPage() {
       <h2 className="!mt-8 text-foreground">Donations and payments</h2>
       <p>
         Payments may be processed by third parties (e.g. Razorpay, Stripe). Their terms apply. Refunds follow the policy
-        of the payment provider and the NGO where applicable; ImpactBridge may facilitate communication but is not the
+        of the payment provider and the NGO where applicable; Soul Space may facilitate communication but is not the
         merchant of record unless explicitly stated.
       </p>
       <h2 className="!mt-8 text-foreground">Limitation of liability</h2>
@@ -43,8 +44,8 @@ export default function TermsPage() {
       </p>
       <h2 className="!mt-8 text-foreground">Contact</h2>
       <p>
-        <a href="mailto:support@impactbridge.app" className="text-primary underline">
-          support@impactbridge.app
+        <a href={`mailto:${SUPPORT_EMAIL}`} className="text-primary underline">
+          {SUPPORT_EMAIL}
         </a>
       </p>
       <p className="!mt-6 text-xs">Last updated: {new Date().toISOString().slice(0, 10)}. Not legal advice; obtain local review.</p>

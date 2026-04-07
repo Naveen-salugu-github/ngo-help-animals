@@ -2,15 +2,15 @@ import type { Metadata } from "next"
 import { LegalPageShell } from "@/components/legal/legal-page-shell"
 
 export const metadata: Metadata = {
-  title: "Community Guidelines | ImpactBridge",
-  description: "Expected conduct for donors, NGOs, volunteers, and brands on ImpactBridge.",
+  title: "Community Guidelines | Soul Space",
+  description: "Expected conduct for donors, NGOs, volunteers, and brands on Soul Space.",
 }
 
 export default function GuidelinesPage() {
   return (
     <LegalPageShell title="Community Guidelines">
       <p>
-        ImpactBridge works when everyone, donors, NGOs, volunteers, and brands, acts with honesty and respect. These
+        Soul Space works when everyone, donors, NGOs, volunteers, and brands, acts with honesty and respect. These
         guidelines apply to all roles.
       </p>
       <h2 className="!mt-8 text-foreground">For NGOs</h2>

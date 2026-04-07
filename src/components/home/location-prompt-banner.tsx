@@ -11,7 +11,7 @@ type Props = {
 
 function notifyCoordsUpdated() {
   if (typeof window !== "undefined") {
-    window.dispatchEvent(new Event("impactbridge:coords-updated"))
+    window.dispatchEvent(new Event("Soul Space:coords-updated"))
   }
 }
 

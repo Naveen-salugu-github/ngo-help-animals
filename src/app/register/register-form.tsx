@@ -69,7 +69,7 @@ export function RegisterForm() {
       <Card>
         <CardHeader>
           <CardTitle>Create account</CardTitle>
-          <CardDescription>Choose how you’ll use ImpactBridge.</CardDescription>
+          <CardDescription>Choose how you’ll use Soul Space.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">

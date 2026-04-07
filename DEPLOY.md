@@ -1,6 +1,6 @@
-# Deploying ImpactBridge
+# Deploying Soul Space
 
-ImpactBridge is a **Next.js 14** app on the App Router, backed by **Supabase** (Postgres, Auth, Storage) and ready for **Vercel**.
+Soul Space is a **Next.js 14** app on the App Router, backed by **Supabase** (Postgres, Auth, Storage) and ready for **Vercel**.
 
 ## 1. Supabase
 
@@ -43,7 +43,7 @@ ImpactBridge is a **Next.js 14** app on the App Router, backed by **Supabase** (
 1. Import the Git repository into Vercel.
 2. Framework preset: **Next.js**.
 3. Add all variables from `.env.example` in **Project → Settings → Environment Variables**.
-4. Deploy. Set `NEXT_PUBLIC_APP_URL` to your production URL (e.g. `https://impactbridge.vercel.app`).
+4. Deploy. Set `NEXT_PUBLIC_APP_URL` to your production URL (e.g. `https://soulspace.vercel.app`).
 
 ## 6. Mobile / external API clients
 

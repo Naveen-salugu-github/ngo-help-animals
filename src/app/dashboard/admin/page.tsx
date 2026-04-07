@@ -7,7 +7,7 @@ import { setNgoVerification, setProjectCampaignStatus } from "@/app/actions/admi
 import { AdminDeleteProjectButton } from "@/components/dashboard/admin-delete-project-button"
 import Link from "next/link"
 
-export const metadata = { title: "Admin | ImpactBridge" }
+export const metadata = { title: "Admin | Soul Space" }
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
