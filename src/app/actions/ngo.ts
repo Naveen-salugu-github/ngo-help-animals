@@ -84,12 +84,14 @@ export async function createProject(formData: FormData): Promise<CreateProjectRe
     micro_donation_units = []
   }
 
-  const lat = formData.get("latitude")
-  const lng = formData.get("longitude")
+  const isPastCampaign = String(formData.get("is_past_campaign") ?? "") === "true"
+
+  const latRaw = formData.get("latitude")
+  const lngRaw = formData.get("longitude")
 
   const campaignDate = String(formData.get("campaign_date") ?? "").trim()
-  const startTime = String(formData.get("event_start_time") ?? "").trim()
-  const endTime = String(formData.get("event_end_time") ?? "").trim()
+  const startTime = isPastCampaign ? "" : String(formData.get("event_start_time") ?? "").trim()
+  const endTime = isPastCampaign ? "" : String(formData.get("event_end_time") ?? "").trim()
 
   const combineDateTime = (date: string, time: string): string | null => {
     if (!date || !time) return null
@@ -98,8 +100,8 @@ export async function createProject(formData: FormData): Promise<CreateProjectRe
     return Number.isNaN(d.getTime()) ? null : d.toISOString()
   }
 
-  const event_start_at = combineDateTime(campaignDate, startTime)
-  const event_end_at = combineDateTime(campaignDate, endTime)
+  const event_start_at = isPastCampaign ? null : combineDateTime(campaignDate, startTime)
+  const event_end_at = isPastCampaign ? null : combineDateTime(campaignDate, endTime)
 
   const submittedAsDraft = String(formData.get("status") ?? "") === "draft"
   const nextStatus = submittedAsDraft ? "draft" : "pending_review"
@@ -132,17 +134,18 @@ export async function createProject(formData: FormData): Promise<CreateProjectRe
     timeline_end: null,
     status: nextStatus,
     cover_image_url: String(formData.get("cover_image_url") ?? "") || null,
-    volunteer_slots: Number(formData.get("volunteer_slots") ?? 0) || 0,
-    volunteer_category: String(formData.get("volunteer_category") ?? "") || null,
-    latitude: lat ? Number(lat) : null,
-    longitude: lng ? Number(lng) : null,
+    volunteer_slots: isPastCampaign ? 0 : Number(formData.get("volunteer_slots") ?? 0) || 0,
+    volunteer_category: isPastCampaign ? null : String(formData.get("volunteer_category") ?? "") || null,
+    latitude: isPastCampaign ? null : latRaw ? Number(latRaw) : null,
+    longitude: isPastCampaign ? null : lngRaw ? Number(lngRaw) : null,
     impact_metrics: {},
     beneficiaries_impacted: Number(formData.get("beneficiaries_impacted") ?? 0) || 0,
     event_start_at,
     event_end_at,
-    event_venue_detail: String(formData.get("event_venue_detail") ?? "").trim() || null,
+    event_venue_detail: isPastCampaign ? null : String(formData.get("event_venue_detail") ?? "").trim() || null,
     organizer_contact_phone: organizer_contact_phone || null,
     organizer_contact_email: organizer_contact_email || null,
+    is_past_campaign: isPastCampaign,
   })
 
   if (error) {

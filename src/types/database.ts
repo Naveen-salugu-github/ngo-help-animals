@@ -56,6 +56,7 @@ export type Project = {
   funding_needed?: boolean | null
   organizer_contact_phone?: string | null
   organizer_contact_email?: string | null
+  is_past_campaign?: boolean | null
 }
 
 export type ImpactUpdate = {

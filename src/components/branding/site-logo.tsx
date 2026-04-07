@@ -24,14 +24,16 @@ export function SiteLogo({ size = "header", className }: SiteLogoProps) {
       <Image
         src={LOGO_PATH}
         alt=""
-        width={isFooter ? 160 : 200}
-        height={isFooter ? 52 : 56}
+        width={isFooter ? 272 : 340}
+        height={isFooter ? 89 : 96}
         className={cn(
-          "w-auto object-contain object-left",
-          isFooter ? "h-10" : "h-9 max-h-9 sm:h-10 sm:max-h-10",
+          "w-auto max-w-[min(100vw-8rem,24rem)] object-contain object-left",
+          isFooter
+            ? "h-[52px] max-h-[52px] sm:h-14 sm:max-h-14"
+            : "h-14 max-h-14 sm:h-16 sm:max-h-16",
         )}
         priority={!isFooter}
-        sizes="(max-width: 640px) 160px, 200px"
+        sizes="(max-width: 640px) 272px, 340px"
       />
     </Link>
   )

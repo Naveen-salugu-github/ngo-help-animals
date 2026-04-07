@@ -85,6 +85,8 @@ export async function updateProjectAsAdmin(formData: FormData): Promise<UpdatePr
 
   const volunteerCount = Number(existing.volunteer_count) || 0
 
+  const isPastCampaign = String(formData.get("is_past_campaign") ?? "") === "true"
+
   const title = String(formData.get("title") ?? "").trim()
   const description = String(formData.get("description") ?? "").trim()
   const location = String(formData.get("location") ?? "").trim()
@@ -126,8 +128,8 @@ export async function updateProjectAsAdmin(formData: FormData): Promise<UpdatePr
   const lng = formData.get("longitude")
 
   const campaignDate = String(formData.get("campaign_date") ?? "").trim()
-  const startTime = String(formData.get("event_start_time") ?? "").trim()
-  const endTime = String(formData.get("event_end_time") ?? "").trim()
+  const startTime = isPastCampaign ? "" : String(formData.get("event_start_time") ?? "").trim()
+  const endTime = isPastCampaign ? "" : String(formData.get("event_end_time") ?? "").trim()
 
   const combineDateTime = (date: string, time: string): string | null => {
     if (!date || !time) return null
@@ -136,8 +138,8 @@ export async function updateProjectAsAdmin(formData: FormData): Promise<UpdatePr
     return Number.isNaN(d.getTime()) ? null : d.toISOString()
   }
 
-  const event_start_at = combineDateTime(campaignDate, startTime)
-  const event_end_at = combineDateTime(campaignDate, endTime)
+  const event_start_at = isPastCampaign ? null : combineDateTime(campaignDate, startTime)
+  const event_end_at = isPastCampaign ? null : combineDateTime(campaignDate, endTime)
 
   const organizer_contact_phone = String(formData.get("organizer_contact_phone") ?? "").trim()
   const organizer_contact_email = String(formData.get("organizer_contact_email") ?? "").trim()
@@ -160,8 +162,13 @@ export async function updateProjectAsAdmin(formData: FormData): Promise<UpdatePr
     }
   }
 
-  const volunteer_slots = Number(formData.get("volunteer_slots") ?? 0) || 0
-  if (volunteer_slots < volunteerCount) {
+  let volunteer_slots = Number(formData.get("volunteer_slots") ?? 0) || 0
+  let volunteer_category = String(formData.get("volunteer_category") ?? "").trim() || null
+
+  if (isPastCampaign) {
+    volunteer_slots = 0
+    volunteer_category = null
+  } else if (volunteer_slots < volunteerCount) {
     return {
       ok: false,
       error: `Volunteer slots cannot be less than current registrations (${volunteerCount}).`,
@@ -197,16 +204,17 @@ export async function updateProjectAsAdmin(formData: FormData): Promise<UpdatePr
       status,
       cover_image_url: String(formData.get("cover_image_url") ?? "").trim() || null,
       volunteer_slots,
-      volunteer_category: String(formData.get("volunteer_category") ?? "").trim() || null,
-      latitude: lat ? Number(lat) : null,
-      longitude: lng ? Number(lng) : null,
+      volunteer_category,
+      latitude: isPastCampaign ? null : lat ? Number(lat) : null,
+      longitude: isPastCampaign ? null : lng ? Number(lng) : null,
       impact_metrics,
       beneficiaries_impacted: Number(formData.get("beneficiaries_impacted") ?? 0) || 0,
       event_start_at,
       event_end_at,
-      event_venue_detail: String(formData.get("event_venue_detail") ?? "").trim() || null,
+      event_venue_detail: isPastCampaign ? null : String(formData.get("event_venue_detail") ?? "").trim() || null,
       organizer_contact_phone: organizer_contact_phone || null,
       organizer_contact_email: organizer_contact_email || null,
+      is_past_campaign: isPastCampaign,
     })
     .eq("id", projectId)
 

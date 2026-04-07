@@ -136,8 +136,7 @@ export default async function NgoDashboardPage() {
               <CardTitle>Create project</CardTitle>
               <CardDescription>
                 Use the toggle if the campaign only needs volunteers or awareness: no funding goal or public Donate
-                button.
-                Otherwise micro-donations JSON is optional (defaults apply if empty).
+                button. When donations are on, preset amounts use platform defaults.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -173,6 +172,9 @@ export default async function NgoDashboardPage() {
                               <span className="text-amber-700 dark:text-amber-500">Awaiting admin approval</span>
                             ) : (
                               <span className="capitalize">{p.status.replace(/_/g, " ")}</span>
+                            )}
+                            {(p as { is_past_campaign?: boolean }).is_past_campaign && (
+                              <span className="mr-1 rounded bg-muted px-1.5 py-0.5 text-xs font-medium">Past</span>
                             )}
                             {p.funding_needed === false ? (
                               <span>, no online funding</span>

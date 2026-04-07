@@ -13,6 +13,7 @@ export default async function VolunteerMapPage() {
       "id, title, location, latitude, longitude, volunteer_category, volunteer_slots, volunteer_count"
     )
     .eq("status", "active")
+    .eq("is_past_campaign", false)
     .gt("volunteer_slots", 0)
 
   return (
