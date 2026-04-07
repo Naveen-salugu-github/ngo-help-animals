@@ -3,6 +3,8 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createProject } from "@/app/actions/ngo"
+import { uploadCampaignCoverImage } from "@/lib/campaign-cover-upload"
+import { CampaignCoverImageField } from "@/components/dashboard/campaign-cover-image-field"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
@@ -10,10 +12,13 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 
-export function NgoCreateCampaignForm() {
+type Props = { userId: string }
+
+export function NgoCreateCampaignForm({ userId }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [fundingNeeded, setFundingNeeded] = useState(true)
+  const [coverFile, setCoverFile] = useState<File | null>(null)
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -21,6 +26,16 @@ export function NgoCreateCampaignForm() {
     const form = e.currentTarget
     const sub = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null
     const fd = new FormData(form)
+
+    if (coverFile) {
+      const up = await uploadCampaignCoverImage(userId, coverFile)
+      if (!up.ok) {
+        toast.error(up.error)
+        setLoading(false)
+        return
+      }
+      fd.set("cover_image_url", up.publicUrl)
+    }
     // Do not rely on `new FormData(form, submitter)`; set explicitly for broad browser/React compatibility.
     if (sub?.name === "status" && sub.value) {
       fd.set("status", sub.value)
@@ -38,9 +53,11 @@ export function NgoCreateCampaignForm() {
         router.push("/?campaignSubmitted=1")
         router.refresh()
         form.reset()
+        setCoverFile(null)
       } else {
         toast.success("Draft saved.")
         router.refresh()
+        setCoverFile(null)
       }
     } catch (err) {
       console.error(err)
@@ -168,14 +185,13 @@ export function NgoCreateCampaignForm() {
           disabled={loading}
         />
       </div>
-      <div className="sm:col-span-2 space-y-2">
-        <Label htmlFor="cover_image_url">Cover image URL</Label>
-        <Input id="cover_image_url" name="cover_image_url" placeholder="https://…" disabled={loading} />
-        <p className="text-xs text-muted-foreground">
-          Prefer Supabase Storage or direct image URLs. Some hosts block hotlinking. If the image breaks, re-upload the
-          file to Storage and paste that URL.
-        </p>
-      </div>
+      <CampaignCoverImageField
+        idPrefix="ngo_create"
+        defaultUrl={null}
+        disabled={loading}
+        selectedFile={coverFile}
+        onSelectedFileChange={setCoverFile}
+      />
       {fundingNeeded && (
         <div className="sm:col-span-2 space-y-2">
           <Label htmlFor="micro_donation_units">Micro donations JSON (optional)</Label>

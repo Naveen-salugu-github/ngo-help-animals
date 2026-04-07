@@ -3,6 +3,8 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { updateProjectAsAdmin } from "@/app/actions/admin"
+import { uploadCampaignCoverImage } from "@/lib/campaign-cover-upload"
+import { CampaignCoverImageField } from "@/components/dashboard/campaign-cover-image-field"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
@@ -42,7 +44,7 @@ export type AdminEditCampaignInitial = {
   impact_metrics: string
 }
 
-type Props = { initial: AdminEditCampaignInitial }
+type Props = { initial: AdminEditCampaignInitial; userId: string }
 
 const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
   { value: "draft", label: "Draft" },
@@ -52,11 +54,12 @@ const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
   { value: "closed", label: "Closed" },
 ]
 
-export function AdminEditCampaignForm({ initial }: Props) {
+export function AdminEditCampaignForm({ initial, userId }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [fundingNeeded, setFundingNeeded] = useState(initial.funding_needed)
   const [status, setStatus] = useState<ProjectStatus>(initial.status)
+  const [coverFile, setCoverFile] = useState<File | null>(null)
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -65,6 +68,17 @@ export function AdminEditCampaignForm({ initial }: Props) {
     const fd = new FormData(form)
     fd.set("funding_needed", fundingNeeded ? "true" : "false")
     fd.set("status", status)
+
+    if (coverFile) {
+      const up = await uploadCampaignCoverImage(userId, coverFile)
+      if (!up.ok) {
+        toast.error(up.error)
+        setLoading(false)
+        return
+      }
+      fd.set("cover_image_url", up.publicUrl)
+    }
+
     try {
       const result = await updateProjectAsAdmin(fd)
       if (!result.ok) {
@@ -250,10 +264,14 @@ export function AdminEditCampaignForm({ initial }: Props) {
           disabled={loading}
         />
       </div>
-      <div className="sm:col-span-2 space-y-2">
-        <Label htmlFor="cover_image_url">Cover image URL</Label>
-        <Input id="cover_image_url" name="cover_image_url" defaultValue={initial.cover_image_url ?? ""} disabled={loading} />
-      </div>
+      <CampaignCoverImageField
+        key={initial.cover_image_url ?? "no-cover"}
+        idPrefix="admin_edit"
+        defaultUrl={initial.cover_image_url}
+        disabled={loading}
+        selectedFile={coverFile}
+        onSelectedFileChange={setCoverFile}
+      />
       {fundingNeeded && (
         <div className="sm:col-span-2 space-y-2">
           <Label htmlFor="micro_donation_units">Micro donations JSON</Label>

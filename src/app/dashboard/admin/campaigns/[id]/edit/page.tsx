@@ -106,7 +106,7 @@ export default async function AdminEditCampaignPage({ params }: Params) {
         </Button>
       </div>
 
-      <AdminEditCampaignForm initial={initial} />
+      <AdminEditCampaignForm initial={initial} userId={user.id} />
     </div>
   )
 }

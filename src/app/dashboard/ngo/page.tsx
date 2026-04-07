@@ -141,7 +141,7 @@ export default async function NgoDashboardPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <NgoCreateCampaignForm />
+              <NgoCreateCampaignForm userId={user.id} />
             </CardContent>
           </Card>
 
