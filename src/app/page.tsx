@@ -7,6 +7,7 @@ import { HeroImageRotator } from "@/components/home/hero-image-rotator"
 import { LocationPromptBanner } from "@/components/home/location-prompt-banner"
 import { FeaturedProjectsGrid, type FeaturedProject } from "@/components/home/featured-projects-grid"
 import { NgoHomeQuickActions } from "@/components/home/ngo-home-quick-actions"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 
 type HomeSearchParams = { campaignSubmitted?: string | string[] }
 
@@ -146,7 +147,7 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="mb-10 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <ScrollReveal variant="fade-up" className="mb-10 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Featured projects</h2>
             <p className="text-muted-foreground">
@@ -156,7 +157,7 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
           <Button asChild variant="outline">
             <Link href="/projects">View all</Link>
           </Button>
-        </div>
+        </ScrollReveal>
         <FeaturedProjectsGrid projects={list} />
         {list.length === 0 && (
           <p className="text-center text-muted-foreground">
@@ -167,7 +168,7 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
 
       {(me?.role === "ngo" || me?.role === "brand") && (
         <section className="border-t bg-muted/40 py-16">
-          <div className="mx-auto max-w-6xl px-4 text-center">
+          <ScrollReveal variant="fade-up" className="mx-auto max-w-6xl px-4 text-center">
             <h2 className="text-2xl font-bold">For NGOs, brands, and changemakers</h2>
             <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
               NGOs publish verified projects and field updates. Brands co-create CSR campaigns with downloadable impact
@@ -186,7 +187,7 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
                 <Link href="/dashboard/brand">Brand dashboard</Link>
               </Button>
             </div>
-          </div>
+          </ScrollReveal>
         </section>
       )}
     </div>
