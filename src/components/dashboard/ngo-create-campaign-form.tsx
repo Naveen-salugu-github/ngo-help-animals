@@ -83,8 +83,7 @@ export function NgoCreateCampaignForm({ userId }: Props) {
             This campaign needs online donations
           </Label>
           <p className="text-xs text-muted-foreground">
-            Turn off for volunteer-only or awareness campaigns: no funding goal, micro-donations, or public Donate button
-            after approval.
+            Turn off for volunteer-only or awareness campaigns: no funding goal or public Donate button after approval.
           </p>
         </div>
       </div>
@@ -192,18 +191,6 @@ export function NgoCreateCampaignForm({ userId }: Props) {
         selectedFile={coverFile}
         onSelectedFileChange={setCoverFile}
       />
-      {fundingNeeded && (
-        <div className="sm:col-span-2 space-y-2">
-          <Label htmlFor="micro_donation_units">Micro donations JSON (optional)</Label>
-          <Textarea
-            id="micro_donation_units"
-            name="micro_donation_units"
-            rows={3}
-            placeholder='[{"amount":50,"label":"1 meal"},{"amount":200,"label":"1 tree"}]'
-            disabled={loading}
-          />
-        </div>
-      )}
       <p className="text-xs text-muted-foreground sm:col-span-2">
         Submitting for publication sends the campaign to admin review. It appears on Explore after approval
         {fundingNeeded ? " and can accept donations if enabled on the platform." : " (no public donate button for this campaign)."}

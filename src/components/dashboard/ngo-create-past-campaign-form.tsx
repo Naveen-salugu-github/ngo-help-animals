@@ -50,12 +50,13 @@ export function NgoCreatePastCampaignForm({ userId }: Props) {
       }
       if (result.submittedForReview) {
         toast.success("Past campaign submitted for admin review.")
-        router.push("/?campaignSubmitted=1")
-        router.refresh()
-        form.reset()
         setCoverFile(null)
+        form.reset()
+        router.push("/dashboard/ngo?pastSubmitted=1")
+        router.refresh()
       } else {
         toast.success("Draft saved.")
+        router.push("/dashboard/ngo")
         router.refresh()
         setCoverFile(null)
       }
@@ -166,18 +167,6 @@ export function NgoCreatePastCampaignForm({ userId }: Props) {
         selectedFile={coverFile}
         onSelectedFileChange={setCoverFile}
       />
-      {fundingNeeded && (
-        <div className="sm:col-span-2 space-y-2">
-          <Label htmlFor="past_micro_donation_units">Micro donations JSON (optional)</Label>
-          <Textarea
-            id="past_micro_donation_units"
-            name="micro_donation_units"
-            rows={3}
-            placeholder='[{"amount":50,"label":"1 meal"},{"amount":200,"label":"1 tree"}]'
-            disabled={loading}
-          />
-        </div>
-      )}
       <p className="text-xs text-muted-foreground sm:col-span-2">
         Past campaigns are reviewed like other projects. They appear as &quot;Past&quot; on Explore and do not offer
         volunteering or map pins.

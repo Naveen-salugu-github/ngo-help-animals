@@ -23,7 +23,7 @@ const navDefault = [
 const navNgo = [
   { href: "/projects", label: "Explore projects" },
   { href: "/dashboard/ngo#create-campaign", label: "Create campaign" },
-  { href: "/dashboard/ngo#past-campaign", label: "Add past campaign" },
+  { href: "/dashboard/ngo/past-campaign", label: "Add past campaign" },
   { href: "/feed", label: "Impact feed" },
   { href: "/dashboard/ngo", label: "NGO dashboard" },
   { href: "/dashboard/brand", label: "Brand dashboard" },

@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { createNgoProfile } from "@/app/actions/ngo"
 import { NgoCreateCampaignForm } from "@/components/dashboard/ngo-create-campaign-form"
-import { NgoCreatePastCampaignForm } from "@/components/dashboard/ngo-create-past-campaign-form"
 
 export const metadata = { title: "NGO dashboard | Soul Space" }
 
@@ -137,25 +136,11 @@ export default async function NgoDashboardPage() {
               <CardTitle>Create project</CardTitle>
               <CardDescription>
                 Use the toggle if the campaign only needs volunteers or awareness: no funding goal or public Donate
-                button.
-                Otherwise micro-donations JSON is optional (defaults apply if empty).
+                button. When donations are on, preset amounts use platform defaults.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <NgoCreateCampaignForm userId={user.id} />
-            </CardContent>
-          </Card>
-
-          <Card id="past-campaign">
-            <CardHeader>
-              <CardTitle>Add a past / historical campaign</CardTitle>
-              <CardDescription>
-                Showcase completed work: same details as a new campaign except volunteering, map location, and event
-                times. These appear with a &quot;Past&quot; label and never accept volunteer sign-ups.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <NgoCreatePastCampaignForm userId={user.id} />
             </CardContent>
           </Card>
 
