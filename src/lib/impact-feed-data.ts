@@ -11,6 +11,7 @@ const IMPACT_FEED_SELECT = `
   projects:project_id (
     id,
     title,
+    is_past_campaign,
     ngos:ngo_id (
       organization_name,
       verification_status
@@ -29,6 +30,7 @@ export type ImpactFeedRow = {
   projects: {
     id: string
     title: string
+    is_past_campaign?: boolean | null
     ngos: {
       organization_name: string
       verification_status: string
@@ -54,6 +56,7 @@ export function normalizeImpactFeedRows(rows: RawRow[]): ImpactFeedRow[] {
       | {
           id: string
           title: string
+          is_past_campaign?: boolean | null
           ngos: unknown
         }
       | null
@@ -75,6 +78,7 @@ export function normalizeImpactFeedRows(rows: RawRow[]): ImpactFeedRow[] {
         ? {
             id: project.id,
             title: project.title,
+            is_past_campaign: project.is_past_campaign ?? null,
             ngos: ngo ?? { organization_name: "", verification_status: "" },
           }
         : null,

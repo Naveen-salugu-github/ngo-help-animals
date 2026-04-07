@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { NgoCreatePastCampaignForm } from "@/components/dashboard/ngo-create-past-campaign-form"
+import { ImagePlus } from "lucide-react"
 
 export const metadata = { title: "Add past campaign | NGO | Soul Space" }
 
@@ -42,6 +43,28 @@ export default async function NgoPastCampaignPage() {
           </p>
         </div>
       </div>
+
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader className="pb-2">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <ImagePlus className="h-5 w-5" />
+            </div>
+            <div className="space-y-1">
+              <CardTitle className="text-lg">Impact photos & videos for past campaigns</CardTitle>
+              <CardDescription>
+                After a past campaign is published, add field updates the same way as for active projects. They show on
+                the impact feed and the campaign&apos;s project page.
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Button asChild variant="secondary">
+            <Link href="/dashboard/ngo/impact-updates">Go to impact updates</Link>
+          </Button>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

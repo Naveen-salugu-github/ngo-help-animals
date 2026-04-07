@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
 import { Heart, Share2, MapPin, BadgeCheck } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/client"
@@ -101,12 +102,19 @@ export function ImpactFeedList({ initial }: { initial: ImpactFeedRow[] }) {
                     )}
                   </div>
                   {post.projects && (
-                    <Link
-                      href={`/projects/${post.projects.id}`}
-                      className="text-sm text-primary hover:underline"
-                    >
-                      {post.projects.title}
-                    </Link>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Link
+                        href={`/projects/${post.projects.id}`}
+                        className="text-sm text-primary hover:underline"
+                      >
+                        {post.projects.title}
+                      </Link>
+                      {post.projects.is_past_campaign ? (
+                        <Badge variant="secondary" className="text-[10px] font-normal">
+                          Past campaign
+                        </Badge>
+                      ) : null}
+                    </div>
                   )}
                 </div>
                 <span className="text-xs text-muted-foreground">

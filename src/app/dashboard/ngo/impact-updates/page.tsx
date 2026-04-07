@@ -57,7 +57,7 @@ export default async function NgoImpactUpdatesPage() {
 
   const { data: projects } = await supabase
     .from("projects")
-    .select("id, title")
+    .select("id, title, is_past_campaign")
     .eq("ngo_id", ngo.id)
     .order("created_at", { ascending: false })
 
@@ -81,6 +81,7 @@ export default async function NgoImpactUpdatesPage() {
               <h1 className="text-3xl font-bold tracking-tight">Impact updates</h1>
               <p className="text-muted-foreground">
                 Share field photos or videos for your campaigns. They appear on the impact feed and project pages.
+                Past and historical campaigns are listed under &quot;Past / historical&quot; in the project menu.
               </p>
             </div>
           </div>
