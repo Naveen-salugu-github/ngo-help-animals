@@ -148,3 +148,77 @@ export async function POST(request: NextRequest) {
     volunteerWhatsappUrl: VOLUNTEER_WHATSAPP_CHANNEL_URL,
   })
 }
+
+/** Remove volunteer registration: frees a slot and allows re-registration. Blocked after check-in. */
+export async function DELETE(request: NextRequest) {
+  const supabase = createApiRouteClient(request)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const projectId = request.nextUrl.searchParams.get("projectId")?.trim()
+  if (!projectId) {
+    return NextResponse.json({ error: "projectId query parameter required" }, { status: 400 })
+  }
+
+  const admin = createAdminClient()
+  if (!admin) {
+    return NextResponse.json(
+      { error: "Server missing SUPABASE_SERVICE_ROLE_KEY; cannot update volunteer slots" },
+      { status: 503 }
+    )
+  }
+
+  const { data: row, error: rowErr } = await admin
+    .from("volunteers")
+    .select("id, status, user_id")
+    .eq("project_id", projectId)
+    .eq("user_id", user.id)
+    .maybeSingle()
+
+  if (rowErr || !row) {
+    return NextResponse.json({ error: "No registration found for this event" }, { status: 404 })
+  }
+
+  if (row.user_id !== user.id) {
+    return NextResponse.json({ error: "Not allowed" }, { status: 403 })
+  }
+
+  if (row.status === "checked_in") {
+    return NextResponse.json(
+      {
+        error:
+          "You already checked in for this event. Contact the organizer if you need to change your attendance.",
+      },
+      { status: 400 }
+    )
+  }
+
+  if (row.status === "cancelled") {
+    return NextResponse.json({ error: "Registration is already cancelled" }, { status: 400 })
+  }
+
+  const { data: project, error: pErr } = await admin
+    .from("projects")
+    .select("volunteer_count")
+    .eq("id", projectId)
+    .single()
+
+  if (pErr || !project) {
+    return NextResponse.json({ error: "Project not found" }, { status: 404 })
+  }
+
+  const { error: delErr } = await admin.from("volunteers").delete().eq("id", row.id)
+  if (delErr) {
+    return NextResponse.json({ error: delErr.message }, { status: 400 })
+  }
+
+  const current = Number(project.volunteer_count) || 0
+  const nextCount = Math.max(0, current - 1)
+  await admin.from("projects").update({ volunteer_count: nextCount }).eq("id", projectId)
+
+  return NextResponse.json({ ok: true, volunteerCount: nextCount })
+}

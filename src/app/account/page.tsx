@@ -10,6 +10,7 @@ import { signOut } from "@/app/actions/auth"
 import { AvatarUpload } from "@/components/account/avatar-upload"
 import { AccountNameForm } from "@/components/account/account-name-form"
 import { DONATIONS_ENABLED } from "@/lib/feature-flags"
+import { VolunteerCancelRegistration } from "@/components/projects/volunteer-cancel-registration"
 
 export const metadata = { title: "My account | ImpactBridge" }
 
@@ -182,12 +183,19 @@ export default async function AccountPage() {
                         {new Date(v.created_at as string).toLocaleString()}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Badge variant="outline">{v.status}</Badge>
                       {project?.id && (
                         <Button asChild variant="outline" size="sm">
                           <Link href={`/projects/${project.id}`}>View</Link>
                         </Button>
+                      )}
+                      {project?.id && (v.status === "rsvp" || v.status === "confirmed") && (
+                        <VolunteerCancelRegistration
+                          projectId={project.id}
+                          status={v.status}
+                          compact
+                        />
                       )}
                     </div>
                   </li>
