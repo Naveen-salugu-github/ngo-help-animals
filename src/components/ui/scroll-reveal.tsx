@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
-export type ScrollRevealVariant = "media" | "fade-up"
+export type ScrollRevealVariant = "media" | "fade-up" | "fade-lift" | "zoom"
 
 type Props = {
   children: ReactNode
@@ -27,7 +27,7 @@ export function ScrollReveal({
   variant = "fade-up",
   className,
   delayMs = 0,
-  threshold = 0.12,
+  threshold = 0.05,
   once = true,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null)
@@ -53,7 +53,8 @@ export function ScrollReveal({
           }
         }
       },
-      { root: null, rootMargin: "0px 0px -8% 0px", threshold }
+      // Generous margin so above-the-fold and first grid rows still animate reliably
+      { root: null, rootMargin: "0px 0px 2% 0px", threshold }
     )
 
     obs.observe(el)
@@ -71,6 +72,8 @@ export function ScrollReveal({
       className={cn(
         variant === "media" && "scroll-reveal scroll-reveal--media",
         variant === "fade-up" && "scroll-reveal scroll-reveal--fade-up",
+        variant === "fade-lift" && "scroll-reveal scroll-reveal--fade-lift",
+        variant === "zoom" && "scroll-reveal scroll-reveal--zoom",
         className
       )}
     >

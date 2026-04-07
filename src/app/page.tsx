@@ -100,7 +100,7 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
 
       <section className="border-b bg-gradient-to-b from-accent/40 to-background">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-16 md:flex-row md:items-center md:py-24">
-          <div className="flex-1 space-y-6">
+          <ScrollReveal variant="fade-lift" className="flex-1 space-y-6">
             <Badge variant="secondary" className="w-fit">
               Verified impact marketplace
             </Badge>
@@ -141,8 +141,10 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
                 <Link href="/volunteer-map">Volunteer near you</Link>
               </Button>
             </div>
-          </div>
-          <HeroImageRotator />
+          </ScrollReveal>
+          <ScrollReveal variant="zoom" className="mx-auto w-full max-w-md flex-1 md:max-w-lg">
+            <HeroImageRotator />
+          </ScrollReveal>
         </div>
       </section>
 
@@ -168,7 +170,7 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
 
       {(me?.role === "ngo" || me?.role === "brand") && (
         <section className="border-t bg-muted/40 py-16">
-          <ScrollReveal variant="fade-up" className="mx-auto max-w-6xl px-4 text-center">
+          <ScrollReveal variant="fade-lift" className="mx-auto max-w-6xl px-4 text-center">
             <h2 className="text-2xl font-bold">For NGOs, brands, and changemakers</h2>
             <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
               NGOs publish verified projects and field updates. Brands co-create CSR campaigns with downloadable impact

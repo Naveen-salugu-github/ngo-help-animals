@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { ProjectsFilter, type ProjectListItem } from "@/components/projects/projects-filter"
 import { LocationPromptBanner } from "@/components/home/location-prompt-banner"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 
 export const metadata = {
   title: "Explore projects | Soul Space",
@@ -52,14 +53,14 @@ export default async function ProjectsPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <ScrollReveal variant="fade-lift" className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Explore projects</h1>
           <p className="mt-2 text-muted-foreground">
             Filter by cause or location. Every card shows verified NGO badges and live funding.
           </p>
         </div>
-      </div>
+      </ScrollReveal>
       <div className="mb-6">
         <LocationPromptBanner variant="compact" />
       </div>

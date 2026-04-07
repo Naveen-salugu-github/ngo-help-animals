@@ -55,18 +55,19 @@ export function FeaturedProjectsGrid({ projects }: { projects: FeaturedProject[]
               ? Math.min(100, Math.round((Number(p.funds_raised) / Number(p.goal_amount)) * 100))
               : 0
           return (
-            <Link key={p.id} href={`/projects/${p.id}`}>
-              <Card className="h-full overflow-hidden transition-shadow hover:shadow-lg">
-                <ScrollReveal variant="media" delayMs={index * 70} className="block">
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
-                    <ProjectCoverImage
-                      src={p.cover_image_url}
-                      alt=""
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  </div>
-                </ScrollReveal>
-                <CardContent className="space-y-3 p-4">
+            <ScrollReveal key={p.id} variant="fade-lift" delayMs={index * 85} className="h-full">
+              <Link href={`/projects/${p.id}`} className="block h-full">
+                <Card className="h-full overflow-hidden transition-shadow hover:shadow-lg">
+                  <ScrollReveal variant="media" delayMs={index * 85 + 40} className="block">
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
+                      <ProjectCoverImage
+                        src={p.cover_image_url}
+                        alt=""
+                        className="absolute inset-0 h-full w-full object-cover"
+                      />
+                    </div>
+                  </ScrollReveal>
+                  <CardContent className="space-y-3 p-4">
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="font-semibold leading-snug">{p.title}</h3>
                     {ngo?.verification_status === "verified" && (
@@ -90,9 +91,10 @@ export function FeaturedProjectsGrid({ projects }: { projects: FeaturedProject[]
                       Volunteers and awareness only: no public funding goal
                     </p>
                   )}
-                </CardContent>
-              </Card>
-            </Link>
+                  </CardContent>
+                </Card>
+              </Link>
+            </ScrollReveal>
           )
         })}
       </div>

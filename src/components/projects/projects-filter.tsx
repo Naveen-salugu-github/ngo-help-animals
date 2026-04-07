@@ -19,6 +19,7 @@ import { campaignAcceptsOrganizerContact, eventHasFinished } from "@/lib/campaig
 import { ContactOrganizerDialog } from "@/components/projects/contact-organizer-dialog"
 import { PostEventFeedbackDialog } from "@/components/projects/post-event-feedback-dialog"
 import { ProjectCoverImage } from "@/components/projects/project-cover-image"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { readStoredUserCoords, type StoredUserCoords } from "@/lib/geolocation-storage"
 import { sortProjectsByDistance } from "@/lib/sort-projects-by-distance"
 
@@ -107,7 +108,7 @@ export function ProjectsFilter({ projects }: { projects: ProjectListItem[] }) {
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {displayList.map((p) => {
+        {displayList.map((p, index) => {
           const ngo = p.ngos
           const fundingNeeded = p.funding_needed !== false
           const pct =
@@ -120,16 +121,19 @@ export function ProjectsFilter({ projects }: { projects: ProjectListItem[] }) {
           const showFeedback = active && !isPast && eventHasFinished(p.event_end_at)
           const ngoName = ngo?.organization_name ?? "Organizer"
           return (
-            <Card key={p.id} className="flex h-full flex-col overflow-hidden transition-shadow hover:shadow-lg">
-              <Link href={`/projects/${p.id}`} className="block shrink-0">
-                <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
-                  <ProjectCoverImage
-                    src={p.cover_image_url}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                </div>
-              </Link>
+            <ScrollReveal key={p.id} variant="fade-lift" delayMs={index * 65} className="h-full">
+              <Card className="flex h-full flex-col overflow-hidden transition-shadow hover:shadow-lg">
+                <Link href={`/projects/${p.id}`} className="block shrink-0">
+                  <ScrollReveal variant="media" delayMs={index * 65 + 45} className="block">
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
+                      <ProjectCoverImage
+                        src={p.cover_image_url}
+                        alt=""
+                        className="absolute inset-0 h-full w-full object-cover"
+                      />
+                    </div>
+                  </ScrollReveal>
+                </Link>
               <CardContent className="flex flex-1 flex-col space-y-2 p-4">
                 <div className="flex items-start justify-between gap-2">
                   <Link href={`/projects/${p.id}`} className="min-w-0 flex-1 hover:underline">
@@ -188,7 +192,8 @@ export function ProjectsFilter({ projects }: { projects: ProjectListItem[] }) {
                   </div>
                 )}
               </CardContent>
-            </Card>
+              </Card>
+            </ScrollReveal>
           )
         })}
       </div>
