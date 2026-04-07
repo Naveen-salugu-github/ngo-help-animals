@@ -204,5 +204,6 @@ export async function createImpactUpdate(formData: FormData): Promise<CreateImpa
   revalidatePath("/dashboard/ngo")
   revalidatePath("/feed")
   revalidatePath("/")
+  revalidatePath(`/projects/${project_id}`)
   return { ok: true }
 }

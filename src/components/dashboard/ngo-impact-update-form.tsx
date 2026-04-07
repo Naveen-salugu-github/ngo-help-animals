@@ -13,7 +13,7 @@ import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { Loader2, Upload, X } from "lucide-react"
 
-type ProjectOption = { id: string; title: string }
+type ProjectOption = { id: string; title: string; is_past_campaign?: boolean | null }
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024
 const MAX_VIDEO_BYTES = 50 * 1024 * 1024
@@ -45,6 +45,33 @@ function validateMediaFile(file: File): string | null {
 }
 
 type Props = { projects: ProjectOption[]; userId: string }
+
+function ProjectSelectOptions({ projects }: { projects: ProjectOption[] }) {
+  const past = projects.filter((p) => p.is_past_campaign)
+  const current = projects.filter((p) => !p.is_past_campaign)
+  return (
+    <>
+      {current.length > 0 && (
+        <optgroup label="Current & upcoming">
+          {current.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.title}
+            </option>
+          ))}
+        </optgroup>
+      )}
+      {past.length > 0 && (
+        <optgroup label="Past / historical">
+          {past.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.title}
+            </option>
+          ))}
+        </optgroup>
+      )}
+    </>
+  )
+}
 
 export function NgoImpactUpdateForm({ projects, userId }: Props) {
   const router = useRouter()
@@ -138,11 +165,7 @@ export function NgoImpactUpdateForm({ projects, userId }: Props) {
           className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
         >
           <option value="">Select…</option>
-          {projects.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.title}
-            </option>
-          ))}
+          <ProjectSelectOptions projects={projects} />
         </select>
       </div>
 
