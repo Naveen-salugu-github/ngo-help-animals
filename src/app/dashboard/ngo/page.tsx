@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { createNgoProfile } from "@/app/actions/ngo"
 import { NgoCreateCampaignForm } from "@/components/dashboard/ngo-create-campaign-form"
+import { NgoCreatePastCampaignForm } from "@/components/dashboard/ngo-create-past-campaign-form"
 
 export const metadata = { title: "NGO dashboard | Soul Space" }
 
@@ -145,6 +146,19 @@ export default async function NgoDashboardPage() {
             </CardContent>
           </Card>
 
+          <Card id="past-campaign">
+            <CardHeader>
+              <CardTitle>Add a past / historical campaign</CardTitle>
+              <CardDescription>
+                Showcase completed work: same details as a new campaign except volunteering, map location, and event
+                times. These appear with a &quot;Past&quot; label and never accept volunteer sign-ups.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <NgoCreatePastCampaignForm userId={user.id} />
+            </CardContent>
+          </Card>
+
           <Separator />
 
           <div id="your-projects">
@@ -173,6 +187,9 @@ export default async function NgoDashboardPage() {
                               <span className="text-amber-700 dark:text-amber-500">Awaiting admin approval</span>
                             ) : (
                               <span className="capitalize">{p.status.replace(/_/g, " ")}</span>
+                            )}
+                            {(p as { is_past_campaign?: boolean }).is_past_campaign && (
+                              <span className="mr-1 rounded bg-muted px-1.5 py-0.5 text-xs font-medium">Past</span>
                             )}
                             {p.funding_needed === false ? (
                               <span>, no online funding</span>

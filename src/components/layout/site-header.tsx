@@ -23,6 +23,7 @@ const navDefault = [
 const navNgo = [
   { href: "/projects", label: "Explore projects" },
   { href: "/dashboard/ngo#create-campaign", label: "Create campaign" },
+  { href: "/dashboard/ngo#past-campaign", label: "Add past campaign" },
   { href: "/feed", label: "Impact feed" },
   { href: "/dashboard/ngo", label: "NGO dashboard" },
   { href: "/dashboard/brand", label: "Brand dashboard" },
@@ -61,7 +62,7 @@ export async function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4">
+      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-4 px-4">
         <SiteLogo />
 
         <nav className="hidden items-center gap-5 lg:flex">

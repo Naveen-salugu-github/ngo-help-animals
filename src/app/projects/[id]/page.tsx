@@ -122,8 +122,10 @@ export default async function ProjectDetailPage({ params }: Params) {
 
   const metrics = project.impact_metrics as Record<string, string | number> | null
 
+  const isPastCampaign = (project as { is_past_campaign?: boolean }).is_past_campaign === true
+
   const sharePageUrl = `${getSiteUrl()}/projects/${id}`
-  const slots = Number(project.volunteer_slots) || 0
+  const slots = isPastCampaign ? 0 : Number(project.volunteer_slots) || 0
   const filled = Number(project.volunteer_count) || 0
   const spotsLeft = Math.max(0, slots - filled)
   const registrationFull = slots > 0 && filled >= slots
@@ -154,6 +156,11 @@ export default async function ProjectDetailPage({ params }: Params) {
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-3xl font-bold tracking-tight">{project.title}</h1>
+          {isPastCampaign && (
+            <Badge variant="secondary" className="font-normal">
+              Past campaign
+            </Badge>
+          )}
           {ngo?.verification_status === "verified" && (
             <Badge variant="secondary" className="gap-1">
               <BadgeCheck className="h-3.5 w-3.5" />
@@ -203,7 +210,7 @@ export default async function ProjectDetailPage({ params }: Params) {
         </Card>
       )}
 
-      {project.status === "active" && eventHasFinished(eventEnd) && (
+      {project.status === "active" && !isPastCampaign && eventHasFinished(eventEnd) && (
         <Card className="mt-6 border-amber-500/20 bg-amber-500/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-base">How was the event?</CardTitle>
@@ -223,7 +230,7 @@ export default async function ProjectDetailPage({ params }: Params) {
         </Card>
       )}
 
-      {slots > 0 && (
+      {!isPastCampaign && slots > 0 && (
         <Card className="mt-6 border-primary/20 bg-accent/20">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
@@ -347,21 +354,24 @@ export default async function ProjectDetailPage({ params }: Params) {
                     <HeartHandshake className="h-4 w-4 text-muted-foreground" />
                     <span>{project.donor_count} donors</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                    <span>
-                      {filled}/{slots} volunteers registered
-                    </span>
-                  </div>
+                  {!isPastCampaign && (
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span>
+                        {filled}/{slots} volunteers registered
+                      </span>
+                    </div>
+                  )}
                 </div>
               </>
             ) : (
               <>
                 <p className="text-sm text-muted-foreground">
-                  This campaign is not collecting online donations. You can still volunteer, contact the organizer, or
-                  share the event.
+                  {isPastCampaign
+                    ? "This is a past or archival campaign highlight."
+                    : "This campaign is not collecting online donations. You can still volunteer, contact the organizer, or share the event."}
                 </p>
-                {slots > 0 && (
+                {!isPastCampaign && slots > 0 && (
                   <div className="flex items-center gap-2 text-sm">
                     <Users className="h-4 w-4 text-muted-foreground" />
                     <span>
@@ -374,7 +384,7 @@ export default async function ProjectDetailPage({ params }: Params) {
             {project.status === "active" && (
               <DonateButton projectId={project.id} units={microUnits} fundingNeeded={fundingNeeded} />
             )}
-            {project.status === "active" && slots > 0 && (
+            {project.status === "active" && !isPastCampaign && slots > 0 && (
               <div className="flex flex-col gap-2">
                 {myVolunteer &&
                   (myVolunteer.status === "rsvp" ||

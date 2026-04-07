@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { BadgeCheck } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import { campaignAcceptsOrganizerContact, eventHasFinished } from "@/lib/campaign-utils"
 import { ContactOrganizerDialog } from "@/components/projects/contact-organizer-dialog"
 import { PostEventFeedbackDialog } from "@/components/projects/post-event-feedback-dialog"
@@ -37,6 +38,7 @@ export type ProjectListItem = {
   latitude: number | null
   longitude: number | null
   funding_needed: boolean | null
+  is_past_campaign?: boolean | null
   organizer_contact_phone: string | null
   organizer_contact_email: string | null
   ngos: {
@@ -59,7 +61,7 @@ export function ProjectsFilter({ projects }: { projects: ProjectListItem[] }) {
 
   const filtered = useMemo(() => {
     return projects.filter((p) => {
-      const hay = `${p.title} ${p.location} ${p.volunteer_category ?? ""}`.toLowerCase()
+      const hay = `${p.title} ${p.location} ${p.volunteer_category ?? ""} ${p.is_past_campaign ? "past" : ""}`.toLowerCase()
       if (q && !hay.includes(q.toLowerCase())) return false
       if (progress === "any") return true
       if (p.funding_needed === false) return false
@@ -113,8 +115,9 @@ export function ProjectsFilter({ projects }: { projects: ProjectListItem[] }) {
               ? Math.min(100, Math.round((Number(p.funds_raised) / Number(p.goal_amount)) * 100))
               : 0
           const active = p.status === "active"
-          const showContact = active && campaignAcceptsOrganizerContact(p.event_end_at)
-          const showFeedback = active && eventHasFinished(p.event_end_at)
+          const isPast = p.is_past_campaign === true
+          const showContact = active && !isPast && campaignAcceptsOrganizerContact(p.event_end_at)
+          const showFeedback = active && !isPast && eventHasFinished(p.event_end_at)
           const ngoName = ngo?.organization_name ?? "Organizer"
           return (
             <Card key={p.id} className="flex h-full flex-col overflow-hidden transition-shadow hover:shadow-lg">
@@ -130,7 +133,14 @@ export function ProjectsFilter({ projects }: { projects: ProjectListItem[] }) {
               <CardContent className="flex flex-1 flex-col space-y-2 p-4">
                 <div className="flex items-start justify-between gap-2">
                   <Link href={`/projects/${p.id}`} className="min-w-0 flex-1 hover:underline">
-                    <h2 className="font-semibold leading-snug">{p.title}</h2>
+                    <h2 className="font-semibold leading-snug">
+                      {p.title}
+                      {isPast && (
+                        <Badge variant="secondary" className="ml-2 align-middle text-xs font-normal">
+                          Past
+                        </Badge>
+                      )}
+                    </h2>
                   </Link>
                   {ngo?.verification_status === "verified" && (
                     <BadgeCheck className="h-5 w-5 shrink-0 text-primary" aria-hidden />

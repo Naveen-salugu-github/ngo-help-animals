@@ -42,6 +42,7 @@ export type AdminEditCampaignInitial = {
   organizer_contact_email: string | null
   status: ProjectStatus
   impact_metrics: string
+  is_past_campaign: boolean
 }
 
 type Props = { initial: AdminEditCampaignInitial; userId: string }
@@ -59,6 +60,7 @@ export function AdminEditCampaignForm({ initial, userId }: Props) {
   const [loading, setLoading] = useState(false)
   const [fundingNeeded, setFundingNeeded] = useState(initial.funding_needed)
   const [status, setStatus] = useState<ProjectStatus>(initial.status)
+  const [isPastCampaign, setIsPastCampaign] = useState(initial.is_past_campaign)
   const [coverFile, setCoverFile] = useState<File | null>(null)
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -68,6 +70,7 @@ export function AdminEditCampaignForm({ initial, userId }: Props) {
     const fd = new FormData(form)
     fd.set("funding_needed", fundingNeeded ? "true" : "false")
     fd.set("status", status)
+    fd.set("is_past_campaign", isPastCampaign ? "true" : "false")
 
     if (coverFile) {
       const up = await uploadCampaignCoverImage(userId, coverFile)
@@ -86,6 +89,7 @@ export function AdminEditCampaignForm({ initial, userId }: Props) {
         return
       }
       toast.success("Campaign updated.")
+      setCoverFile(null)
       router.refresh()
     } catch (err) {
       console.error(err)
@@ -118,6 +122,24 @@ export function AdminEditCampaignForm({ initial, userId }: Props) {
           Set to <strong>Active</strong> to show the campaign on Explore and the map. Use <strong>Draft</strong> to hide
           it while you edit.
         </p>
+      </div>
+
+      <div className="sm:col-span-2 flex items-start gap-3 rounded-lg border border-dashed border-muted-foreground/40 bg-muted/20 p-4">
+        <Checkbox
+          id="admin-past-campaign"
+          checked={isPastCampaign}
+          onCheckedChange={(v) => setIsPastCampaign(v === true)}
+          disabled={loading}
+          className="mt-0.5"
+        />
+        <div className="space-y-1">
+          <Label htmlFor="admin-past-campaign" className="cursor-pointer font-medium leading-snug">
+            Past / historical campaign (no volunteering)
+          </Label>
+          <p className="text-xs text-muted-foreground">
+            Clears volunteer slots, map coordinates, and event fields on save. Not shown on the volunteer map.
+          </p>
+        </div>
       </div>
 
       <div className="sm:col-span-2 flex items-start gap-3 rounded-lg border border-border bg-muted/30 p-4">
@@ -164,70 +186,86 @@ export function AdminEditCampaignForm({ initial, userId }: Props) {
           />
         </div>
       )}
+      {!isPastCampaign && (
+        <>
+          <div className="space-y-2">
+            <Label htmlFor="volunteer_slots">Volunteer slots</Label>
+            <Input
+              id="volunteer_slots"
+              name="volunteer_slots"
+              type="number"
+              min={0}
+              defaultValue={initial.volunteer_slots}
+              disabled={loading}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="volunteer_category">Volunteer category</Label>
+            <Input
+              id="volunteer_category"
+              name="volunteer_category"
+              defaultValue={initial.volunteer_category ?? ""}
+              placeholder="e.g. Environment"
+              disabled={loading}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="latitude">Latitude</Label>
+            <Input
+              id="latitude"
+              name="latitude"
+              type="number"
+              step="any"
+              defaultValue={initial.latitude ?? ""}
+              disabled={loading}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="longitude">Longitude</Label>
+            <Input
+              id="longitude"
+              name="longitude"
+              type="number"
+              step="any"
+              defaultValue={initial.longitude ?? ""}
+              disabled={loading}
+            />
+          </div>
+        </>
+      )}
       <div className="space-y-2">
-        <Label htmlFor="volunteer_slots">Volunteer slots</Label>
-        <Input
-          id="volunteer_slots"
-          name="volunteer_slots"
-          type="number"
-          min={0}
-          defaultValue={initial.volunteer_slots}
-          disabled={loading}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="volunteer_category">Volunteer category</Label>
-        <Input
-          id="volunteer_category"
-          name="volunteer_category"
-          defaultValue={initial.volunteer_category ?? ""}
-          placeholder="e.g. Environment"
-          disabled={loading}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="latitude">Latitude</Label>
-        <Input
-          id="latitude"
-          name="latitude"
-          type="number"
-          step="any"
-          defaultValue={initial.latitude ?? ""}
-          disabled={loading}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="longitude">Longitude</Label>
-        <Input
-          id="longitude"
-          name="longitude"
-          type="number"
-          step="any"
-          defaultValue={initial.longitude ?? ""}
-          disabled={loading}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="campaign_date">Campaign / event date</Label>
+        <Label htmlFor="campaign_date">
+          {isPastCampaign ? "When this work took place (optional)" : "Campaign / event date"}
+        </Label>
         <Input id="campaign_date" name="campaign_date" type="date" defaultValue={initial.campaign_date} disabled={loading} />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="event_start_time">Start time</Label>
-        <Input id="event_start_time" name="event_start_time" type="time" defaultValue={initial.event_start_time} disabled={loading} />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="event_end_time">End time</Label>
-        <Input id="event_end_time" name="event_end_time" type="time" defaultValue={initial.event_end_time} disabled={loading} />
-      </div>
-      <div className="sm:col-span-2 space-y-2">
-        <Label htmlFor="event_venue_detail">Event venue (building / landmark)</Label>
-        <Input
-          id="event_venue_detail"
-          name="event_venue_detail"
-          defaultValue={initial.event_venue_detail ?? ""}
-          disabled={loading}
-        />
-      </div>
+      {!isPastCampaign && (
+        <>
+          <div className="space-y-2">
+            <Label htmlFor="event_start_time">Start time</Label>
+            <Input
+              id="event_start_time"
+              name="event_start_time"
+              type="time"
+              defaultValue={initial.event_start_time}
+              disabled={loading}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="event_end_time">End time</Label>
+            <Input id="event_end_time" name="event_end_time" type="time" defaultValue={initial.event_end_time} disabled={loading} />
+          </div>
+          <div className="sm:col-span-2 space-y-2">
+            <Label htmlFor="event_venue_detail">Event venue (building / landmark)</Label>
+            <Input
+              id="event_venue_detail"
+              name="event_venue_detail"
+              defaultValue={initial.event_venue_detail ?? ""}
+              disabled={loading}
+            />
+          </div>
+        </>
+      )}
       <div className="sm:col-span-2 rounded-lg border border-border bg-muted/30 p-4">
         <p className="mb-3 text-sm font-medium">Organizer contact</p>
         <div className="grid gap-4 sm:grid-cols-2">

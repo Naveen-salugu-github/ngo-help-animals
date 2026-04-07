@@ -82,6 +82,7 @@ export default async function AdminEditCampaignPage({ params }: Params) {
     organizer_contact_email: (project as { organizer_contact_email?: string | null }).organizer_contact_email ?? null,
     status: project.status as AdminEditCampaignInitial["status"],
     impact_metrics: JSON.stringify(project.impact_metrics ?? {}, null, 2),
+    is_past_campaign: (project as { is_past_campaign?: boolean }).is_past_campaign === true,
   }
 
   const raw = project.ngos as unknown
