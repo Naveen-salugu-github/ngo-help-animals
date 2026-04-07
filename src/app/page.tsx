@@ -116,7 +116,7 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
               </h1>
             )}
             <p className="max-w-xl text-lg text-muted-foreground">
-              ImpactBridge connects NGOs, donors, volunteers, and brands. Every project shows funding progress, field
+              Soul Space connects NGOs, donors, volunteers, and brands. Every project shows funding progress, field
               media, and verification, so generosity stays transparent.
             </p>
             <div className="space-y-3">

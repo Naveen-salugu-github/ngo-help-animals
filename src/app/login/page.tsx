@@ -39,7 +39,7 @@ export default function LoginPage() {
       <Card>
         <CardHeader>
           <CardTitle>Log in</CardTitle>
-          <CardDescription>Access your ImpactBridge account.</CardDescription>
+          <CardDescription>Access your Soul Space account.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
@@ -77,7 +77,7 @@ export default function LoginPage() {
           href={`/register?next=${encodeURIComponent(next)}`}
           className="text-primary underline"
         >
-          Join ImpactBridge
+          Join Soul Space
         </Link>
       </p>
     </div>

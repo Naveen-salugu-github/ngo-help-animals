@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { VolunteerMap } from "@/components/map/volunteer-map"
 
 export const metadata = {
-  title: "Volunteer map | ImpactBridge",
+  title: "Volunteer map | Soul Space",
 }
 
 export default async function VolunteerMapPage() {

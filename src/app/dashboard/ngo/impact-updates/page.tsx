@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, ImagePlus } from "lucide-react"
 
-export const metadata = { title: "Impact updates | NGO dashboard | ImpactBridge" }
+export const metadata = { title: "Impact updates | NGO dashboard | Soul Space" }
 
 export default async function NgoImpactUpdatesPage() {
   const supabase = await createClient()

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { SiteHeader } from "@/components/layout/site-header"
 import { SiteFooter } from "@/components/layout/site-footer"
+import { APP_NAME, LOGO_PATH } from "@/lib/branding"
 import { Toaster } from "@/components/ui/sonner"
 
 const inter = Inter({
@@ -11,9 +12,13 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "ImpactBridge | Social impact marketplace",
+  title: `${APP_NAME} | Social impact marketplace`,
   description:
     "Connect NGOs, donors, volunteers, and brands. Fund verified impact projects and follow transparent outcomes.",
+  icons: {
+    icon: LOGO_PATH,
+    apple: LOGO_PATH,
+  },
 }
 
 export default function RootLayout({

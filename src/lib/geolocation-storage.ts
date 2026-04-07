@@ -1,6 +1,6 @@
 /** Browser localStorage, shared by web and in-app WebViews on iOS/Android (Capacitor/TWA). */
 
-const KEY = "impactbridge:user_location_v1"
+const KEY = "Soul Space:user_location_v1"
 
 export type StoredUserCoords = {
   lat: number

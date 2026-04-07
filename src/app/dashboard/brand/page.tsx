@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { createBrandProfile, sponsorProject } from "@/app/actions/brand"
 import { BrandCsrClient } from "@/components/dashboard/brand-csr-client"
 
-export const metadata = { title: "Brand dashboard | ImpactBridge" }
+export const metadata = { title: "Brand dashboard | Soul Space" }
 
 export default async function BrandDashboardPage() {
   const supabase = await createClient()

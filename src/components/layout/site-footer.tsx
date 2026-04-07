@@ -1,5 +1,7 @@
 import Link from "next/link"
 import { Mail, Phone } from "lucide-react"
+import { SiteLogo } from "@/components/branding/site-logo"
+import { SUPPORT_EMAIL } from "@/lib/branding"
 
 function IconFacebook({ className }: { className?: string }) {
   return (
@@ -54,6 +56,9 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-zinc-800 bg-zinc-950 text-zinc-300">
       <div className="mx-auto max-w-6xl px-4 py-10">
+        <div className="mb-8 flex justify-center">
+          <SiteLogo size="footer" />
+        </div>
         <p className="text-center text-xs text-zinc-500 sm:text-sm">
           For queries, partnerships, or support, reach us at:
         </p>
@@ -67,11 +72,11 @@ export function SiteFooter() {
           </a>
           <span className="hidden h-6 w-px bg-zinc-700 sm:block" aria-hidden />
           <a
-            href="mailto:support@impactbridge.app"
+            href={`mailto:${SUPPORT_EMAIL}`}
             className="flex items-center gap-2 text-lg font-semibold tracking-tight text-white hover:text-zinc-200 sm:text-xl"
           >
             <Mail className="h-5 w-5 shrink-0" aria-hidden />
-            <span>support@impactbridge.app</span>
+            <span>{SUPPORT_EMAIL}</span>
           </a>
         </div>
 
@@ -105,7 +110,7 @@ export function SiteFooter() {
         </nav>
 
         <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-zinc-800 pt-8 text-[10px] text-zinc-600 sm:flex-row sm:text-xs">
-          <p>© {new Date().getFullYear()} ImpactBridge. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Soul Space. All rights reserved.</p>
           <p className="max-w-md text-center sm:text-right">
             Campaigns and impact posts are published by partner organizations. Numbers and images are as reported by
             NGOs; verify directly with the organizer when needed.

@@ -10,8 +10,9 @@ import { signOut } from "@/app/actions/auth"
 import { AvatarUpload } from "@/components/account/avatar-upload"
 import { AccountNameForm } from "@/components/account/account-name-form"
 import { DONATIONS_ENABLED } from "@/lib/feature-flags"
+import { VolunteerCancelRegistration } from "@/components/projects/volunteer-cancel-registration"
 
-export const metadata = { title: "My account | ImpactBridge" }
+export const metadata = { title: "My account | Soul Space" }
 
 export default async function AccountPage() {
   const supabase = await createClient()
@@ -73,7 +74,7 @@ export default async function AccountPage() {
       <Card>
         <CardHeader>
           <CardTitle>Profile</CardTitle>
-          <CardDescription>How you appear across ImpactBridge.</CardDescription>
+          <CardDescription>How you appear across Soul Space.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
@@ -182,12 +183,19 @@ export default async function AccountPage() {
                         {new Date(v.created_at as string).toLocaleString()}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Badge variant="outline">{v.status}</Badge>
                       {project?.id && (
                         <Button asChild variant="outline" size="sm">
                           <Link href={`/projects/${project.id}`}>View</Link>
                         </Button>
+                      )}
+                      {project?.id && (v.status === "rsvp" || v.status === "confirmed") && (
+                        <VolunteerCancelRegistration
+                          projectId={project.id}
+                          status={v.status}
+                          compact
+                        />
                       )}
                     </div>
                   </li>

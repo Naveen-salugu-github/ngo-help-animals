@@ -1,4 +1,4 @@
--- ImpactBridge schema — Postgres + Supabase Auth
+-- Soul Space schema — Postgres + Supabase Auth
 -- Run via Supabase CLI: supabase db push, or paste in SQL editor
 
 -- Roles

@@ -2,15 +2,15 @@ import type { Metadata } from "next"
 import { LegalPageShell } from "@/components/legal/legal-page-shell"
 
 export const metadata: Metadata = {
-  title: "Cookie Policy | ImpactBridge",
-  description: "How ImpactBridge uses cookies and similar technologies.",
+  title: "Cookie Policy | Soul Space",
+  description: "How Soul Space uses cookies and similar technologies.",
 }
 
 export default function CookiesPage() {
   return (
     <LegalPageShell title="Cookie Policy">
       <p>
-        This policy explains how ImpactBridge uses cookies and similar technologies when you visit our site or use our
+        This policy explains how Soul Space uses cookies and similar technologies when you visit our site or use our
         app (including web views).
       </p>
       <h2 className="!mt-8 text-foreground">What are cookies?</h2>

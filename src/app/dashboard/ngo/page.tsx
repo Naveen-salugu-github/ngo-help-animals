@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { createNgoProfile } from "@/app/actions/ngo"
 import { NgoCreateCampaignForm } from "@/components/dashboard/ngo-create-campaign-form"
 
-export const metadata = { title: "NGO dashboard | ImpactBridge" }
+export const metadata = { title: "NGO dashboard | Soul Space" }
 
 export default async function NgoDashboardPage() {
   const supabase = await createClient()

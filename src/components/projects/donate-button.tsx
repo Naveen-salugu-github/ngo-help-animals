@@ -125,7 +125,7 @@ export function DonateButton({ projectId, units, fundingNeeded = true }: Props) 
         amount: payload.amount,
         currency: payload.currency,
         order_id: payload.orderId,
-        name: "ImpactBridge",
+        name: "Soul Space",
         description: label ?? "Impact donation",
         handler: async (response: {
           razorpay_payment_id: string

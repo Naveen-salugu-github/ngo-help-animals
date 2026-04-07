@@ -3,6 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { format } from "date-fns"
 import { createClient } from "@/lib/supabase/server"
+import { APP_NAME } from "@/lib/branding"
 import { getSiteUrl } from "@/lib/env"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,6 +14,7 @@ import {
   VolunteerEventRegistration,
   VolunteerWhatsappChannelCard,
 } from "@/components/projects/volunteer-event-registration"
+import { VolunteerCancelRegistration } from "@/components/projects/volunteer-cancel-registration"
 import { VolunteerCheckIn } from "@/components/projects/volunteer-check-in"
 import { EventShareRow } from "@/components/projects/event-share-row"
 import { ContactOrganizerDialog } from "@/components/projects/contact-organizer-dialog"
@@ -27,7 +29,7 @@ export async function generateMetadata({ params }: Params) {
   const { id } = await params
   const supabase = await createClient()
   const { data } = await supabase.from("projects").select("title").eq("id", id).single()
-  return { title: data?.title ? `${data.title} | ImpactBridge` : "Project | ImpactBridge" }
+  return { title: data?.title ? `${data.title} | ${APP_NAME}` : `Project | ${APP_NAME}` }
 }
 
 export default async function ProjectDetailPage({ params }: Params) {
@@ -75,7 +77,7 @@ export default async function ProjectDetailPage({ params }: Params) {
     user && project
       ? await supabase
           .from("volunteers")
-          .select("status")
+          .select("id, status")
           .eq("user_id", user.id)
           .eq("project_id", id)
           .maybeSingle()
@@ -386,6 +388,15 @@ export default async function ProjectDetailPage({ params }: Params) {
                   (myVolunteer.status === "rsvp" ||
                     myVolunteer.status === "confirmed" ||
                     myVolunteer.status === "checked_in") && <VolunteerWhatsappChannelCard />}
+                {myVolunteer &&
+                  (myVolunteer.status === "rsvp" || myVolunteer.status === "confirmed") && (
+                    <VolunteerCancelRegistration projectId={project.id} status={myVolunteer.status} />
+                  )}
+                {myVolunteer?.status === "checked_in" && (
+                  <p className="text-xs text-muted-foreground">
+                    You checked in for this event. To change attendance, contact the organizer.
+                  </p>
+                )}
                 {(!myVolunteer || myVolunteer.status === "cancelled") && (
                   <VolunteerEventRegistration
                     projectId={project.id}

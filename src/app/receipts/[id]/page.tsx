@@ -1,96 +1,68 @@
-import { notFound, redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { ProjectsFilter, type ProjectListItem } from "@/components/projects/projects-filter"
+import { LocationPromptBanner } from "@/components/home/location-prompt-banner"
 
-type Params = { params: Promise<{ id: string }> }
+export const metadata = {
+  title: "Explore projects | Soul Space",
+}
 
-export default async function ReceiptPage({ params }: Params) {
-  const { id } = await params
+export default async function ProjectsPage() {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect(`/login?next=/receipts/${id}`)
-
-  const { data: donation } = await supabase
-    .from("donations")
+  const { data: projects } = await supabase
+    .from("projects")
     .select(
       `
       id,
-      project_id,
-      amount,
-      currency,
-      payment_status,
-      micro_unit_label,
-      payment_provider,
-      razorpay_payment_id,
-      stripe_payment_intent_id,
-      created_at,
-      projects:project_id ( title )
+      title,
+      description,
+      location,
+      goal_amount,
+      funds_raised,
+      cover_image_url,
+      donor_count,
+      beneficiaries_impacted,
+      volunteer_category,
+      event_end_at,
+      status,
+      latitude,
+      longitude,
+      funding_needed,
+      organizer_contact_phone,
+      organizer_contact_email,
+      ngos:ngo_id (
+        organization_name,
+        verification_status
+      )
     `
     )
-    .eq("id", id)
-    .eq("user_id", user.id)
-    .single()
+    .eq("status", "active")
+    .order("created_at", { ascending: false })
 
-  if (!donation) {
-    notFound()
-  }
-
-  const pr = donation.projects as unknown
-  const project = (Array.isArray(pr) ? pr[0] : pr) as { title: string } | null
+  const list: ProjectListItem[] = (projects ?? []).map((p) => {
+    const raw = p.ngos as unknown
+    const ngo = (Array.isArray(raw) ? raw[0] : raw) as ProjectListItem["ngos"]
+    return {
+      ...p,
+      ngos: ngo,
+      latitude: p.latitude != null ? Number(p.latitude) : null,
+      longitude: p.longitude != null ? Number(p.longitude) : null,
+    }
+  })
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-16">
-      <Card>
-        <CardHeader>
-          <CardTitle>Donation receipt</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <p>
-            <span className="text-muted-foreground">Project: </span>
-            {project?.title}
+    <div className="mx-auto max-w-6xl px-4 py-10">
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Explore projects</h1>
+          <p className="mt-2 text-muted-foreground">
+            Filter by cause or location. Every card shows verified NGO badges and live funding.
           </p>
-          <p>
-            <span className="text-muted-foreground">Amount: </span>₹
-            {Number(donation.amount).toLocaleString("en-IN")} {donation.currency}
-          </p>
-          {donation.micro_unit_label && (
-            <p>
-              <span className="text-muted-foreground">Unit: </span>
-              {donation.micro_unit_label}
-            </p>
-          )}
-          <p>
-            <span className="text-muted-foreground">Status: </span>
-            {donation.payment_status}
-          </p>
-          <p>
-            <span className="text-muted-foreground">Paid via: </span>
-            {donation.payment_provider === "stripe" ? "Stripe" : "Razorpay"}
-          </p>
-          {donation.razorpay_payment_id && (
-            <p>
-              <span className="text-muted-foreground">Razorpay ref: </span>
-              {donation.razorpay_payment_id}
-            </p>
-          )}
-          {donation.stripe_payment_intent_id && (
-            <p>
-              <span className="text-muted-foreground">Stripe ref: </span>
-              {donation.stripe_payment_intent_id}
-            </p>
-          )}
-          <p className="text-xs text-muted-foreground">
-            {new Date(donation.created_at).toLocaleString()}
-          </p>
-          <Button asChild variant="outline" className="mt-4">
-            <Link href={`/projects/${donation.project_id}`}>Back to project</Link>
-          </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+      <div className="mb-6">
+        <LocationPromptBanner variant="compact" />
+      </div>
+      <ProjectsFilter projects={list} />
     </div>
   )
 }

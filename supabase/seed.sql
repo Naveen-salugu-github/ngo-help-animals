@@ -1,9 +1,9 @@
--- ImpactBridge demo seed (run in Supabase SQL editor after Auth users exist)
+-- Soul Space demo seed (run in Supabase SQL editor after Auth users exist)
 -- 1. Create users in Authentication with emails below (or change emails here).
 -- 2. Set roles:
---    update public.users set role = 'ngo' where email = 'ngo@demo.impactbridge.dev';
---    update public.users set role = 'brand' where email = 'brand@demo.impactbridge.dev';
---    update public.users set role = 'admin' where email = 'admin@demo.impactbridge.dev';
+--    update public.users set role = 'ngo' where email = 'ngo@demo.soulspace.dev';
+--    update public.users set role = 'brand' where email = 'brand@demo.soulspace.dev';
+--    update public.users set role = 'admin' where email = 'admin@demo.soulspace.dev';
 -- 3. Run this file.
 
 -- Demo NGOs (linked by email)
@@ -11,21 +11,21 @@ insert into public.ngos (user_id, organization_name, registration_number, verifi
 select u.id, 'Green Vista Foundation', 'GVF-2012-114', 'verified',
   'Coastal reforestation and school WASH programs across Andhra Pradesh.',
   'Visakhapatnam, Andhra Pradesh', 'AABCG1234F'
-from auth.users u where u.email = 'ngo@demo.impactbridge.dev'
+from auth.users u where u.email = 'ngo@demo.soulspace.dev'
 on conflict (user_id) do nothing;
 
 insert into public.ngos (user_id, organization_name, registration_number, verification_status, description, address, pan_number)
 select u.id, 'Hope Meals Collective', 'HMC-2018-009', 'verified',
   'Nutrition security for children in urban shelter homes.',
   'Hyderabad, Telangana', 'AABCH5678G'
-from auth.users u where u.email = 'ngo2@demo.impactbridge.dev'
+from auth.users u where u.email = 'ngo2@demo.soulspace.dev'
 on conflict (user_id) do nothing;
 
 -- Brand profile
 insert into public.brands (user_id, company_name, logo_url)
 select u.id, 'BlueTide Consumer Co.',
   'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&q=80'
-from auth.users u where u.email = 'brand@demo.impactbridge.dev'
+from auth.users u where u.email = 'brand@demo.soulspace.dev'
 on conflict (user_id) do nothing;
 
 -- Projects
@@ -49,7 +49,7 @@ select
   80, 34, 412, 1800, 'Environment'
 from public.ngos n
 join auth.users u on u.id = n.user_id
-where u.email = 'ngo@demo.impactbridge.dev'
+where u.email = 'ngo@demo.soulspace.dev'
 and not exists (
   select 1 from public.projects p where p.ngo_id = n.id and p.title = 'Plant 10,000 trees in Vizag'
 );
@@ -74,7 +74,7 @@ select
   40, 18, 890, 500, 'Food security'
 from public.ngos n
 join auth.users u on u.id = n.user_id
-where u.email = 'ngo2@demo.impactbridge.dev'
+where u.email = 'ngo2@demo.soulspace.dev'
 and not exists (
   select 1 from public.projects p where p.ngo_id = n.id and p.title = 'Feed 500 children — daily meals'
 );
@@ -89,7 +89,7 @@ select p.id,
 from public.projects p
 join public.ngos n on n.id = p.ngo_id
 join auth.users u on u.id = n.user_id
-where u.email = 'ngo@demo.impactbridge.dev' and p.title = 'Plant 10,000 trees in Vizag'
+where u.email = 'ngo@demo.soulspace.dev' and p.title = 'Plant 10,000 trees in Vizag'
 and not exists (select 1 from public.impact_updates iu where iu.project_id = p.id);
 
 insert into public.impact_updates (project_id, media_url, media_type, caption, moderation_status, like_count, share_count)
@@ -101,7 +101,7 @@ select p.id,
 from public.projects p
 join public.ngos n on n.id = p.ngo_id
 join auth.users u on u.id = n.user_id
-where u.email = 'ngo2@demo.impactbridge.dev' and p.title = 'Feed 500 children — daily meals'
+where u.email = 'ngo2@demo.soulspace.dev' and p.title = 'Feed 500 children — daily meals'
 and not exists (select 1 from public.impact_updates iu where iu.project_id = p.id);
 
 -- Sponsorship (optional — requires brand + first project)
@@ -113,8 +113,8 @@ cross join lateral (
   select pr.id from public.projects pr
   join public.ngos n on n.id = pr.ngo_id
   join auth.users u2 on u2.id = n.user_id
-  where u2.email = 'ngo@demo.impactbridge.dev' and pr.title = 'Plant 10,000 trees in Vizag'
+  where u2.email = 'ngo@demo.soulspace.dev' and pr.title = 'Plant 10,000 trees in Vizag'
   limit 1
 ) p
-where u.email = 'brand@demo.impactbridge.dev'
+where u.email = 'brand@demo.soulspace.dev'
 on conflict (brand_id, project_id) do nothing;
