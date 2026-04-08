@@ -19,6 +19,7 @@ import { VolunteerCheckIn } from "@/components/projects/volunteer-check-in"
 import { EventShareRow } from "@/components/projects/event-share-row"
 import { ContactOrganizerDialog } from "@/components/projects/contact-organizer-dialog"
 import { PostEventFeedbackDialog } from "@/components/projects/post-event-feedback-dialog"
+import { SwipeMediaCarousel } from "@/components/media/swipe-media-carousel"
 import { campaignAcceptsOrganizerContact, eventHasFinished } from "@/lib/campaign-utils"
 import { BadgeCheck, Users, HeartHandshake, CalendarClock, MapPinned } from "lucide-react"
 import type { MicroDonationUnit } from "@/types/database"
@@ -95,7 +96,7 @@ export default async function ProjectDetailPage({ params }: Params) {
 
   const { data: updates } = await supabase
     .from("impact_updates")
-    .select("id, media_url, media_type, caption, created_at")
+    .select("id, media_url, media_urls, media_type, caption, created_at")
     .eq("project_id", id)
     .order("created_at", { ascending: false })
     .limit(12)
@@ -432,17 +433,14 @@ export default async function ProjectDetailPage({ params }: Params) {
           {(updates ?? []).map((u) => (
             <Card key={u.id} className="overflow-hidden">
               <div className="relative aspect-video bg-muted">
-                {u.media_type === "video" ? (
-                  <video src={u.media_url} className="h-full w-full object-cover" controls />
-                ) : (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={u.media_url}
-                    alt=""
-                    className="h-full w-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                )}
+                <SwipeMediaCarousel
+                  className="h-full w-full"
+                  items={
+                    Array.isArray(u.media_urls) && u.media_urls.length > 1
+                      ? u.media_urls.map((url) => ({ url, type: "image" as const }))
+                      : [{ url: u.media_url, type: u.media_type === "video" ? "video" : "image" }]
+                  }
+                />
               </div>
               <CardContent className="p-3">
                 <p className="text-sm">{u.caption}</p>

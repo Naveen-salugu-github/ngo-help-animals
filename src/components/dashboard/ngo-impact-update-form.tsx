@@ -124,6 +124,11 @@ export function NgoImpactUpdateForm({ projects, userId }: Props) {
       let items: Item[] = []
 
       if (selectedFiles.length > 0) {
+        const hasVideo = selectedFiles.some((f) => f.type.startsWith("video/"))
+        if (selectedFiles.length > 1 && hasVideo) {
+          toast.error("Carousel posts currently support images only. Upload one video at a time.")
+          return
+        }
         const supabase = createClient()
         try {
           const uploaded = await Promise.all(
@@ -163,9 +168,8 @@ export function NgoImpactUpdateForm({ projects, userId }: Props) {
 
       const result = await createImpactUpdate(fd)
       if (result.ok) {
-        const n = result.count
-        toast.success(n > 1 ? `Published ${n} impact posts` : "Impact update published", {
-          description: "They appear on the public impact feed and your project page.",
+        toast.success("Impact update published", {
+          description: "It appears on the public impact feed and your project page.",
         })
         formRef.current?.reset()
         clearFiles()
@@ -200,8 +204,8 @@ export function NgoImpactUpdateForm({ projects, userId }: Props) {
       <div className="space-y-2">
         <Label>Photos &amp; videos</Label>
         <p className="text-xs text-muted-foreground">
-          Upload up to {MAX_FILES_PER_POST} files at once (each becomes its own feed post with the same caption), or paste
-          one public HTTPS link below if you are not uploading files.
+          Upload up to {MAX_FILES_PER_POST} files at once to publish one swipeable carousel post, or paste one public
+          HTTPS media link below if you are not uploading files.
         </p>
         <input
           ref={fileInputRef}
@@ -279,7 +283,7 @@ export function NgoImpactUpdateForm({ projects, userId }: Props) {
       </div>
       <AiCaptionButton contextFieldId="ngo_impact_context" targetFieldId="ngo_impact_caption" />
       <div className="space-y-2">
-        <Label htmlFor="ngo_impact_caption">Caption (shared by all posts in this batch)</Label>
+        <Label htmlFor="ngo_impact_caption">Caption</Label>
         <Textarea id="ngo_impact_caption" name="caption" rows={3} />
       </div>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

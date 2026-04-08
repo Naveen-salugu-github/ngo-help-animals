@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 const IMPACT_FEED_SELECT = `
   id,
   media_url,
+  media_urls,
   media_type,
   caption,
   like_count,
@@ -22,6 +23,7 @@ const IMPACT_FEED_SELECT = `
 export type ImpactFeedRow = {
   id: string
   media_url: string
+  media_urls?: string[] | null
   media_type: string
   caption: string
   like_count: number
@@ -41,6 +43,7 @@ export type ImpactFeedRow = {
 type RawRow = {
   id: string
   media_url: string
+  media_urls?: unknown
   media_type: string
   caption: string
   like_count: number
@@ -69,6 +72,9 @@ export function normalizeImpactFeedRows(rows: RawRow[]): ImpactFeedRow[] {
     return {
       id: row.id,
       media_url: row.media_url,
+      media_urls: Array.isArray(row.media_urls)
+        ? row.media_urls.filter((u): u is string => typeof u === "string" && u.length > 0)
+        : null,
       media_type: row.media_type,
       caption: row.caption,
       like_count: row.like_count,

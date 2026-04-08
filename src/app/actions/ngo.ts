@@ -173,7 +173,7 @@ export async function createProject(formData: FormData): Promise<CreateProjectRe
 }
 
 export type CreateImpactUpdateResult =
-  | { ok: true; count: number }
+  | { ok: true }
   | { ok: false; error: string }
 
 export async function createImpactUpdate(formData: FormData): Promise<CreateImpactUpdateResult> {
@@ -215,15 +215,21 @@ export async function createImpactUpdate(formData: FormData): Promise<CreateImpa
     items = [{ media_url, media_type }]
   }
 
-  const rows = items.map((item) => ({
-    project_id,
-    media_url: item.media_url,
-    media_type: item.media_type,
-    caption,
-    moderation_status: "approved" as const,
-  }))
+  if (items.length > 1 && items.some((i) => i.media_type === "video")) {
+    return { ok: false, error: "Carousel posts currently support images only. Upload one video at a time." }
+  }
 
-  const { error } = await supabase.from("impact_updates").insert(rows)
+  const mediaUrls = items.map((i) => i.media_url)
+  const primary = items[0]
+
+  const { error } = await supabase.from("impact_updates").insert({
+    project_id,
+    media_url: primary.media_url,
+    media_type: primary.media_type,
+    media_urls: mediaUrls.length > 1 ? mediaUrls : null,
+    caption,
+    moderation_status: "approved",
+  })
 
   if (error) {
     console.error("createImpactUpdate:", error)
@@ -233,5 +239,5 @@ export async function createImpactUpdate(formData: FormData): Promise<CreateImpa
   revalidatePath("/feed")
   revalidatePath("/")
   revalidatePath(`/projects/${project_id}`)
-  return { ok: true, count: rows.length }
+  return { ok: true }
 }
