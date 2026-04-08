@@ -1,7 +1,15 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
+
+const impactMediaItemSchema = z.object({
+  media_url: z.string().min(1),
+  media_type: z.enum(["image", "video"]),
+})
+
+const impactBatchPayloadSchema = z.array(impactMediaItemSchema).min(1).max(12)
 
 export type CreateProjectResult =
   | { ok: true; submittedForReview: boolean }
@@ -165,7 +173,7 @@ export async function createProject(formData: FormData): Promise<CreateProjectRe
 }
 
 export type CreateImpactUpdateResult =
-  | { ok: true }
+  | { ok: true; count: number }
   | { ok: false; error: string }
 
 export async function createImpactUpdate(formData: FormData): Promise<CreateImpactUpdateResult> {
@@ -175,11 +183,10 @@ export async function createImpactUpdate(formData: FormData): Promise<CreateImpa
   } = await supabase.auth.getUser()
   if (!user) return { ok: false, error: "You must be signed in." }
 
-  const project_id = String(formData.get("project_id") ?? "")
-  const media_url = String(formData.get("media_url") ?? "").trim()
+  const project_id = String(formData.get("project_id") ?? "").trim()
   const caption = String(formData.get("caption") ?? "").trim()
-  if (!project_id || !media_url) {
-    return { ok: false, error: "Choose a project and add a media URL or upload a file." }
+  if (!project_id) {
+    return { ok: false, error: "Choose a project." }
   }
 
   const { data: project } = await supabase.from("projects").select("ngo_id").eq("id", project_id).single()
@@ -189,13 +196,34 @@ export async function createImpactUpdate(formData: FormData): Promise<CreateImpa
     return { ok: false, error: "You can only post updates for your own campaigns." }
   }
 
-  const { error } = await supabase.from("impact_updates").insert({
+  const batchRaw = formData.get("media_items_json")
+  let items: z.infer<typeof impactBatchPayloadSchema>
+
+  if (batchRaw != null && String(batchRaw).trim() !== "") {
+    try {
+      const parsed = JSON.parse(String(batchRaw))
+      items = impactBatchPayloadSchema.parse(parsed)
+    } catch {
+      return { ok: false, error: "Invalid media list. Use 1–12 images or videos." }
+    }
+  } else {
+    const media_url = String(formData.get("media_url") ?? "").trim()
+    if (!media_url) {
+      return { ok: false, error: "Add at least one photo or video, or paste a link." }
+    }
+    const media_type = (formData.get("media_type") as string) === "video" ? "video" : "image"
+    items = [{ media_url, media_type }]
+  }
+
+  const rows = items.map((item) => ({
     project_id,
-    media_url,
-    media_type: (formData.get("media_type") as string) === "video" ? "video" : "image",
+    media_url: item.media_url,
+    media_type: item.media_type,
     caption,
-    moderation_status: "approved",
-  })
+    moderation_status: "approved" as const,
+  }))
+
+  const { error } = await supabase.from("impact_updates").insert(rows)
 
   if (error) {
     console.error("createImpactUpdate:", error)
@@ -205,5 +233,5 @@ export async function createImpactUpdate(formData: FormData): Promise<CreateImpa
   revalidatePath("/feed")
   revalidatePath("/")
   revalidatePath(`/projects/${project_id}`)
-  return { ok: true }
+  return { ok: true, count: rows.length }
 }

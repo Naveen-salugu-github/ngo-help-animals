@@ -17,6 +17,7 @@ type ProjectOption = { id: string; title: string; is_past_campaign?: boolean | n
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024
 const MAX_VIDEO_BYTES = 50 * 1024 * 1024
+const MAX_FILES_PER_POST = 12
 
 const ACCEPT = "image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
 
@@ -78,81 +79,108 @@ export function NgoImpactUpdateForm({ projects, userId }: Props) {
   const formRef = useRef<HTMLFormElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [pending, startTransition] = useTransition()
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
+    const picked = Array.from(e.target.files ?? [])
     e.target.value = ""
-    if (!file) return
-    const err = validateMediaFile(file)
-    if (err) {
-      toast.error(err)
-      return
-    }
-    setSelectedFile(file)
+    if (picked.length === 0) return
+
+    setSelectedFiles((prev) => {
+      const next = [...prev]
+      for (const file of picked) {
+        if (next.length >= MAX_FILES_PER_POST) {
+          toast.message(`You can add up to ${MAX_FILES_PER_POST} files per post.`)
+          break
+        }
+        const err = validateMediaFile(file)
+        if (err) {
+          toast.error(err)
+          continue
+        }
+        next.push(file)
+      }
+      return next
+    })
   }
 
-  function clearFile() {
-    setSelectedFile(null)
+  function removeFileAt(index: number) {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  function clearFiles() {
+    setSelectedFiles([])
     if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
   function submit(formData: FormData) {
     startTransition(async () => {
       const projectId = String(formData.get("project_id") ?? "")
-      const urlRaw = String(formData.get("media_url") ?? "").trim()
       const caption = String(formData.get("caption") ?? "").trim()
-      let mediaType = String(formData.get("media_type") ?? "image")
-      let mediaUrl = urlRaw
+      const urlRaw = String(formData.get("media_url") ?? "").trim()
+      const urlMediaType = (formData.get("media_type") as string) === "video" ? "video" : "image"
 
-      if (selectedFile) {
-        const err = validateMediaFile(selectedFile)
-        if (err) {
-          toast.error(err)
-          return
-        }
+      type Item = { media_url: string; media_type: "image" | "video" }
+      let items: Item[] = []
+
+      if (selectedFiles.length > 0) {
         const supabase = createClient()
-        const ext = extFromMime(selectedFile.type)
-        const path = `impact-updates/${userId}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`
-        const { error: upErr } = await supabase.storage.from("project-media").upload(path, selectedFile, {
-          cacheControl: "3600",
-          upsert: false,
-        })
-        if (upErr) {
-          toast.error(upErr.message)
+        try {
+          const uploaded = await Promise.all(
+            selectedFiles.map(async (file, slot) => {
+              const err = validateMediaFile(file)
+              if (err) throw new Error(err)
+              const ext = extFromMime(file.type)
+              const path = `impact-updates/${userId}/${Date.now()}-${slot}-${crypto.randomUUID().slice(0, 8)}.${ext}`
+              const { error: upErr } = await supabase.storage.from("project-media").upload(path, file, {
+                cacheControl: "3600",
+                upsert: false,
+              })
+              if (upErr) throw new Error(upErr.message)
+              const {
+                data: { publicUrl },
+              } = supabase.storage.from("project-media").getPublicUrl(path)
+              const media_type: "image" | "video" = file.type.startsWith("video/") ? "video" : "image"
+              return { media_url: publicUrl, media_type }
+            })
+          )
+          items = uploaded
+        } catch (e) {
+          toast.error(e instanceof Error ? e.message : "Upload failed")
           return
         }
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("project-media").getPublicUrl(path)
-        mediaUrl = publicUrl
-        mediaType = selectedFile.type.startsWith("video/") ? "video" : "image"
-      }
-
-      if (!mediaUrl) {
-        toast.error("Add a media URL or upload a file from your device.")
+      } else if (urlRaw) {
+        items = [{ media_url: urlRaw, media_type: urlMediaType }]
+      } else {
+        toast.error("Add one or more photos/videos from your device, or paste a single link.")
         return
       }
 
       const fd = new FormData()
       fd.set("project_id", projectId)
-      fd.set("media_url", mediaUrl)
-      fd.set("media_type", mediaType)
       fd.set("caption", caption)
+      fd.set("media_items_json", JSON.stringify(items))
 
       const result = await createImpactUpdate(fd)
       if (result.ok) {
-        toast.success("Impact update published", {
-          description: "It appears on the public impact feed and your project page.",
+        const n = result.count
+        toast.success(n > 1 ? `Published ${n} impact posts` : "Impact update published", {
+          description: "They appear on the public impact feed and your project page.",
         })
         formRef.current?.reset()
-        clearFile()
+        clearFiles()
         router.refresh()
         return
       }
       toast.error("Could not submit", { description: result.error })
     })
   }
+
+  const hasFiles = selectedFiles.length > 0
+  const uploadLabel =
+    selectedFiles.length > 0
+      ? `Add more (${selectedFiles.length}/${MAX_FILES_PER_POST})`
+      : "Upload from device"
 
   return (
     <form ref={formRef} action={submit} className="space-y-4">
@@ -170,61 +198,74 @@ export function NgoImpactUpdateForm({ projects, userId }: Props) {
       </div>
 
       <div className="space-y-2">
-        <Label>Media</Label>
+        <Label>Photos &amp; videos</Label>
         <p className="text-xs text-muted-foreground">
-          Upload a file (stored in your Soul Space media folder) or paste a public HTTPS link to an image or video.
+          Upload up to {MAX_FILES_PER_POST} files at once (each becomes its own feed post with the same caption), or paste
+          one public HTTPS link below if you are not uploading files.
         </p>
         <input
           ref={fileInputRef}
           type="file"
           accept={ACCEPT}
+          multiple
           className="hidden"
           onChange={onFileChange}
         />
         <div className="flex flex-wrap items-center gap-2">
           <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
             <Upload className="mr-2 h-4 w-4" />
-            Upload from device
+            {uploadLabel}
           </Button>
-          {selectedFile && (
-            <span className="inline-flex max-w-full items-center gap-2 rounded-md border bg-muted/50 px-2 py-1 text-xs">
-              <span className="truncate" title={selectedFile.name}>
-                {selectedFile.name}
-              </span>
-              <button
-                type="button"
-                className="shrink-0 rounded p-0.5 text-muted-foreground hover:text-foreground"
-                onClick={clearFile}
-                aria-label="Remove file"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </span>
+          {hasFiles && (
+            <Button type="button" variant="ghost" size="sm" className="text-muted-foreground" onClick={clearFiles}>
+              Clear all
+            </Button>
           )}
         </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="ngo_impact_media_url">Photo or video URL {selectedFile ? "(optional)" : ""}</Label>
-        <Input
-          id="ngo_impact_media_url"
-          name="media_url"
-          required={!selectedFile}
-          placeholder="https://…"
-          disabled={!!selectedFile}
-          className={selectedFile ? "opacity-60" : ""}
-        />
-        {selectedFile && (
-          <p className="text-xs text-muted-foreground">URL is ignored while a file is selected. Remove the file to use a link.</p>
+        {selectedFiles.length > 0 && (
+          <ul className="max-h-40 space-y-1 overflow-y-auto rounded-md border bg-muted/30 p-2 text-xs">
+            {selectedFiles.map((file, i) => (
+              <li key={`${file.name}-${i}`} className="flex items-center justify-between gap-2">
+                <span className="min-w-0 truncate" title={file.name}>
+                  {file.name}
+                </span>
+                <span className="shrink-0 text-muted-foreground">
+                  {file.type.startsWith("video/") ? "Video" : "Image"}
+                </span>
+                <button
+                  type="button"
+                  className="shrink-0 rounded p-0.5 text-muted-foreground hover:text-foreground"
+                  onClick={() => removeFileAt(i)}
+                  aria-label={`Remove ${file.name}`}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="ngo_impact_media_type">Media type {selectedFile ? "(set from file when uploading)" : ""}</Label>
+        <Label htmlFor="ngo_impact_media_url">Photo or video URL {hasFiles ? "(optional — ignored while files are selected)" : ""}</Label>
+        <Input
+          id="ngo_impact_media_url"
+          name="media_url"
+          required={!hasFiles}
+          placeholder="https://…"
+          disabled={hasFiles}
+          className={hasFiles ? "opacity-60" : ""}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="ngo_impact_media_type">
+          Media type for URL {hasFiles ? "(not used for uploads)" : ""}
+        </Label>
         <select
           id="ngo_impact_media_type"
           name="media_type"
-          disabled={!!selectedFile}
+          disabled={hasFiles}
           className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm disabled:opacity-60"
         >
           <option value="image">Image</option>
@@ -238,7 +279,7 @@ export function NgoImpactUpdateForm({ projects, userId }: Props) {
       </div>
       <AiCaptionButton contextFieldId="ngo_impact_context" targetFieldId="ngo_impact_caption" />
       <div className="space-y-2">
-        <Label htmlFor="ngo_impact_caption">Caption</Label>
+        <Label htmlFor="ngo_impact_caption">Caption (shared by all posts in this batch)</Label>
         <Textarea id="ngo_impact_caption" name="caption" rows={3} />
       </div>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -246,7 +287,7 @@ export function NgoImpactUpdateForm({ projects, userId }: Props) {
           {pending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {selectedFile ? "Uploading & publishing…" : "Publishing…"}
+              {hasFiles ? "Uploading & publishing…" : "Publishing…"}
             </>
           ) : (
             "Publish update"

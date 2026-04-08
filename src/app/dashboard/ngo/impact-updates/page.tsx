@@ -103,7 +103,7 @@ export default async function NgoImpactUpdatesPage() {
           <CardHeader>
             <CardTitle>New impact post</CardTitle>
             <CardDescription>
-              Choose a project, then paste a public image/video URL or upload a file from your device.
+              Choose a project, add a caption, then upload several photos or videos at once or paste a single media link.
             </CardDescription>
           </CardHeader>
           <CardContent>
