@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Image from "next/image"
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
 import { Heart, Share2, MapPin, BadgeCheck } from "lucide-react"
@@ -10,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/client"
 import type { ImpactFeedRow } from "@/lib/impact-feed-data"
+import { SwipeMediaCarousel } from "@/components/media/swipe-media-carousel"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
@@ -72,22 +72,14 @@ export function ImpactFeedList({ initial }: { initial: ImpactFeedRow[] }) {
         return (
           <Card key={post.id} className="overflow-hidden border-0 shadow-lg">
             <div className="relative aspect-[4/5] w-full bg-muted sm:aspect-square">
-              {post.media_type === "video" ? (
-                <video
-                  src={post.media_url}
-                  className="h-full w-full object-cover"
-                  controls
-                  playsInline
-                />
-              ) : (
-                <Image
-                  src={post.media_url}
-                  alt=""
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 512px"
-                />
-              )}
+              <SwipeMediaCarousel
+                className="h-full w-full"
+                items={
+                  post.media_urls && post.media_urls.length > 1
+                    ? post.media_urls.map((url) => ({ url, type: "image" as const }))
+                    : [{ url: post.media_url, type: post.media_type === "video" ? "video" : "image" }]
+                }
+              />
             </div>
             <div className="space-y-3 p-4">
               <div className="flex items-start justify-between gap-2">
