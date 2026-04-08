@@ -15,7 +15,17 @@ export async function uploadCampaignCoverImage(
     cacheControl: "3600",
     upsert: false,
   })
-  if (upErr) return { ok: false, error: upErr.message }
+  if (upErr) {
+    const msg = upErr.message || "Upload failed"
+    if (/row-level security|violates.*policy/i.test(msg)) {
+      return {
+        ok: false,
+        error:
+          "Cover image upload was blocked by storage rules. Apply the Supabase migration `20260408000000_project_media_campaign_covers_rls.sql`, or submit without a cover for now.",
+      }
+    }
+    return { ok: false, error: msg }
+  }
 
   const {
     data: { publicUrl },
