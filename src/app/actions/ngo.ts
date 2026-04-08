@@ -228,7 +228,7 @@ export async function createImpactUpdate(formData: FormData): Promise<CreateImpa
     media_type: primary.media_type,
     media_urls: mediaUrls.length > 1 ? mediaUrls : null,
     caption,
-    moderation_status: "approved",
+    moderation_status: "approved" as const,
   })
 
   if (error) {
