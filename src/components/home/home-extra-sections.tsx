@@ -1,7 +1,22 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Heart, MapPin, ShieldCheck, Sparkles, Users } from "lucide-react"
 
-export function HomeExtraSections() {
+type HomeSnapshotStats = {
+  verifiedNgoPartners: number
+  volunteerRegistrations: number
+  beneficiariesReached: number
+  activeCampaigns: number
+}
+
+type Props = {
+  stats: HomeSnapshotStats
+}
+
+function formatCompact(value: number) {
+  return new Intl.NumberFormat("en-IN", { notation: "compact", maximumFractionDigits: 1 }).format(value)
+}
+
+export function HomeExtraSections({ stats }: Props) {
   return (
     <>
       <section className="border-b bg-muted/25 py-16 backdrop-blur-xl md:py-24">
@@ -81,10 +96,10 @@ export function HomeExtraSections() {
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { label: "Verified NGO partners", value: "50+" },
-              { label: "Volunteer hours contributed", value: "12k+" },
-              { label: "Lives supported", value: "85k+" },
-              { label: "Active campaigns", value: "120+" },
+              { label: "Verified NGO partners", value: formatCompact(stats.verifiedNgoPartners) },
+              { label: "Volunteer registrations", value: formatCompact(stats.volunteerRegistrations) },
+              { label: "Beneficiaries reached", value: formatCompact(stats.beneficiariesReached) },
+              { label: "Active campaigns", value: formatCompact(stats.activeCampaigns) },
             ].map((stat) => (
               <div
                 key={stat.label}

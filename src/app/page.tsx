@@ -53,6 +53,17 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
     .order("created_at", { ascending: false })
     .limit(6)
 
+  const [{ count: verifiedNgoPartners }, { count: volunteerRegistrations }, { count: activeCampaigns }, { data: impactRows }] =
+    await Promise.all([
+      supabase.from("ngos").select("*", { count: "exact", head: true }).eq("verification_status", "verified"),
+      supabase.from("volunteers").select("*", { count: "exact", head: true }),
+      supabase.from("projects").select("*", { count: "exact", head: true }).eq("status", "active"),
+      supabase
+        .from("projects")
+        .select("beneficiaries_impacted")
+        .in("status", ["active", "funded", "closed"]),
+    ])
+
   const list: FeaturedProject[] = (projects ?? []).map((p) => {
     const raw = p.ngos as unknown
     const ngo = (Array.isArray(raw) ? raw[0] : raw) as FeaturedProject["ngos"]
@@ -78,6 +89,7 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
     "there"
 
   const showCampaignSubmitted = campaignSubmittedFlag(searchParams) && me?.role === "ngo"
+  const beneficiariesReached = (impactRows ?? []).reduce((sum, row) => sum + (row.beneficiaries_impacted ?? 0), 0)
 
   return (
     <div>
@@ -154,7 +166,14 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
           </div>
         </section>
 
-        <HomeExtraSections />
+        <HomeExtraSections
+          stats={{
+            verifiedNgoPartners: verifiedNgoPartners ?? 0,
+            volunteerRegistrations: volunteerRegistrations ?? 0,
+            beneficiariesReached,
+            activeCampaigns: activeCampaigns ?? 0,
+          }}
+        />
 
         <section className="mx-auto max-w-6xl px-4 py-16">
           <div
