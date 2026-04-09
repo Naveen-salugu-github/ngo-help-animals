@@ -5,7 +5,7 @@ import { Heart, MapPin, ShieldCheck, Sparkles, Users } from "lucide-react"
 export function HomeExtraSections() {
   return (
     <>
-      <section className="border-b bg-muted/30 py-16 md:py-24">
+      <section className="border-b bg-muted/25 py-16 backdrop-blur-xl md:py-24">
         <div className="mx-auto max-w-6xl px-4">
           <div className="mb-12 max-w-2xl" data-gsap-reveal>
             <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Why Soul Space</h2>
@@ -71,7 +71,7 @@ export function HomeExtraSections() {
         </ol>
       </section>
 
-      <section className="border-y bg-gradient-to-b from-accent/40 to-background py-16 md:py-24">
+      <section className="border-y bg-gradient-to-b from-accent/35 to-background/90 py-16 backdrop-blur-md md:py-24">
         <div className="mx-auto max-w-6xl px-4">
           <div className="mb-12 max-w-2xl" data-gsap-reveal>
             <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Impact snapshot</h2>

@@ -86,7 +86,7 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
   return (
     <div>
       {showCampaignSubmitted && (
-        <div className="border-b border-primary/20 bg-primary/10">
+        <div className="relative z-20 border-b border-primary/20 bg-primary/10">
           <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm font-medium text-foreground">
               Your campaign was submitted for admin review. It will appear on Explore and accept support only after
@@ -104,10 +104,12 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
         </div>
       )}
 
-      <HomeGsap>
-        <section className="relative overflow-hidden border-b bg-gradient-to-b from-accent/40 to-background">
-          <HeroThreeBackground />
-          <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-8 px-4 py-16 md:flex-row md:items-center md:py-24">
+      <div className="relative" data-home-scroll-root>
+        <HeroThreeBackground />
+        <div className="relative z-10">
+          <HomeGsap>
+        <section className="relative overflow-hidden border-b bg-gradient-to-b from-accent/35 to-background/90 backdrop-blur-[2px]">
+          <div className="relative mx-auto flex max-w-6xl flex-col gap-8 px-4 py-16 md:flex-row md:items-center md:py-24">
             <div className="flex-1 space-y-6" data-gsap-reveal>
               <Badge variant="secondary" className="w-fit">
                 Verified impact marketplace
@@ -182,7 +184,7 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
         </section>
 
         {(me?.role === "ngo" || me?.role === "brand") && (
-          <section className="border-t bg-muted/40 py-16">
+          <section className="border-t bg-muted/35 py-16 backdrop-blur-xl">
             <div className="mx-auto max-w-6xl px-4 text-center" data-gsap-reveal>
               <h2 className="text-2xl font-bold">For NGOs, brands, and changemakers</h2>
               <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
@@ -205,7 +207,9 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
             </div>
           </section>
         )}
-      </HomeGsap>
+          </HomeGsap>
+        </div>
+      </div>
     </div>
   )
 }
