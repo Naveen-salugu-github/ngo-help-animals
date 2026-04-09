@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
@@ -10,10 +9,7 @@ import { FeaturedProjectsGrid, type FeaturedProject } from "@/components/home/fe
 import { NgoHomeQuickActions } from "@/components/home/ngo-home-quick-actions"
 import { HomeGsap } from "@/components/home/home-gsap"
 import { HomeExtraSections } from "@/components/home/home-extra-sections"
-const HeroThreeBackground = dynamic(
-  () => import("@/components/home/hero-three-background").then((m) => m.HeroThreeBackground),
-  { ssr: false }
-)
+import { HeroThreeBackground } from "@/components/home/hero-three-background"
 
 type HomeSearchParams = { campaignSubmitted?: string | string[] }
 

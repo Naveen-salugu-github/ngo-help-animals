@@ -192,12 +192,10 @@ export function HeroThreeBackground() {
         }
 
         let envTex: InstanceType<typeof THREE.Texture>
-        let gltfDog: Awaited<ReturnType<typeof loader.loadAsync>>
         let gltfCat: Awaited<ReturnType<typeof loader.loadAsync>>
         try {
-          ;[envTex, gltfDog, gltfCat] = await Promise.all([
+          ;[envTex, gltfCat] = await Promise.all([
             loadEnvironment(),
-            loader.loadAsync(DOG_URL),
             loader.loadAsync(CAT_URL),
           ])
         } catch (e) {
@@ -205,6 +203,10 @@ export function HeroThreeBackground() {
           pmremGenerator.dispose()
           return
         }
+        const dogPromise = loader.loadAsync(DOG_URL).catch((e) => {
+          console.error("[HeroThreeBackground] Dog model load failed:", e)
+          return null
+        })
 
         if (cancelled) {
           envTex.dispose()
@@ -217,31 +219,16 @@ export function HeroThreeBackground() {
         scene.environment = envMap
         scene.environmentIntensity = 1.02
 
-        const dog = preparePet(THREE, gltfDog)
         const cat = preparePet(THREE, gltfCat)
         cat.group.scale.multiplyScalar(0.8)
 
-        dog.group.position.set(-0.78, 0, 0.06)
-        dog.group.rotation.y = 0.22
         cat.group.position.set(0.78, 0, -0.04)
         cat.group.rotation.y = -0.26
 
-        petsRoot.add(dog.group)
         petsRoot.add(cat.group)
 
         let mixerDog: InstanceType<typeof THREE.AnimationMixer> | null = null
         let mixerCat: InstanceType<typeof THREE.AnimationMixer> | null = null
-
-        const clipDog = pickIdleClip(dog.animations)
-        if (clipDog) {
-          mixerDog = new THREE.AnimationMixer(dog.model)
-          const a = mixerDog.clipAction(clipDog)
-          a.reset().play()
-          if (reduceMotion) {
-            a.paused = true
-            a.time = 0.08 * clipDog.duration
-          }
-        }
 
         const clipCat = pickIdleClip(cat.animations)
         if (clipCat) {
@@ -253,6 +240,29 @@ export function HeroThreeBackground() {
             a.time = 0.08 * clipCat.duration
           }
         }
+
+        const attachDog = (gltfDog: Awaited<ReturnType<typeof loader.loadAsync>>) => {
+          if (cancelled) return
+          const dog = preparePet(THREE, gltfDog)
+          dog.group.position.set(-0.78, 0, 0.06)
+          dog.group.rotation.y = 0.22
+          petsRoot.add(dog.group)
+
+          const clipDog = pickIdleClip(dog.animations)
+          if (clipDog) {
+            mixerDog = new THREE.AnimationMixer(dog.model)
+            const a = mixerDog.clipAction(clipDog)
+            a.reset().play()
+            if (reduceMotion) {
+              a.paused = true
+              a.time = 0.08 * clipDog.duration
+            }
+          }
+        }
+        void dogPromise.then((gltfDog) => {
+          if (!gltfDog) return
+          attachDog(gltfDog)
+        })
 
         let running = true
         let frameId = 0
