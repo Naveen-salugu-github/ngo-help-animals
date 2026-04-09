@@ -131,7 +131,7 @@ export function NgoCreatePastCampaignForm({ userId }: Props) {
               id="past_organizer_phone"
               name="organizer_contact_phone"
               type="tel"
-              placeholder="+91 98765 43210"
+              placeholder="+91 90000 00000"
               autoComplete="tel"
               disabled={loading}
             />
@@ -142,7 +142,7 @@ export function NgoCreatePastCampaignForm({ userId }: Props) {
               id="past_organizer_email"
               name="organizer_contact_email"
               type="email"
-              placeholder="events@your-ngo.org"
+              placeholder="programs@soulspace.org"
               autoComplete="email"
               disabled={loading}
             />

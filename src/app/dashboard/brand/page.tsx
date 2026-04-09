@@ -73,7 +73,7 @@ export default async function BrandDashboardPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="logo_url">Logo URL</Label>
-                <Input id="logo_url" name="logo_url" placeholder="https://…" />
+                <Input id="logo_url" name="logo_url" placeholder="https://cdn.soulspace.org/brands/company-logo.png" />
               </div>
               <Button type="submit">Save brand</Button>
             </form>
@@ -135,7 +135,7 @@ export default async function BrandDashboardPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="campaign_title">Campaign title</Label>
-                  <Input id="campaign_title" name="campaign_title" placeholder="Clean Ocean powered by …" />
+                  <Input id="campaign_title" name="campaign_title" placeholder="Stray Animal Care Drive powered by Acme Foundation" />
                 </div>
                 <Button type="submit" className="sm:col-span-2 w-fit">
                   Confirm sponsorship

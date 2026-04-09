@@ -150,7 +150,7 @@ export function ContactOrganizerDialog({
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={5}
-              placeholder="Questions about timing, what to bring, accessibility…"
+              placeholder="Please share event timings, meeting point, and preparation checklist."
               required
               minLength={5}
             />

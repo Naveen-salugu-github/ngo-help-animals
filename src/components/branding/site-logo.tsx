@@ -4,10 +4,13 @@ import { APP_NAME, LOGO_PATH } from "@/lib/branding"
 import { cn } from "@/lib/utils"
 
 type SiteLogoProps = {
-  /** e.g. footer: smaller mark */
+  /** Footer: slightly smaller than header but still prominent */
   size?: "header" | "footer"
   className?: string
 }
+
+/** Source asset is 1024×1024; layout uses object-contain so the mark + wordmark scale clearly. */
+const LOGO_INTRINSIC = { width: 1024, height: 1024 }
 
 export function SiteLogo({ size = "header", className }: SiteLogoProps) {
   const isFooter = size === "footer"
@@ -15,25 +18,21 @@ export function SiteLogo({ size = "header", className }: SiteLogoProps) {
     <Link
       href="/"
       aria-label={`${APP_NAME} home`}
-      className={cn(
-        "inline-flex shrink-0 items-center",
-        isFooter && "rounded-lg bg-[#F2EDE4] px-4 py-2.5",
-        className,
-      )}
+      className={cn("inline-flex shrink-0 items-center", className)}
     >
       <Image
         src={LOGO_PATH}
-        alt=""
-        width={isFooter ? 272 : 340}
-        height={isFooter ? 89 : 96}
+        alt={APP_NAME}
+        width={LOGO_INTRINSIC.width}
+        height={LOGO_INTRINSIC.height}
         className={cn(
-          "w-auto max-w-[min(100vw-8rem,24rem)] object-contain object-left",
+          "w-auto object-contain object-left",
           isFooter
-            ? "h-[52px] max-h-[52px] sm:h-14 sm:max-h-14"
-            : "h-14 max-h-14 sm:h-16 sm:max-h-16",
+            ? "h-[4.5rem] max-h-[4.5rem] max-w-[min(100vw-2rem,22rem)] sm:h-24 sm:max-h-24 sm:max-w-[min(100vw-2rem,28rem)]"
+            : "h-[4.25rem] max-h-[4.25rem] max-w-[min(100vw-5rem,24rem)] sm:h-[4.75rem] sm:max-h-[4.75rem] sm:max-w-[min(100vw-8rem,30rem)]",
         )}
         priority={!isFooter}
-        sizes="(max-width: 640px) 272px, 340px"
+        sizes="(max-width: 640px) 90vw, 30rem"
       />
     </Link>
   )

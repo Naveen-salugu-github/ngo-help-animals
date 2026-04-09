@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/layout/site-header"
 import { SiteFooter } from "@/components/layout/site-footer"
 import { APP_NAME, LOGO_PATH } from "@/lib/branding"
 import { Toaster } from "@/components/ui/sonner"
+import { ServiceWorkerRegister } from "@/components/pwa/sw-register"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,6 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} flex min-h-screen flex-col font-sans antialiased`}>
+        <ServiceWorkerRegister />
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />
