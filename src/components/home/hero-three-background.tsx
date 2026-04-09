@@ -5,7 +5,7 @@ import type { AnimationClip, Object3D } from "three"
 
 /** Custom dog GLB (`public/models/dog.glb`, ~23MB — textures embedded; may have no clips) */
 const DOG_URL = "/models/dog.glb"
-/** Quaternius Cat (CC0) — `public/models/cat.glb` */
+/** Bicolor cat GLB (`public/models/cat.glb`, ~3.8MB — textures embedded; clip often named `Animation`) */
 const CAT_URL = "/models/cat.glb"
 /** Same-origin HDRI (~1.6MB) */
 const HDR_URL = "/hdri/brown_photostudio_02_1k.hdr"
@@ -16,6 +16,7 @@ function pickIdleClip(animations: AnimationClip[]) {
     "AnimalArmature|Idle",
     "CharacterArmature|Idle",
     "Idle_2",
+    "Animation",
   ]
   for (const name of prefer) {
     const c = animations.find((a) => a.name === name)
