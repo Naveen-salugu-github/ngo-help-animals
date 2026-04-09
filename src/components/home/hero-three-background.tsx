@@ -330,13 +330,13 @@ export function HeroThreeBackground() {
 
           if (!reduceMotion) {
             const fullTurn = Math.PI * 2
-            // Start 45% rotated from previous initial pose.
-            const targetYaw = (-0.30 + fullTurn * 0.45) + scrollProgress * fullTurn + pointer.x * 0.24
+            // Start 25% rotated from previous initial pose.
+            const targetYaw = (-0.30 + fullTurn * 0.25) + scrollProgress * fullTurn + pointer.x * 0.24
             petsRoot.rotation.y += (targetYaw - petsRoot.rotation.y) * 0.052
             petsRoot.rotation.x = THREE.MathUtils.lerp(petsRoot.rotation.x, pointer.y * 0.045, 0.07)
             petsRoot.position.y = Math.sin(t * 0.62) * 0.016
           } else {
-            petsRoot.rotation.y = -0.18 + Math.PI * 0.9
+            petsRoot.rotation.y = -0.18 + Math.PI * 0.5
             petsRoot.rotation.x = 0
             petsRoot.position.y = 0
           }
