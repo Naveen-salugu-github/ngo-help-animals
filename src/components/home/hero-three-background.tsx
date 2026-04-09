@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react"
 import type { AnimationClip, Object3D } from "three"
 
-/** Quaternius Shiba (CC0) — `public/models/dog.glb` */
+/** Custom dog GLB (`public/models/dog.glb`, ~23MB — textures embedded; may have no clips) */
 const DOG_URL = "/models/dog.glb"
 /** Quaternius Cat (CC0) — `public/models/cat.glb` */
 const CAT_URL = "/models/cat.glb"
