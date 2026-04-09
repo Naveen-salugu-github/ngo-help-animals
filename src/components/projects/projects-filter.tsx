@@ -86,7 +86,7 @@ export function ProjectsFilter({ projects }: { projects: ProjectListItem[] }) {
           <Label htmlFor="q">Search location or cause</Label>
           <Input
             id="q"
-            placeholder="e.g. Vizag, education, trees…"
+            placeholder="Hyderabad, animal rescue, community kitchens"
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
@@ -95,7 +95,7 @@ export function ProjectsFilter({ projects }: { projects: ProjectListItem[] }) {
           <Label>Funding progress</Label>
           <Select value={progress} onValueChange={setProgress}>
             <SelectTrigger>
-              <SelectValue placeholder="Filter" />
+              <SelectValue placeholder="Select progress range" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="any">Any</SelectItem>

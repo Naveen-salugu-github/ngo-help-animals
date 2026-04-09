@@ -256,7 +256,7 @@ export function NgoImpactUpdateForm({ projects, userId }: Props) {
           id="ngo_impact_media_url"
           name="media_url"
           required={!hasFiles}
-          placeholder="https://…"
+          placeholder="https://cdn.soulspace.org/impact/food-distribution.jpg"
           disabled={hasFiles}
           className={hasFiles ? "opacity-60" : ""}
         />
@@ -279,7 +279,11 @@ export function NgoImpactUpdateForm({ projects, userId }: Props) {
 
       <div className="space-y-2">
         <Label htmlFor="ngo_impact_context">Context for AI (optional)</Label>
-        <Textarea id="ngo_impact_context" rows={2} placeholder="Kids receiving midday meals in Vizag…" />
+        <Textarea
+          id="ngo_impact_context"
+          rows={2}
+          placeholder="Street dogs receiving daily feeding support near Gandhi Nagar."
+        />
       </div>
       <AiCaptionButton contextFieldId="ngo_impact_context" targetFieldId="ngo_impact_caption" />
       <div className="space-y-2">

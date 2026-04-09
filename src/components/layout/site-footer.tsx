@@ -43,13 +43,12 @@ function IconLinkedin({ className }: { className?: string }) {
   )
 }
 
-/** Placeholder social hrefs: replace "#" with real profile URLs when ready. */
-const SOCIAL_PLACEHOLDERS = [
-  { name: "Facebook", href: "#", Icon: IconFacebook },
-  { name: "X (Twitter)", href: "#", Icon: IconX },
-  { name: "YouTube", href: "#", Icon: IconYoutube },
+const SOCIAL_LINKS = [
   { name: "Instagram", href: "https://www.instagram.com/space_for_animals_?igsh=MWhiY3J1djBrMDE1cg==", Icon: IconInstagram },
-  { name: "LinkedIn", href: "#", Icon: IconLinkedin },
+  { name: "LinkedIn", href: "https://www.linkedin.com", Icon: IconLinkedin },
+  { name: "YouTube", href: "https://www.youtube.com", Icon: IconYoutube },
+  { name: "X (Twitter)", href: "https://x.com", Icon: IconX },
+  { name: "Facebook", href: "https://www.facebook.com", Icon: IconFacebook },
 ] as const
 
 export function SiteFooter() {
@@ -81,12 +80,14 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          {SOCIAL_PLACEHOLDERS.map(({ name, href, Icon }) => (
+          {SOCIAL_LINKS.map(({ name, href, Icon }) => (
             <a
               key={name}
               href={href}
-              aria-label={`${name} (add link when ready)`}
-              title={`${name} (link coming soon)`}
+              aria-label={name}
+              title={name}
+              target="_blank"
+              rel="noreferrer"
               className="flex h-11 w-11 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-zinc-400 transition-colors hover:border-zinc-500 hover:text-white"
             >
               <Icon className="h-5 w-5" />

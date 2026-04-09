@@ -188,7 +188,7 @@ export function VolunteerEventRegistration({ projectId, disabled, fullMessage }:
               <Input
                 id="reg-phone"
                 type="tel"
-                placeholder="+91 98765 43210 (optional)"
+                placeholder="+91 90000 00000"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 autoComplete="tel"

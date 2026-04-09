@@ -205,7 +205,7 @@ export function AdminEditCampaignForm({ initial, userId }: Props) {
               id="volunteer_category"
               name="volunteer_category"
               defaultValue={initial.volunteer_category ?? ""}
-              placeholder="e.g. Environment"
+              placeholder="Environment and Animal Welfare"
               disabled={loading}
             />
           </div>

@@ -76,7 +76,7 @@ export function CampaignCoverImageField({
         name="cover_image_url"
         type="text"
         inputMode="url"
-        placeholder="https://…"
+        placeholder="https://cdn.soulspace.org/campaigns/cover-image.jpg"
         defaultValue={defaultUrl ?? ""}
         disabled={disabled}
         autoComplete="off"

@@ -111,15 +111,20 @@ export function NgoCreateCampaignForm({ userId }: Props) {
       </div>
       <div className="space-y-2">
         <Label htmlFor="volunteer_category">Volunteer category</Label>
-        <Input id="volunteer_category" name="volunteer_category" placeholder="e.g. Environment" disabled={loading} />
+        <Input
+          id="volunteer_category"
+          name="volunteer_category"
+          placeholder="Environment and Animal Welfare"
+          disabled={loading}
+        />
       </div>
       <div className="space-y-2">
         <Label htmlFor="latitude">Latitude (map)</Label>
-        <Input id="latitude" name="latitude" type="number" step="any" placeholder="17.6868" disabled={loading} />
+        <Input id="latitude" name="latitude" type="number" step="any" placeholder="16.5062" disabled={loading} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="longitude">Longitude</Label>
-        <Input id="longitude" name="longitude" type="number" step="any" placeholder="83.2185" disabled={loading} />
+        <Input id="longitude" name="longitude" type="number" step="any" placeholder="80.6480" disabled={loading} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="campaign_date">Date of campaign</Label>
@@ -138,7 +143,7 @@ export function NgoCreateCampaignForm({ userId }: Props) {
         <Input
           id="event_venue_detail"
           name="event_venue_detail"
-          placeholder="e.g. RK Beach meeting point, near Submarine Museum"
+          placeholder="Community Hall, Ward 4, near Municipal School"
           disabled={loading}
         />
       </div>
@@ -155,7 +160,7 @@ export function NgoCreateCampaignForm({ userId }: Props) {
               id="organizer_contact_phone"
               name="organizer_contact_phone"
               type="tel"
-              placeholder="+91 98765 43210"
+              placeholder="+91 90000 00000"
               autoComplete="tel"
               disabled={loading}
             />
@@ -166,7 +171,7 @@ export function NgoCreateCampaignForm({ userId }: Props) {
               id="organizer_contact_email"
               name="organizer_contact_email"
               type="email"
-              placeholder="events@your-ngo.org"
+              placeholder="programs@soulspace.org"
               autoComplete="email"
               disabled={loading}
             />

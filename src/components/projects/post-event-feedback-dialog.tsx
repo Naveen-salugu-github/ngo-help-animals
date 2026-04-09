@@ -134,7 +134,7 @@ export function PostEventFeedbackDialog({
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 rows={4}
-                placeholder="What went well? What could be better?"
+                placeholder="Share what worked well and one suggestion to improve future events."
                 required
                 minLength={10}
               />
