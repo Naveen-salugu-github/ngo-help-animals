@@ -25,21 +25,6 @@ function pickIdleClip(animations: AnimationClip[]) {
   return animations[0] ?? null
 }
 
-function scheduleIdle(fn: () => void): number {
-  if (typeof requestIdleCallback !== "undefined") {
-    return requestIdleCallback(fn, { timeout: 2500 }) as unknown as number
-  }
-  return window.setTimeout(fn, 120) as unknown as number
-}
-
-function cancelScheduled(id: number) {
-  if (typeof cancelIdleCallback !== "undefined") {
-    cancelIdleCallback(id)
-  } else {
-    clearTimeout(id)
-  }
-}
-
 type ThreeModule = typeof import("three")
 
 type LoadedGltfPet = { scene: Object3D; animations: AnimationClip[] }
@@ -76,7 +61,7 @@ function preparePet(THREE: ThreeModule, gltf: LoadedGltfPet) {
 }
 
 /**
- * Full-viewport WebGL: dog + cat GLBs, idle after first paint (idle + dynamic imports).
+ * Full-viewport WebGL: dog + cat GLBs, starts loading immediately on mount.
  */
 export function HeroThreeBackground() {
   const mountRef = useRef<HTMLDivElement>(null)
@@ -91,23 +76,22 @@ export function HeroThreeBackground() {
     let cancelled = false
     let cleanup: (() => void) | null = null
 
-    const idleId = scheduleIdle(() => {
-      void (async () => {
-        const [
-          THREE,
-          { GLTFLoader },
-          { RGBELoader },
-          { RoomEnvironment },
-          { default: gsap },
-          { ScrollTrigger },
-        ] = await Promise.all([
-          import("three"),
-          import("three/examples/jsm/loaders/GLTFLoader.js"),
-          import("three/examples/jsm/loaders/RGBELoader.js"),
-          import("three/examples/jsm/environments/RoomEnvironment.js"),
-          import("gsap"),
-          import("gsap/ScrollTrigger"),
-        ])
+    void (async () => {
+      const [
+        THREE,
+        { GLTFLoader },
+        { RGBELoader },
+        { RoomEnvironment },
+        { default: gsap },
+        { ScrollTrigger },
+      ] = await Promise.all([
+        import("three"),
+        import("three/examples/jsm/loaders/GLTFLoader.js"),
+        import("three/examples/jsm/loaders/RGBELoader.js"),
+        import("three/examples/jsm/environments/RoomEnvironment.js"),
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ])
 
         if (cancelled) return
 
@@ -235,6 +219,7 @@ export function HeroThreeBackground() {
 
         const dog = preparePet(THREE, gltfDog)
         const cat = preparePet(THREE, gltfCat)
+        cat.group.scale.multiplyScalar(0.8)
 
         dog.group.position.set(-0.78, 0, 0.06)
         dog.group.rotation.y = 0.22
@@ -389,12 +374,10 @@ export function HeroThreeBackground() {
             }
           })
         }
-      })()
-    })
+    })()
 
     return () => {
       cancelled = true
-      cancelScheduled(idleId)
       cleanup?.()
     }
   }, [])
