@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
@@ -9,6 +10,10 @@ import { FeaturedProjectsGrid, type FeaturedProject } from "@/components/home/fe
 import { NgoHomeQuickActions } from "@/components/home/ngo-home-quick-actions"
 import { HomeGsap } from "@/components/home/home-gsap"
 import { HomeExtraSections } from "@/components/home/home-extra-sections"
+const HeroThreeBackground = dynamic(
+  () => import("@/components/home/hero-three-background").then((m) => m.HeroThreeBackground),
+  { ssr: false }
+)
 
 type HomeSearchParams = { campaignSubmitted?: string | string[] }
 
@@ -100,8 +105,9 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
       )}
 
       <HomeGsap>
-        <section className="border-b bg-gradient-to-b from-accent/40 to-background">
-          <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-16 md:flex-row md:items-center md:py-24">
+        <section className="relative overflow-hidden border-b bg-gradient-to-b from-accent/40 to-background">
+          <HeroThreeBackground />
+          <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-8 px-4 py-16 md:flex-row md:items-center md:py-24">
             <div className="flex-1 space-y-6" data-gsap-reveal>
               <Badge variant="secondary" className="w-fit">
                 Verified impact marketplace
