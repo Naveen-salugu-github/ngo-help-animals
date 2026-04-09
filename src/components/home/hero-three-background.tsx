@@ -1,15 +1,22 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import type { AnimationClip } from "three"
+import type { AnimationClip, Object3D } from "three"
 
-/** Quaternius Shiba Inu (CC0) via Poly Pizza — replace `public/models/dog.glb` with a larger PBR asset anytime */
-const MODEL_URL = "/models/dog.glb"
-/** Same-origin HDRI (~1.6MB) — avoids blocking on third-party CDN during first paint */
+/** Quaternius Shiba (CC0) — `public/models/dog.glb` */
+const DOG_URL = "/models/dog.glb"
+/** Quaternius Cat (CC0) — `public/models/cat.glb` */
+const CAT_URL = "/models/cat.glb"
+/** Same-origin HDRI (~1.6MB) */
 const HDR_URL = "/hdri/brown_photostudio_02_1k.hdr"
 
 function pickIdleClip(animations: AnimationClip[]) {
-  const prefer = ["Idle", "AnimalArmature|Idle", "Idle_2"]
+  const prefer = [
+    "Idle",
+    "AnimalArmature|Idle",
+    "CharacterArmature|Idle",
+    "Idle_2",
+  ]
   for (const name of prefer) {
     const c = animations.find((a) => a.name === name)
     if (c) return c
@@ -32,9 +39,43 @@ function cancelScheduled(id: number) {
   }
 }
 
+type ThreeModule = typeof import("three")
+
+type LoadedGltfPet = { scene: Object3D; animations: AnimationClip[] }
+
+function preparePet(THREE: ThreeModule, gltf: LoadedGltfPet) {
+  const model = gltf.scene
+  model.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      child.castShadow = true
+      child.receiveShadow = true
+      const mat = child.material
+      if (mat && !Array.isArray(mat)) {
+        const m = mat as InstanceType<typeof THREE.MeshStandardMaterial>
+        if (m.map) m.map.colorSpace = THREE.SRGBColorSpace
+        m.envMapIntensity = 1.05
+        if (m.roughness !== undefined) m.roughness = THREE.MathUtils.clamp(m.roughness * 0.92, 0.12, 1)
+      }
+    }
+  })
+
+  const box = new THREE.Box3().setFromObject(model)
+  const size = box.getSize(new THREE.Vector3())
+  const maxDim = Math.max(size.x, size.y, size.z, 1e-6)
+  const scale = 1.38 / maxDim
+  model.scale.multiplyScalar(scale)
+  box.setFromObject(model)
+  const center = box.getCenter(new THREE.Vector3())
+  model.position.sub(center)
+  model.position.y += 0.035
+
+  const group = new THREE.Group()
+  group.add(model)
+  return { group, model, animations: gltf.animations }
+}
+
 /**
- * Full-viewport WebGL: loads **after** first paint (idle + dynamic imports) so the shell stays snappy.
- * HDR + GLB load in parallel; HDRI is served from `/public` to avoid extra CDN latency.
+ * Full-viewport WebGL: dog + cat GLBs, idle after first paint (idle + dynamic imports).
  */
 export function HeroThreeBackground() {
   const mountRef = useRef<HTMLDivElement>(null)
@@ -79,10 +120,10 @@ export function HeroThreeBackground() {
         const pointer = { x: 0, y: 0 }
 
         const scene = new THREE.Scene()
-        scene.fog = new THREE.FogExp2(0xf8fafc, 0.016)
+        scene.fog = new THREE.FogExp2(0xf8fafc, 0.014)
 
         const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100)
-        camera.position.set(0.35, 0.72, 3.15)
+        camera.position.set(0.35, 0.76, 3.35)
 
         const renderer = new THREE.WebGLRenderer({
           alpha: true,
@@ -92,7 +133,7 @@ export function HeroThreeBackground() {
         renderer.setClearColor(0x000000, 0)
         renderer.outputColorSpace = THREE.SRGBColorSpace
         renderer.toneMapping = THREE.ACESFilmicToneMapping
-        renderer.toneMappingExposure = 1.12
+        renderer.toneMappingExposure = 1.1
         renderer.shadowMap.enabled = true
         renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
@@ -102,43 +143,43 @@ export function HeroThreeBackground() {
         const ambient = new THREE.AmbientLight(0xffffff, 0.22)
         scene.add(ambient)
 
-        const sun = new THREE.DirectionalLight(0xfff6ed, 1.85)
+        const sun = new THREE.DirectionalLight(0xfff6ed, 1.75)
         sun.position.set(3.5, 8, 4.2)
         sun.castShadow = true
         sun.shadow.mapSize.set(isCoarse ? 1024 : 2048, isCoarse ? 1024 : 2048)
         sun.shadow.bias = -0.00012
         sun.shadow.camera.near = 0.4
-        sun.shadow.camera.far = 24
-        sun.shadow.camera.left = -4
-        sun.shadow.camera.right = 4
-        sun.shadow.camera.top = 4
-        sun.shadow.camera.bottom = -4
+        sun.shadow.camera.far = 26
+        sun.shadow.camera.left = -5
+        sun.shadow.camera.right = 5
+        sun.shadow.camera.top = 5
+        sun.shadow.camera.bottom = -5
         scene.add(sun)
 
-        const rim = new THREE.DirectionalLight(0xd4c4ff, 0.55)
+        const rim = new THREE.DirectionalLight(0xd4c4ff, 0.5)
         rim.position.set(-3.2, 4, -3.8)
         scene.add(rim)
 
-        const spot = new THREE.SpotLight(0xfff0e6, 18, 22, Math.PI / 5.5, 0.38, 1)
-        spot.position.set(2.2, 5.8, 2.8)
+        const spot = new THREE.SpotLight(0xfff0e6, 16, 24, Math.PI / 5.2, 0.4, 1)
+        spot.position.set(2.4, 6, 3)
         spot.castShadow = true
         spot.shadow.mapSize.set(isCoarse ? 1024 : 2048, isCoarse ? 1024 : 2048)
         spot.target.position.set(0, 0.22, 0)
         scene.add(spot)
         scene.add(spot.target)
 
-        const fill = new THREE.PointLight(0xffd4b8, 0.42, 14)
+        const fill = new THREE.PointLight(0xffd4b8, 0.4, 16)
         fill.position.set(-1.2, 1.4, 1.5)
         scene.add(fill)
 
         const ground = new THREE.Mesh(
-          new THREE.RingGeometry(0.65, 3.2, 64),
+          new THREE.RingGeometry(0.55, 4.2, 64),
           new THREE.MeshStandardMaterial({
             color: 0xe8e4dc,
             roughness: 1,
             metalness: 0,
             transparent: true,
-            opacity: 0.22,
+            opacity: 0.2,
           })
         )
         ground.rotation.x = -Math.PI / 2
@@ -146,8 +187,8 @@ export function HeroThreeBackground() {
         ground.receiveShadow = true
         scene.add(ground)
 
-        const modelRoot = new THREE.Group()
-        scene.add(modelRoot)
+        const petsRoot = new THREE.Group()
+        scene.add(petsRoot)
 
         const loader = new GLTFLoader()
         const rgbeLoader = new RGBELoader()
@@ -165,10 +206,15 @@ export function HeroThreeBackground() {
           }
         }
 
-        let gltf: Awaited<ReturnType<typeof loader.loadAsync>>
         let envTex: InstanceType<typeof THREE.Texture>
+        let gltfDog: Awaited<ReturnType<typeof loader.loadAsync>>
+        let gltfCat: Awaited<ReturnType<typeof loader.loadAsync>>
         try {
-          ;[envTex, gltf] = await Promise.all([loadEnvironment(), loader.loadAsync(MODEL_URL)])
+          ;[envTex, gltfDog, gltfCat] = await Promise.all([
+            loadEnvironment(),
+            loader.loadAsync(DOG_URL),
+            loader.loadAsync(CAT_URL),
+          ])
         } catch (e) {
           console.error("[HeroThreeBackground] Asset load failed:", e)
           pmremGenerator.dispose()
@@ -186,49 +232,45 @@ export function HeroThreeBackground() {
         scene.environment = envMap
         scene.environmentIntensity = 1.02
 
-        let mixer: InstanceType<typeof THREE.AnimationMixer> | null = null
-        let model: InstanceType<typeof THREE.Object3D> | null = null
+        const dog = preparePet(THREE, gltfDog)
+        const cat = preparePet(THREE, gltfCat)
+
+        dog.group.position.set(-0.78, 0, 0.06)
+        dog.group.rotation.y = 0.22
+        cat.group.position.set(0.78, 0, -0.04)
+        cat.group.rotation.y = -0.26
+
+        petsRoot.add(dog.group)
+        petsRoot.add(cat.group)
+
+        let mixerDog: InstanceType<typeof THREE.AnimationMixer> | null = null
+        let mixerCat: InstanceType<typeof THREE.AnimationMixer> | null = null
+
+        const clipDog = pickIdleClip(dog.animations)
+        if (clipDog) {
+          mixerDog = new THREE.AnimationMixer(dog.model)
+          const a = mixerDog.clipAction(clipDog)
+          a.reset().play()
+          if (reduceMotion) {
+            a.paused = true
+            a.time = 0.08 * clipDog.duration
+          }
+        }
+
+        const clipCat = pickIdleClip(cat.animations)
+        if (clipCat) {
+          mixerCat = new THREE.AnimationMixer(cat.model)
+          const a = mixerCat.clipAction(clipCat)
+          a.reset().play()
+          if (reduceMotion) {
+            a.paused = true
+            a.time = 0.08 * clipCat.duration
+          }
+        }
+
         let running = true
         let frameId = 0
         const clock = new THREE.Clock()
-
-        model = gltf.scene
-        model.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.castShadow = true
-            child.receiveShadow = true
-            const mat = child.material
-            if (mat && !Array.isArray(mat)) {
-              const m = mat as InstanceType<typeof THREE.MeshStandardMaterial>
-              if (m.map) m.map.colorSpace = THREE.SRGBColorSpace
-              m.envMapIntensity = 1.05
-              if (m.roughness !== undefined) m.roughness = THREE.MathUtils.clamp(m.roughness * 0.92, 0.12, 1)
-            }
-          }
-        })
-
-        const box = new THREE.Box3().setFromObject(model)
-        const size = box.getSize(new THREE.Vector3())
-        const maxDim = Math.max(size.x, size.y, size.z, 1e-6)
-        const scale = 1.58 / maxDim
-        model.scale.multiplyScalar(scale)
-        box.setFromObject(model)
-        const center = box.getCenter(new THREE.Vector3())
-        model.position.sub(center)
-        model.position.y += 0.04
-
-        modelRoot.add(model)
-
-        const clip = pickIdleClip(gltf.animations)
-        if (clip) {
-          mixer = new THREE.AnimationMixer(model)
-          const action = mixer.clipAction(clip)
-          action.reset().play()
-          if (reduceMotion) {
-            action.paused = true
-            action.time = 0.08 * clip.duration
-          }
-        }
 
         const resize = () => {
           const w = mount.clientWidth
@@ -284,38 +326,43 @@ export function HeroThreeBackground() {
           const delta = Math.min(clock.getDelta(), 0.05)
           const t = clock.elapsedTime
 
-          if (mixer) {
-            if (reduceMotion) {
-              mixer.update(0)
-            } else {
-              mixer.timeScale = 0.32 + scrollProgress * 1.05
-              mixer.update(delta)
+          const ts = reduceMotion ? 0 : 0.3 + scrollProgress * 1.0
+          if (mixerDog) {
+            if (reduceMotion) mixerDog.update(0)
+            else {
+              mixerDog.timeScale = ts
+              mixerDog.update(delta)
             }
           }
-
-          if (model) {
-            if (!reduceMotion) {
-              const fullTurn = Math.PI * 2
-              const targetYaw = -0.28 + scrollProgress * fullTurn + pointer.x * 0.28
-              modelRoot.rotation.y += (targetYaw - modelRoot.rotation.y) * 0.055
-              modelRoot.rotation.x = THREE.MathUtils.lerp(modelRoot.rotation.x, pointer.y * 0.05, 0.07)
-              modelRoot.position.y = Math.sin(t * 0.65) * 0.018
-            } else {
-              modelRoot.rotation.y = -0.2
-              modelRoot.rotation.x = 0
-              modelRoot.position.y = 0
+          if (mixerCat) {
+            if (reduceMotion) mixerCat.update(0)
+            else {
+              mixerCat.timeScale = ts
+              mixerCat.update(delta)
             }
           }
 
           if (!reduceMotion) {
-            const camTargetX = 0.32 + scrollProgress * 0.62 + pointer.x * 0.18
-            const camTargetY = 0.7 + pointer.y * 0.08
-            const camTargetZ = 2.95 + scrollProgress * 0.55
-            camera.position.x = THREE.MathUtils.lerp(camera.position.x, camTargetX, 0.045)
-            camera.position.y = THREE.MathUtils.lerp(camera.position.y, camTargetY, 0.045)
-            camera.position.z = THREE.MathUtils.lerp(camera.position.z, camTargetZ, 0.038)
+            const fullTurn = Math.PI * 2
+            const targetYaw = -0.22 + scrollProgress * fullTurn + pointer.x * 0.24
+            petsRoot.rotation.y += (targetYaw - petsRoot.rotation.y) * 0.052
+            petsRoot.rotation.x = THREE.MathUtils.lerp(petsRoot.rotation.x, pointer.y * 0.045, 0.07)
+            petsRoot.position.y = Math.sin(t * 0.62) * 0.016
+          } else {
+            petsRoot.rotation.y = -0.18
+            petsRoot.rotation.x = 0
+            petsRoot.position.y = 0
           }
-          camera.lookAt(0, 0.26, 0)
+
+          if (!reduceMotion) {
+            const camTargetX = 0.28 + scrollProgress * 0.58 + pointer.x * 0.16
+            const camTargetY = 0.72 + pointer.y * 0.07
+            const camTargetZ = 3.05 + scrollProgress * 0.52
+            camera.position.x = THREE.MathUtils.lerp(camera.position.x, camTargetX, 0.044)
+            camera.position.y = THREE.MathUtils.lerp(camera.position.y, camTargetY, 0.044)
+            camera.position.z = THREE.MathUtils.lerp(camera.position.z, camTargetZ, 0.036)
+          }
+          camera.lookAt(0, 0.24, 0)
 
           renderer.render(scene, camera)
         }
