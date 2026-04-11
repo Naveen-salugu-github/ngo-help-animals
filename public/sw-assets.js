@@ -1,5 +1,14 @@
-const CACHE_NAME = "soul-space-3d-assets-v1"
-const ASSETS = ["/models/dog.glb", "/models/cat.glb", "/hdri/brown_photostudio_02_1k.hdr"]
+const CACHE_NAME = "soul-space-3d-assets-v2"
+const ASSETS = [
+  "/models/dog.glb",
+  "/models/cat.glb",
+  "/models/bird.glb",
+  "/models/tree.glb",
+  "/models/house.glb",
+  "/models/plant.glb",
+  "/models/cloud.glb",
+  "/hdri/brown_photostudio_02_1k.hdr",
+]
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

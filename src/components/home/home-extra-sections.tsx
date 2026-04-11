@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Heart, MapPin, ShieldCheck, Sparkles, Users } from "lucide-react"
+import { HomeImpactCounters, type ImpactCounterTargets } from "@/components/home/home-impact-counters"
 
 type HomeSnapshotStats = {
   verifiedNgoPartners: number
@@ -8,61 +9,63 @@ type HomeSnapshotStats = {
   activeCampaigns: number
 }
 
-type Props = {
-  stats: HomeSnapshotStats
+export function HomeImpactSection({ impactTargets }: { impactTargets: ImpactCounterTargets }) {
+  return (
+    <section id="impact" className="scroll-mt-24 border-b bg-muted/25 py-16 backdrop-blur-xl md:py-24">
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="mb-12 max-w-2xl" data-gsap-reveal>
+          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Impact</h2>
+          <p className="mt-2 text-muted-foreground">
+            Live totals from the Soul Space network: verified partners, volunteers, and outcomes reported across
+            campaigns.
+          </p>
+        </div>
+        <HomeImpactCounters targets={impactTargets} />
+        <div className="mt-14 grid gap-6 md:grid-cols-3">
+          <Card data-gsap-reveal className="border-primary/15">
+            <CardHeader>
+              <ShieldCheck className="mb-2 h-8 w-8 text-primary" aria-hidden />
+              <CardTitle className="text-lg">Verified NGOs</CardTitle>
+              <CardDescription>
+                Every NGO profile includes onboarding details and verification status so supporters can contribute with
+                confidence.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          <Card data-gsap-reveal className="border-primary/15">
+            <CardHeader>
+              <Sparkles className="mb-2 h-8 w-8 text-primary" aria-hidden />
+              <CardTitle className="text-lg">Transparent impact</CardTitle>
+              <CardDescription>
+                Campaign pages show goals, funds raised, media evidence, and milestone updates so supporters can track
+                progress end to end.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          <Card data-gsap-reveal className="border-primary/15">
+            <CardHeader>
+              <Users className="mb-2 h-8 w-8 text-primary" aria-hidden />
+              <CardTitle className="text-lg">Community &amp; volunteers</CardTitle>
+              <CardDescription>
+                People discover opportunities by location, register for events, and collaborate with brands on
+                measurable social impact.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+        <p className="mx-auto mt-10 max-w-2xl text-center text-xs text-muted-foreground">
+          Tree and meal totals are illustrative multipliers on reported beneficiary reach and partner activity so the
+          story matches the scale of verified work on the platform. Volunteer and funded-project counts come directly from
+          Soul Space records.
+        </p>
+      </div>
+    </section>
+  )
 }
 
-function formatCompact(value: number) {
-  return new Intl.NumberFormat("en-IN", { notation: "compact", maximumFractionDigits: 1 }).format(value)
-}
-
-export function HomeExtraSections({ stats }: Props) {
+export function HomeSupportingSections({ stats }: { stats: HomeSnapshotStats }) {
   return (
     <>
-      <section className="border-b bg-muted/25 py-16 backdrop-blur-xl md:py-24">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="mb-12 max-w-2xl" data-gsap-reveal>
-            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Why Soul Space</h2>
-            <p className="mt-2 text-muted-foreground">
-              Soul Space helps every contribution stay accountable. Donors support verified NGOs, volunteers join nearby
-              initiatives, and organizations publish transparent outcomes from the field.
-            </p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            <Card data-gsap-reveal className="border-primary/15">
-              <CardHeader>
-                <ShieldCheck className="mb-2 h-8 w-8 text-primary" aria-hidden />
-                <CardTitle className="text-lg">Verified NGOs</CardTitle>
-                <CardDescription>
-                  Every NGO profile includes onboarding details and verification status so supporters can contribute with
-                  confidence.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            <Card data-gsap-reveal className="border-primary/15">
-              <CardHeader>
-                <Sparkles className="mb-2 h-8 w-8 text-primary" aria-hidden />
-                <CardTitle className="text-lg">Transparent impact</CardTitle>
-                <CardDescription>
-                  Campaign pages show goals, funds raised, media evidence, and milestone updates so supporters can track
-                  progress end to end.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            <Card data-gsap-reveal className="border-primary/15">
-              <CardHeader>
-                <Users className="mb-2 h-8 w-8 text-primary" aria-hidden />
-                <CardTitle className="text-lg">Community &amp; volunteers</CardTitle>
-                <CardDescription>
-                  People discover opportunities by location, register for events, and collaborate with brands on
-                  measurable social impact.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
-        </div>
-      </section>
-
       <section className="mx-auto max-w-6xl px-4 py-16 md:py-24">
         <div className="mb-12 max-w-2xl" data-gsap-reveal>
           <h2 className="text-2xl font-bold tracking-tight md:text-3xl">How it works</h2>
@@ -84,34 +87,6 @@ export function HomeExtraSections({ stats }: Props) {
             </li>
           ))}
         </ol>
-      </section>
-
-      <section className="border-y bg-gradient-to-b from-accent/35 to-background/90 py-16 backdrop-blur-md md:py-24">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="mb-12 max-w-2xl" data-gsap-reveal>
-            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Impact snapshot</h2>
-            <p className="mt-2 text-muted-foreground">
-              A transparent system works best when progress is visible and easy to understand.
-            </p>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              { label: "Verified NGO partners", value: formatCompact(stats.verifiedNgoPartners) },
-              { label: "Volunteer registrations", value: formatCompact(stats.volunteerRegistrations) },
-              { label: "Beneficiaries reached", value: formatCompact(stats.beneficiariesReached) },
-              { label: "Active campaigns", value: formatCompact(stats.activeCampaigns) },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                data-gsap-reveal
-                className="rounded-2xl border border-primary/20 bg-background/80 p-6 text-center shadow-sm backdrop-blur"
-              >
-                <p className="text-3xl font-bold tracking-tight text-primary">{stat.value}</p>
-                <p className="mt-2 text-sm text-muted-foreground">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-16 md:py-24">
@@ -157,6 +132,36 @@ export function HomeExtraSections({ stats }: Props) {
           </Card>
         </div>
       </section>
+
+      <section className="border-y bg-gradient-to-b from-accent/35 to-background/90 py-12 backdrop-blur-md md:py-16">
+        <div className="mx-auto max-w-6xl px-4">
+          <div className="mb-8 max-w-2xl" data-gsap-reveal>
+            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Snapshot</h2>
+            <p className="mt-2 text-muted-foreground">Raw platform counts for partners, volunteers, and campaigns.</p>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { label: "Verified NGO partners", value: stats.verifiedNgoPartners },
+              { label: "Volunteer registrations", value: stats.volunteerRegistrations },
+              { label: "Beneficiaries reached", value: stats.beneficiariesReached },
+              { label: "Active campaigns", value: stats.activeCampaigns },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                data-gsap-reveal
+                className="rounded-2xl border border-primary/20 bg-background/80 p-6 text-center shadow-sm backdrop-blur"
+              >
+                <p className="text-3xl font-bold tracking-tight text-primary">
+                  {new Intl.NumberFormat("en-IN", { notation: "compact", maximumFractionDigits: 1 }).format(stat.value)}
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     </>
   )
 }
+
+export type { ImpactCounterTargets }

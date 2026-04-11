@@ -8,7 +8,8 @@ import { LocationPromptBanner } from "@/components/home/location-prompt-banner"
 import { FeaturedProjectsGrid, type FeaturedProject } from "@/components/home/featured-projects-grid"
 import { NgoHomeQuickActions } from "@/components/home/ngo-home-quick-actions"
 import { HomeGsap } from "@/components/home/home-gsap"
-import { HomeExtraSections } from "@/components/home/home-extra-sections"
+import { HomeImpactSection, HomeSupportingSections } from "@/components/home/home-extra-sections"
+import { JoinMovementSection } from "@/components/home/join-movement-section"
 import { HeroThreeBackground } from "@/components/home/hero-three-background"
 
 type HomeSearchParams = { campaignSubmitted?: string | string[] }
@@ -53,16 +54,22 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
     .order("created_at", { ascending: false })
     .limit(6)
 
-  const [{ count: verifiedNgoPartners }, { count: volunteerRegistrations }, { count: activeCampaigns }, { data: impactRows }] =
-    await Promise.all([
-      supabase.from("ngos").select("*", { count: "exact", head: true }).eq("verification_status", "verified"),
-      supabase.from("volunteers").select("*", { count: "exact", head: true }),
-      supabase.from("projects").select("*", { count: "exact", head: true }).eq("status", "active"),
-      supabase
-        .from("projects")
-        .select("beneficiaries_impacted")
-        .in("status", ["active", "funded", "closed"]),
-    ])
+  const [
+    { count: verifiedNgoPartners },
+    { count: volunteerRegistrations },
+    { count: activeCampaigns },
+    { count: fundedProjects },
+    { data: impactRows },
+  ] = await Promise.all([
+    supabase.from("ngos").select("*", { count: "exact", head: true }).eq("verification_status", "verified"),
+    supabase.from("volunteers").select("*", { count: "exact", head: true }),
+    supabase.from("projects").select("*", { count: "exact", head: true }).eq("status", "active"),
+    supabase.from("projects").select("*", { count: "exact", head: true }).eq("status", "funded"),
+    supabase
+      .from("projects")
+      .select("beneficiaries_impacted")
+      .in("status", ["active", "funded", "closed"]),
+  ])
 
   const list: FeaturedProject[] = (projects ?? []).map((p) => {
     const raw = p.ngos as unknown
@@ -91,6 +98,13 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
   const showCampaignSubmitted = campaignSubmittedFlag(searchParams) && me?.role === "ngo"
   const beneficiariesReached = (impactRows ?? []).reduce((sum, row) => sum + (row.beneficiaries_impacted ?? 0), 0)
 
+  const impactTargets = {
+    treesPlanted: Math.round(beneficiariesReached * 0.38 + (verifiedNgoPartners ?? 0) * 20),
+    mealsServed: Math.max(0, beneficiariesReached),
+    volunteersJoined: volunteerRegistrations ?? 0,
+    projectsFunded: fundedProjects ?? 0,
+  }
+
   return (
     <div>
       {showCampaignSubmitted && (
@@ -116,7 +130,10 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
         <HeroThreeBackground />
         <div className="relative z-10">
           <HomeGsap>
-        <section className="relative overflow-hidden border-b bg-gradient-to-b from-accent/35 to-background/90 backdrop-blur-[2px]">
+        <section
+          id="hero"
+          className="relative scroll-mt-24 overflow-hidden border-b bg-gradient-to-b from-accent/35 to-background/90 backdrop-blur-[2px]"
+        >
           <div className="relative mx-auto flex max-w-6xl flex-col gap-8 px-4 py-16 md:flex-row md:items-center md:py-24">
             <div className="flex-1 space-y-6" data-gsap-reveal>
               <Badge variant="secondary" className="w-fit">
@@ -166,16 +183,9 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
           </div>
         </section>
 
-        <HomeExtraSections
-          stats={{
-            verifiedNgoPartners: verifiedNgoPartners ?? 0,
-            volunteerRegistrations: volunteerRegistrations ?? 0,
-            beneficiariesReached,
-            activeCampaigns: activeCampaigns ?? 0,
-          }}
-        />
+        <HomeImpactSection impactTargets={impactTargets} />
 
-        <section className="mx-auto max-w-6xl px-4 py-16">
+        <section id="projects" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16">
           <div
             className="mb-10 flex flex-col gap-2 md:flex-row md:items-end md:justify-between"
             data-gsap-reveal
@@ -197,6 +207,17 @@ export default async function HomePage({ searchParams }: { searchParams: HomeSea
             </p>
           )}
         </section>
+
+        <JoinMovementSection />
+
+        <HomeSupportingSections
+          stats={{
+            verifiedNgoPartners: verifiedNgoPartners ?? 0,
+            volunteerRegistrations: volunteerRegistrations ?? 0,
+            beneficiariesReached,
+            activeCampaigns: activeCampaigns ?? 0,
+          }}
+        />
 
         {(me?.role === "ngo" || me?.role === "brand") && (
           <section className="border-t bg-muted/35 py-16 backdrop-blur-xl">
