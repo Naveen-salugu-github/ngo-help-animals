@@ -18,7 +18,6 @@ export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
-  const [resetLoading, setResetLoading] = useState(false)
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -33,26 +32,6 @@ export default function LoginPage() {
     toast.success("Welcome back")
     router.push(next)
     router.refresh()
-  }
-
-  async function onForgotPassword() {
-    if (!email) {
-      toast.error("Enter your email first to reset your password.")
-      return
-    }
-
-    setResetLoading(true)
-    const supabase = createClient()
-    const redirectTo = `${window.location.origin}/auth/callback?next=/reset-password`
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo })
-    setResetLoading(false)
-
-    if (error) {
-      toast.error(error.message)
-      return
-    }
-
-    toast.success("Password reset email sent. Check your inbox.")
   }
 
   return (
@@ -78,14 +57,12 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <button
-                  type="button"
+                <Link
+                  href={`/forgot-password${email ? `?email=${encodeURIComponent(email)}` : ""}`}
                   className="text-sm text-primary underline underline-offset-4"
-                  onClick={onForgotPassword}
-                  disabled={resetLoading}
                 >
-                  {resetLoading ? "Sending..." : "Forgot password?"}
-                </button>
+                  Forgot password?
+                </Link>
               </div>
               <Input
                 id="password"
