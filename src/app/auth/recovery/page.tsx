@@ -1,17 +1,13 @@
 "use client"
 
 import { Suspense } from "react"
-import { useSearchParams } from "next/navigation"
 import { CompleteEmailSession } from "@/components/auth/complete-email-session"
-import { safeNextPath } from "@/lib/safe-next-path"
 
-function ConfirmInner() {
-  const searchParams = useSearchParams()
-  const next = safeNextPath(searchParams.get("next"))
-  return <CompleteEmailSession redirectAfter={next} />
-}
-
-export default function AuthConfirmPage() {
+/**
+ * Password recovery return URL. Supabase often redirects with only ?code=… and drops
+ * other query params, so we cannot rely on ?next=/reset-password on /auth/confirm.
+ */
+export default function AuthRecoveryPage() {
   return (
     <Suspense
       fallback={
@@ -20,7 +16,7 @@ export default function AuthConfirmPage() {
         </div>
       }
     >
-      <ConfirmInner />
+      <CompleteEmailSession redirectAfter="/reset-password" />
     </Suspense>
   )
 }
