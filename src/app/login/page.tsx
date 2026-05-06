@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
@@ -18,6 +18,17 @@ export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const err = searchParams.get("error")
+    if (err === "auth_callback") {
+      toast.error("We could not finish signing you in from that link. Try a new reset email or open the link in the same browser you used to request it.")
+      return
+    }
+    if (err === "auth_confirm") {
+      toast.error("That sign-in or reset link is invalid or expired. Please request a new password reset.")
+    }
+  }, [searchParams])
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()

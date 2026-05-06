@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { getBrowserAppUrl } from "@/lib/env"
 import { toast } from "sonner"
 
 export default function ForgotPasswordPage() {
@@ -20,7 +21,7 @@ export default function ForgotPasswordPage() {
     setLoading(true)
 
     const supabase = createClient()
-    const redirectTo = `${window.location.origin}/auth/callback?next=/reset-password`
+    const redirectTo = `${getBrowserAppUrl()}/auth/confirm?next=/reset-password`
     const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo })
     setLoading(false)
 
