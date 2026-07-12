@@ -44,7 +44,7 @@ function IconLinkedin({ className }: { className?: string }) {
 }
 
 const SOCIAL_LINKS = [
-  { name: "Instagram", href: "https://www.instagram.com/space_for_animals_?igsh=MWhiY3J1djBrMDE1cg==", Icon: IconInstagram },
+  { name: "Instagram", href: "https://www.instagram.com/souls___space?igsh=N3d2eWx0dXo0dnZx", Icon: IconInstagram },
   { name: "LinkedIn", href: "https://www.linkedin.com", Icon: IconLinkedin },
   { name: "YouTube", href: "https://www.youtube.com", Icon: IconYoutube },
   { name: "X (Twitter)", href: "https://x.com", Icon: IconX },
